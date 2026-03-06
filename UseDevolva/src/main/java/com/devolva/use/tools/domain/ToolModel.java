@@ -10,23 +10,23 @@ public class ToolModel {
     private Long id;
     private String nome;
     private String descricao;
-    private String categoria;
+    private Long categoriaId;
     private String estadoConservacao;
     private Double valorDiaria;
     private boolean disponivel;
-    private Long ownerId;
+    private Long proprietarioId;
 
     public ToolModel() {
     }
 
-    public ToolModel(Long id, String nome, String descricao, String categoria, String estadoConservacao, Double valorDiaria, boolean disponivel, Long ownerId) {
+    public ToolModel(Long id, String nome, String descricao, Long categoriaId, String estadoConservacao, Double valorDiaria, boolean disponivel, Long proprietarioId) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
-        this.categoria = categoria;
+        this.categoriaId = categoriaId;
         this.estadoConservacao = estadoConservacao;
         this.valorDiaria = valorDiaria;
         this.disponivel = disponivel;
-        this.ownerId = ownerId;
+        this.proprietarioId = proprietarioId;
     }
 }
