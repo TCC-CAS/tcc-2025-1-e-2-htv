@@ -1,0 +1,170 @@
+<!-- PÁGINA DE BUSCA -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buscar Ferramentas - Use e Devolva</title>
+</head>
+<body>
+
+<div>
+    Header
+</div>
+
+<main>
+
+    <section>
+        <h1>Buscar ferramentas</h1>
+        <p>Encontre ferramentas disponíveis por nome, categoria, preço ou localização.</p>
+    </section>
+
+    <section>
+        <h2>Filtros</h2>
+
+        <form>
+            <div>
+                <label for="categoria">Categoria</label>
+                <select id="categoria" name="categoria">
+                    <option value="">Todas</option>
+                    <option value="construcao">Construção</option>
+                    <option value="jardinagem">Jardinagem</option>
+                    <option value="eletrica">Elétrica</option>
+                    <option value="limpeza">Limpeza</option>
+                    <option value="marcenaria">Marcenaria</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="precoMin">Preço mínimo por diária</label>
+                <input type="number" id="precoMin" name="precoMin" placeholder="0,00" />
+            </div>
+
+            <div>
+                <label for="precoMax">Preço máximo por diária</label>
+                <input type="number" id="precoMax" name="precoMax" placeholder="100,00" />
+            </div>
+
+            <div>
+                <label for="distancia">Distância máxima</label>
+                <select id="distancia" name="distancia">
+                    <option value="">Qualquer distância</option>
+                    <option value="1">Até 1 km</option>
+                    <option value="3">Até 3 km</option>
+                    <option value="5">Até 5 km</option>
+                    <option value="10">Até 10 km</option>
+                    <option value="20">Até 20 km</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="disponibilidade">Disponibilidade</label>
+                <select id="disponibilidade" name="disponibilidade">
+                    <option value="">Todos</option>
+                    <option value="disponivel">Disponível agora</option>
+                    <option value="sob-consulta">Sob consulta</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit">Aplicar filtros</button>
+                <button type="reset">Limpar filtros</button>
+                <button type="button">Buscar no mapa</button>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <h2>Resultados encontrados</h2>
+        <p>Exibindo ferramentas disponíveis com base na sua busca.</p>
+
+        <article>
+            <h3>Furadeira Bosch</h3>
+            <p>Categoria: Construção</p>
+            <p>Estado: Ótimo estado</p>
+            <p>Valor: R$ 25,00 por dia</p>
+            <p>Distância aproximada: 2,4 km</p>
+            <p>Disponibilidade: Disponível</p>
+            <a href="/tools/tools-page">Ver detalhes</a>
+        </article>
+
+        <article>
+            <h3>Escada extensível</h3>
+            <p>Categoria: Construção</p>
+            <p>Estado: Bom estado</p>
+            <p>Valor: R$ 30,00 por dia</p>
+            <p>Distância aproximada: 4,1 km</p>
+            <p>Disponibilidade: Disponível</p>
+            <a href="/tools/tools-page">Ver detalhes</a>
+        </article>
+
+        <article>
+            <h3>Aparador de grama</h3>
+            <p>Categoria: Jardinagem</p>
+            <p>Estado: Muito bom</p>
+            <p>Valor: R$ 22,00 por dia</p>
+            <p>Distância aproximada: 3,0 km</p>
+            <p>Disponibilidade: Disponível</p>
+            <a href="/tools/tools-page">Ver detalhes</a>
+        </article>
+    </section>
+
+    <section>
+        <h2>Paginação</h2>
+        <nav>
+            <a href="#">Anterior</a>
+            <a href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">Próxima</a>
+        </nav>
+    </section>
+
+    <section>
+        <h2>Popup de busca por mapa</h2>
+
+        <div>
+            <h3>Buscar ferramentas por localização</h3>
+            <p>Selecione uma região no mapa ou use sua localização atual.</p>
+
+            <form>
+                <div>
+                    <label for="enderecoBusca">Endereço ou região</label>
+                    <input type="text" id="enderecoBusca" name="enderecoBusca" placeholder="Digite um endereço ou bairro" />
+                </div>
+
+                <div>
+                    <label for="raioBusca">Raio de busca</label>
+                    <select id="raioBusca" name="raioBusca">
+                        <option value="1">1 km</option>
+                        <option value="3">3 km</option>
+                        <option value="5">5 km</option>
+                        <option value="10">10 km</option>
+                        <option value="20">20 km</option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="button">Usar minha localização</button>
+                    <button type="button">Selecionar no mapa</button>
+                    <button type="submit">Buscar nesta região</button>
+                </div>
+            </form>
+
+            <div>
+                Área reservada para o mapa (colocar uma img de mapa ou qqr coisa de placeholder
+            </div>
+
+            <button type="button">Fechar</button>
+        </div>
+    </section>
+
+</main>
+
+<div>
+    Footer
+</div>
+
+</body>
+</html>

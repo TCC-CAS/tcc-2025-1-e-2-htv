@@ -1,0 +1,53 @@
+<header>
+    <div>
+        <!-- Logo -->
+        <a href="/">Use e Devolva</a>
+    </div>
+
+    <nav>
+        <ul>
+            <li>
+                <a href="/">Home</a>
+            </li>
+
+            <div>
+                <span>Categorias</span>
+
+                <ul> <!-- apenas de exemplo -->
+                    <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                    <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                    <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                    <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                    <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                </ul>
+            </div>
+
+            <li><!-- barra de busca-->
+                <form>
+                    <input type="text" placeholder="Buscar ferramentas..." />
+                    <button type="submit">Buscar</button>
+                </form>
+            </li>
+<!--            <li> categorias acho? o que mais der pra colocar para o header nao ficar vazio </li>-->
+        </ul>
+    </nav>
+
+    <div>
+        <!-- Área do usuário -->
+
+        <!-- quando NÃO estiver logado -->
+        <a href="/auth/login">Entrar</a>
+        <a href="/auth/register">Criar conta</a>
+
+        <!-- quando estiver logado (depois arrumamos no back -->
+        <a href="/users/profile">Meu perfil</a>
+        <a href="/users/my-rentals">Meus aluguéis</a>
+        <a href="/users/my-tools">Minhas ferramentas</a>
+        <a href="/users/favorites">❤️</a> <!-- simbolo de coração para parte de favoritos -->
+
+
+        <!-- apenas admin -->
+        <a href="/security/admin-dashboard">Admin</a>
+    </div>
+
+</header>

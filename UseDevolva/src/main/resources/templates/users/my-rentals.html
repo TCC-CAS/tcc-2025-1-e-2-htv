@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meus Aluguéis - Use e Devolva</title>
+</head>
+<body>
+
+<div>
+    Header
+</div>
+
+<main>
+
+    <section>
+        <h1>Meus aluguéis</h1>
+        <p>
+            Aqui você acompanha os aluguéis realizados, os valores pagos e o status de cada empréstimo.
+        </p>
+    </section>
+
+    <section>
+        <h2>Filtros</h2>
+
+        <form>
+            <div>
+                <label for="statusAluguel">Status</label>
+                <select id="statusAluguel" name="statusAluguel">
+                    <option value="">Todos</option>
+                    <option value="solicitado">Solicitado</option>
+                    <option value="aprovado">Aprovado</option>
+                    <option value="em-uso">Em uso</option>
+                    <option value="devolvido">Devolvido</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="periodo">Período</label>
+                <input type="month" id="periodo" name="periodo" />
+            </div>
+
+            <div>
+                <button type="submit">Filtrar</button>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <h2>Lista de aluguéis</h2>
+
+        <article>
+            <h3>Furadeira</h3>
+            <p>Proprietário: João Silva</p>
+            <p>Período: 10/03/2026 até 12/03/2026</p>
+            <p>Valor pago: R$ 55,00</p>
+            <p>Status: Em uso</p>
+            <p>Forma de pagamento: Pix</p>
+
+            <div>
+                <a href="/rentals/rental-tracking">Acompanhar aluguel</a>
+                <button type="button">Falar com o proprietário</button>
+            </div>
+        </article>
+
+        <article>
+            <h3>Escada</h3>
+            <p>Proprietário: Maria Souza</p>
+            <p>Período: 01/03/2026 até 03/03/2026</p>
+            <p>Valor pago: R$ 65,00</p>
+            <p>Status: Devolvido</p>
+            <p>Forma de pagamento: Cartão</p>
+
+            <div>
+                <a href="/rentals/rental-tracking">Ver histórico</a>
+                <button type="button">Avaliar aluguel</button>
+            </div>
+        </article>
+
+        <article>
+            <h3>Aparador de grama</h3>
+            <p>Proprietário: Carlos Mendes</p>
+            <p>Período: 18/03/2026 até 20/03/2026</p>
+            <p>Valor previsto: R$ 49,00</p>
+            <p>Status: Solicitado</p>
+            <p>Aguardando aprovação do proprietário</p>
+
+            <div>
+                <a href="/rentals/rental-tracking">Ver solicitação</a>
+                <button type="button">Cancelar solicitação</button>
+            </div>
+        </article>
+    </section>
+
+    <section>
+        <h2>Resumo financeiro</h2>
+        <p>Total de aluguéis realizados: 3</p>
+        <p>Total pago: R$ 169,00</p>
+        <p>Aluguéis em andamento: 1</p>
+        <p>Aluguéis finalizados: 1</p>
+    </section>
+
+    <section>
+        <h2>Quando não houver aluguéis</h2>
+        <p>Você ainda não realizou nenhum aluguel.</p>
+        <a href="/tools/tools-list">Explorar ferramentas</a>
+    </section>
+
+</main>
+
+<div>
+    Footer
+</div>
+
+</body>
+</html>

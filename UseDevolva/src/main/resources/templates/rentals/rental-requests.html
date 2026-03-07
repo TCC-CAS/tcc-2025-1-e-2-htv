@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solicitações de Aluguel - Use e Devolva</title>
+</head>
+<body>
+
+<div>
+    Header
+</div>
+
+<main>
+
+    <section>
+        <h1>Solicitações de aluguel</h1>
+        <p>
+            Aqui você acompanha os pedidos recebidos para suas ferramentas e pode aprovar ou recusar cada solicitação.
+        </p>
+    </section>
+
+    <section>
+        <h2>Filtros</h2>
+
+        <form>
+            <div>
+                <label for="statusSolicitacao">Status</label>
+                <select id="statusSolicitacao" name="statusSolicitacao">
+                    <option value="">Todos</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="aprovada">Aprovadas</option>
+                    <option value="recusada">Recusadas</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="ferramentaSolicitacao">Ferramenta</label>
+                <input type="text" id="ferramentaSolicitacao" name="ferramentaSolicitacao" placeholder="Buscar por ferramenta" />
+            </div>
+
+            <div>
+                <button type="submit">Filtrar</button>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <h2>Pedidos recebidos</h2>
+
+        <article>
+            <h3>Furadeira</h3>
+            <p><strong>Solicitante:</strong> Carlos Mendes</p>
+            <p><strong>Período solicitado:</strong> 18/03/2026 até 20/03/2026</p>
+            <p><strong>Data da solicitação:</strong> 15/03/2026</p>
+            <p><strong>Valor estimado:</strong> R$ 50,00</p>
+            <p><strong>Status:</strong> Pendente</p>
+            <p><strong>Mensagem do locatário:</strong> Preciso da ferramenta para uma pequena reforma em casa.</p>
+
+            <div>
+                <button type="button">Aprovar solicitação</button>
+                <button type="button">Recusar solicitação</button>
+                <button type="button">Falar com o locatário</button> <!-- abrir uma popup de chat? acho nao sei kk -->
+            </div>
+        </article>
+
+        <article>
+            <h3>Escada</h3>
+            <p><strong>Solicitante:</strong> Maria Souza</p>
+            <p><strong>Período solicitado:</strong> 22/03/2026 até 23/03/2026</p>
+            <p><strong>Data da solicitação:</strong> 16/03/2026</p>
+            <p><strong>Valor estimado:</strong> R$ 30,00</p>
+            <p><strong>Status:</strong> Aprovada</p>
+
+            <div>
+                <button type="button">Ver detalhes</button>
+                <button type="button">Falar com o locatário</button> <!-- abrir uma popup de chat? acho nao sei kk -->
+            </div>
+        </article>
+
+        <article>
+            <h3>Aparador de grama</h3>
+            <p><strong>Solicitante:</strong> João Pedro</p>
+            <p><strong>Período solicitado:</strong> 25/03/2026 até 26/03/2026</p>
+            <p><strong>Data da solicitação:</strong> 17/03/2026</p>
+            <p><strong>Valor estimado:</strong> R$ 22,00</p>
+            <p><strong>Status:</strong> Recusada</p>
+            <p><strong>Motivo da recusa:</strong> Ferramenta indisponível para esse período.</p>
+
+            <div>
+                <button type="button">Ver detalhes</button>
+            </div>
+        </article>
+    </section>
+
+    <section>
+        <h2>Confirmação de decisão</h2>
+        <p>Este bloco representa a confirmação antes de aprovar ou recusar um pedido.</p>
+
+        <div>
+            <p>Tem certeza que deseja aprovar esta solicitação?</p>
+            <button type="button">Confirmar aprovação</button>
+            <button type="button">Cancelar</button>
+        </div>
+
+        <div>
+            <p>Tem certeza que deseja recusar esta solicitação?</p>
+
+            <label for="motivoRecusa">Motivo da recusa</label>
+            <textarea id="motivoRecusa" name="motivoRecusa" rows="4" cols="50"></textarea>
+
+            <button type="button">Confirmar recusa</button>
+            <button type="button">Cancelar</button>
+        </div>
+    </section>
+
+</main>
+
+<div>
+    Footer
+</div>
+
+</body>
+</html>

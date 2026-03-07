@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minhas Ferramentas - Use e Devolva</title>
+</head>
+<body>
+
+<div>
+    Header
+</div>
+
+<main>
+
+    <section>
+        <h1>Minhas ferramentas</h1>
+        <p>
+            Aqui você acompanha as ferramentas que cadastrou, sua disponibilidade e o status de cada item.
+        </p>
+    </section>
+
+    <section>
+        <div>
+            <a href="/users/create-tool">Cadastrar nova ferramenta</a>
+        </div>
+    </section>
+
+    <section>
+        <h2>Ferramentas cadastradas</h2>
+
+        <article>
+            <h3>Furadeira</h3>
+            <p>Categoria: Construção</p>
+            <p>Estado: Ótimo estado</p>
+            <p>Valor da diária: R$ 25,00</p>
+            <p>Status: Disponível</p>
+            <p>Próxima disponibilidade: Imediata</p>
+
+            <div>
+                <a href="/tools/tools-page">Ver página pública</a>
+                <a href="/users/edit-tool">Editar</a>
+                <button type="button">Bloquear temporariamente</button>
+                <button type="button">Excluir</button>
+            </div>
+        </article>
+
+        <article>
+            <h3>Escada</h3>
+            <p>Categoria: Construção</p>
+            <p>Estado: Bom estado</p>
+            <p>Valor da diária: R$ 30,00</p>
+            <p>Status: Alugada no momento</p>
+            <p>Próxima disponibilidade: 20/03/2026</p>
+
+            <div>
+                <a href="/tools/tools-page">Ver página pública</a>
+                <a href="/users/edit-tool">Editar</a>
+                <button type="button">Bloquear temporariamente</button>
+                <button type="button">Excluir</button>
+            </div>
+        </article>
+
+        <article>
+            <h3>Aparador de grama</h3>
+            <p>Categoria: Jardinagem</p>
+            <p>Estado: Muito bom</p>
+            <p>Valor da diária: R$ 22,00</p>
+            <p>Status: Bloqueada temporariamente</p>
+            <p>Motivo: Manutenção</p>
+
+            <div>
+                <a href="/tools/tools-page">Ver página pública</a>
+                <a href="/users/edit-tool">Editar</a>
+                <button type="button">Reativar ferramenta</button>
+                <button type="button">Excluir</button>
+            </div>
+        </article>
+    </section>
+
+    <section>
+        <h2>Resumo</h2>
+        <p>Total de ferramentas cadastradas: 3</p>
+        <p>Ferramentas disponíveis: 1</p>
+        <p>Ferramentas alugadas: 1</p>
+        <p>Ferramentas bloqueadas: 1</p>
+    </section>
+
+    <section>
+        <h2>Quando não houver ferramentas cadastradas</h2>
+        <p>Você ainda não cadastrou nenhuma ferramenta.</p>
+        <a href="/users/create-tool">Cadastrar minha primeira ferramenta</a>
+    </section>
+
+</main>
+
+<div>
+    Footer
+</div>
+
+</body>
+</html>

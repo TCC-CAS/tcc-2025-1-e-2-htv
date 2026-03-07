@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finalização do Aluguel - Use e Devolva</title>
+</head>
+<body>
+
+<div>
+    Header
+</div>
+
+<main>
+
+    <section>
+        <h1>Finalização do aluguel</h1>
+        <p>
+            Revise os dados da locação e conclua o pagamento de forma segura.
+        </p>
+    </section>
+
+    <section>
+        <h2>Resumo da ferramenta</h2>
+        <p><strong>Ferramenta:</strong> Furadeira</p>
+        <p><strong>Descrição:</strong> Furadeira elétrica ideal para pequenos reparos e instalações.</p>
+        <p><strong>Imagem:</strong> Área reservada para imagem da ferramenta</p>
+    </section>
+
+    <section>
+        <h2>Resumo da locação</h2>
+        <p><strong>Período:</strong> 18/03/2026 até 20/03/2026</p>
+        <p><strong>Quantidade de diárias:</strong> 2</p>
+        <p><strong>Valor da diária:</strong> R$ 25,00</p>
+        <p><strong>Subtotal:</strong> R$ 50,00</p>
+        <p><strong>Taxa da plataforma (7%):</strong> R$ 3,50</p>
+        <p><strong>Total:</strong> R$ 53,50</p>
+    </section>
+
+    <section>
+        <h2>Método de pagamento</h2>
+
+        <form>
+            <div>
+                <input type="radio" id="pix" name="metodoPagamento" value="pix" />
+                <label for="pix">Pix</label>
+            </div>
+
+            <div>
+                <input type="radio" id="cartao" name="metodoPagamento" value="cartao" />
+                <label for="cartao">Cartão de crédito</label>
+            </div>
+
+            <div>
+                <input type="radio" id="boleto" name="metodoPagamento" value="boleto" />
+                <label for="boleto">Boleto</label>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <h2>Pagamento via Pix</h2>
+        <p>Escaneie o QR Code ou copie a chave Pix para concluir o pagamento.</p>
+
+        <div>
+            Área reservada para QR Code
+        </div>
+
+        <p><strong>Chave Pix:</strong> pix@useedevolva.com</p>
+        <button type="button">Copiar chave Pix</button>
+    </section>
+
+    <section>
+        <h2>Pagamento via cartão</h2>
+
+        <form>
+            <div>
+                <label for="nomeCartao">Nome no cartão</label>
+                <input type="text" id="nomeCartao" name="nomeCartao" />
+            </div>
+
+            <div>
+                <label for="numeroCartao">Número do cartão</label>
+                <input type="text" id="numeroCartao" name="numeroCartao" />
+            </div>
+
+            <div>
+                <label for="validadeCartao">Validade</label>
+                <input type="text" id="validadeCartao" name="validadeCartao" placeholder="MM/AA" />
+            </div>
+
+            <div>
+                <label for="cvvCartao">CVV</label>
+                <input type="text" id="cvvCartao" name="cvvCartao" />
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <h2>Confirmação</h2>
+        <p>
+            Ao confirmar o pagamento, o sistema registrará a transação e atualizará o status do aluguel.
+        </p>
+
+        <button type="button">Confirmar pagamento</button>
+        <button type="button">Cancelar</button>
+    </section>
+
+</main>
+
+<div>
+    Footer
+</div>
+
+</body>
+</html>
