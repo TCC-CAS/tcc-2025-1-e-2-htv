@@ -6,6 +6,17 @@
             --cor-texto-claro: #7E7E7E;     
             --cor-fundo-claro: #EAEAEA;     
             --cor-branco: #FFFFFF;
+            --reg-bg-fundo: #F3F4F6;
+            --reg-bg-card: #FFFFFF;
+            --reg-cor-borda: #D1D5DB;
+            --reg-cor-primaria: #5248B3;
+            --reg-cor-primaria-escura: #302885;
+            --reg-cor-texto: #323232;
+            --reg-cor-texto-secundario: #676767;
+            --reg-cor-borda: #D1D5DB;
+            --reg-bg-fundo: #F3F4F6;
+            --reg-bg-card: #FFFFFF;
+
         }
 
         * {

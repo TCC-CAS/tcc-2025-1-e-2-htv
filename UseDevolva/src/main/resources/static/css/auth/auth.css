@@ -128,3 +128,145 @@
         .back-home:hover {
             color: var(--cor-texto-escuro);
         }
+
+ /* Removendo margens padrão do body para o fundo ocupar tudo */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--reg-bg-fundo);
+        }
+
+        /* =========================================
+           ESTRUTURA DA PÁGINA
+           ========================================= */
+        /* Wrapper que atua como o fundo cinza da página (seguro para o Preview) */
+        .register-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-color: var(--reg-bg-fundo);
+        }
+
+        /* O Cartão branco principal */
+        .register-card {
+            background-color: var(--reg-bg-card);
+            width: 100%;
+            max-width: 450px; /* Tamanho contido e elegante */
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Textos do cabeçalho */
+        .register-title {
+            color: var(--reg-cor-primaria-escura);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .register-subtitle {
+            color: var(--reg-cor-texto-secundario);
+            font-size: 0.95rem;
+            text-align: center;
+            margin: 0 0 2rem 0;
+            line-height: 1.5;
+        }
+
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem; 
+        }
+
+        .register-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .register-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--reg-cor-texto);
+        }
+
+        .register-input {
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--reg-cor-borda);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--reg-cor-texto);
+            box-sizing: border-box; 
+            transition: all 0.3s ease;
+        }
+
+        .register-input:focus {
+            outline: none;
+            border-color: var(--reg-cor-primaria);
+            box-shadow: 0 0 0 3px rgba(82, 72, 179, 0.15);
+        }
+
+        /* Área do Checkbox */
+        .register-terms {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .register-terms input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--reg-cor-primaria);
+            cursor: pointer;
+        }
+
+        .register-terms label {
+            font-size: 0.9rem;
+            color: var(--reg-cor-texto-secundario);
+            cursor: pointer;
+        }
+
+        .register-btn {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--reg-cor-primaria);
+            color: #FFFFFF;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .register-btn:hover {
+            background-color: var(--reg-cor-primaria-escura);
+        }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--reg-cor-texto-secundario);
+        }
+
+        .register-footer a {
+            color: var(--reg-cor-primaria);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .register-footer a:hover {
+            color: var(--reg-cor-primaria-escura);
+            text-decoration: underline;
+        }
