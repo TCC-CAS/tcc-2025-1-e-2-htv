@@ -1,0 +1,246 @@
+        :root {
+            --cor-primaria: #0056b3; /* Azul Use e Devolva */
+            --cor-sucesso: #00a650;  /* Verde estilo "Mercado Livre" */
+            --cor-pendente: #e5e7eb; /* Cinza claro */
+            --cor-texto: #333333;
+            --cor-texto-mutado: #6b7280;
+            --bg-fundo: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-fundo);
+            color: var(--cor-texto);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--cor-primaria);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* =========================================
+           O CAMINHO (PROGRESS BAR / STEPPER)
+           ========================================= */
+        .caminho-container {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .caminho-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+        /* Linha de fundo (Cinza - Pendente) */
+        .caminho-linha-fundo {
+            position: absolute;
+            top: 20px; /* Metade da altura da bolinha */
+            left: 5%;
+            width: 90%;
+            height: 6px;
+            background-color: var(--cor-pendente);
+            z-index: 1;
+            border-radius: 3px;
+        }
+
+        /* Linha que vai completando (Verde - Sucesso) */
+        .caminho-linha-progresso {
+            position: absolute;
+            top: 20px;
+            left: 5%;
+            width: 0%; /* Controlado via JS */
+            height: 6px;
+            background-color: var(--cor-sucesso);
+            z-index: 2;
+            border-radius: 3px;
+            transition: width 0.6s ease-in-out;
+        }
+.etapa {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    padding: 10px;
+}
+
+        .etapa-bolinha {
+            width: 46px;
+            height: 46px;
+            background-color: white;
+            border: 4px solid var(--cor-pendente);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--cor-texto-mutado);
+            transition: all 0.6s ease-in-out;
+        }
+
+        .etapa-icone {
+            display: none; /* Oculto por padrão, mostra o check quando completo */
+        }
+
+        .etapa-numero {
+            display: block;
+        }
+
+        .etapa-texto {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--cor-texto-mutado);
+            text-align: center;
+        }
+
+        /* Estados das Etapas */
+        .etapa.completada .etapa-bolinha {
+            background-color: var(--cor-sucesso);
+            border-color: var(--cor-sucesso);
+            color: white;
+        }
+        
+        .etapa.completada .etapa-icone {
+            display: block;
+        }
+
+        .etapa.completada .etapa-numero {
+            display: none;
+        }
+
+        .etapa.completada .etapa-texto {
+            color: var(--cor-sucesso);
+        }
+
+        /* Etapa atual piscando levemente */
+        .etapa.atual .etapa-bolinha {
+            border-color: var(--cor-primaria);
+            color: var(--cor-primaria);
+            box-shadow: 0 0 0 6px rgba(0, 86, 179, 0.15);
+            background-color: white;
+        }
+
+        .etapa.atual .etapa-texto {
+            color: var(--cor-primaria);
+            font-weight: bold;
+        }
+
+        /* =========================================
+           CARDS DE INFORMAÇÃO
+           ========================================= */
+        .grid-infos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #eaeaea;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            color: var(--cor-primaria);
+            border-bottom: 2px solid var(--bg-fundo);
+            padding-bottom: 10px;
+        }
+
+        .card p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .destaque-valor {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--cor-sucesso);
+        }
+
+        /* Botão de simulação */
+        .btn-simular {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--cor-primaria);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .btn-simular:hover {
+            background-color: #004494;
+        }
+        
+        .btn-simular:disabled {
+            background-color: var(--cor-pendente);
+            color: var(--cor-texto-mutado);
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            .caminho-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+                padding-left: 20px;
+                gap: 30px;
+            }
+            .caminho-linha-fundo {
+                width: 6px;
+                height: 100%;
+                left: 40px; /* Alinhado ao centro da bolinha */
+                top: 0;
+            }
+            .caminho-linha-progresso {
+                width: 6px !important; /* Força largura fixa na vertical */
+                height: 0%; /* Será controlado via JS agora na altura */
+                left: 40px;
+                top: 0;
+                transition: height 0.6s ease-in-out;
+            }
+            .etapa {
+                flex-direction: row;
+                width: 100%;
+                gap: 20px;
+            }
+            .etapa-texto {
+                margin-top: 0;
+                text-align: left;
+            }
+        }

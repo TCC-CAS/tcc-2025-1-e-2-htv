@@ -4,109 +4,175 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Acompanhamento de Aluguel - Use e Devolva</title>
+
+<link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/pages/rental-tracking.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
 </head>
 <body>
-
-<div>
-    Header
-</div>
-
-<main>
-
-    <section>
-        <h1>Acompanhamento do aluguel</h1>
-        <p>
-            Acompanhe o andamento do seu aluguel, o pagamento e a etapa atual do processo.
-        </p>
-    </section>
-
-    <section>
-        <h2>Resumo do aluguel</h2>
-        <p><strong>Ferramenta:</strong> Furadeira Bosch</p>
-        <p><strong>Identificação do aluguel:</strong> ALUG-2026-00125</p>
-        <p><strong>Data da solicitação:</strong> 15/03/2026</p>
-        <p><strong>Período:</strong> 18/03/2026 até 20/03/2026</p>
-        <p><strong>Valor pago:</strong> R$ 55,00</p>
-        <p><strong>Status atual:</strong> Pagamento aprovado</p>
-    </section>
-
-    <section>
-        <h2>Status do fluxo</h2>
-
-        <div>
-            <p>1. Solicitação enviada</p>
-            <p>2. Solicitação aprovada</p>
-            <p>3. Pagamento aprovado</p>
-            <p>4. Aguardando retirada</p>
-            <p>5. Em uso</p>
-            <p>6. Devolução concluída</p>
+<header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
         </div>
-    </section>
 
-    <section>
-        <h2>Etapa atual</h2>
-        <p><strong>Etapa atual:</strong> Aguardando retirada</p>
-        <p>
-            Seu pagamento foi aprovado. Combine com o proprietário a retirada da ferramenta no local informado.
-        </p>
-    </section>
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
 
-    <section>
-        <h2>Informações de retirada</h2>
-        <p><strong>Forma de recebimento:</strong> Retirada presencial</p>
-        <p><strong>Local:</strong> Vila Mariana - São Paulo/SP</p>
-        <p><strong>Responsável:</strong> João Silva</p>
-        <p><strong>Janela de retirada:</strong> 18/03/2026 das 09:00 às 12:00</p>
-    </section>
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
 
-    <section>
-        <h2>Alternativa de envio</h2>
-        <p><strong>Forma de recebimento:</strong> Transportadora</p>
-        <p><strong>Status do envio:</strong> Aguardando postagem</p>
-        <p><strong>Código de rastreio:</strong> XXXXXXXXXX</p>
-    </section>
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
 
-    <section>
-        <h2>Pagamento</h2>
-        <p><strong>Status:</strong> Confirmado</p>
-        <p><strong>Método:</strong> Pix</p>
-        <p><strong>Valor:</strong> R$ 55,00</p>
-        <p><strong>Data de confirmação:</strong> 16/03/2026</p>
-        <p><strong>Comprovante:</strong> Pagamento confirmado com sucesso.</p>
-    </section>
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+    <main>
 
-    <section>
-        <h2>Histórico de atualizações</h2>
+        <!-- O CAMINHO QUE VAI COMPLETANDO -->
+        <section class="caminho-container">
+            <h2 style="margin-top:0; margin-bottom: 30px; font-size: 1.2rem;">Status Atual</h2>
+            
+            <div class="caminho-wrapper">
+                <!-- Linhas de conexão -->
+                <div class="caminho-linha-fundo"></div>
+                <div class="caminho-linha-progresso" id="linhaProgresso"></div>
 
-        <article>
-            <p><strong>15/03/2026 14:20</strong> - Solicitação enviada</p>
-        </article>
+                <!-- Etapa 1 -->
+                <div class="etapa" data-passo="0">
+                    <div class="etapa-bolinha">
+                        <span class="etapa-numero">1</span>
+                        <svg class="etapa-icone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="etapa-texto">Solicitação<br>Enviada</div>
+                </div>
 
-        <article>
-            <p><strong>16/03/2026 09:10</strong> - Solicitação aprovada pelo proprietário</p>
-        </article>
+                <!-- Etapa 2 -->
+                <div class="etapa" data-passo="1">
+                    <div class="etapa-bolinha">
+                        <span class="etapa-numero">2</span>
+                        <svg class="etapa-icone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="etapa-texto">Aprovada<br>pelo Dono</div>
+                </div>
 
-        <article>
-            <p><strong>16/03/2026 09:30</strong> - Pagamento confirmado</p>
-        </article>
+                <!-- Etapa 3 -->
+                <div class="etapa" data-passo="2">
+                    <div class="etapa-bolinha">
+                        <span class="etapa-numero">3</span>
+                        <svg class="etapa-icone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="etapa-texto">Pagamento<br>Confirmado</div>
+                </div>
 
-        <article>
-            <p><strong>16/03/2026 10:00</strong> - Retirada aguardando confirmação</p>
-        </article>
-    </section>
+                <!-- Etapa 4 -->
+                <div class="etapa" data-passo="3">
+                    <div class="etapa-bolinha">
+                        <span class="etapa-numero">4</span>
+                        <svg class="etapa-icone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="etapa-texto">Item retirado</div>
+                </div>
 
-    <section>
-        <h2>Ações</h2>
-        <a href="/tools/tools-page">Ver ferramenta</a>
-        <button type="button">Falar com o proprietário</button>
-        <button type="button">Cancelar aluguel</button>
-    </section>
+                <!-- Etapa 5 -->
+                <div class="etapa" data-passo="4">
+                    <div class="etapa-bolinha">
+                        <span class="etapa-numero">5</span>
+                        <svg class="etapa-icone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="etapa-texto">Em uso</div>
+                </div>
 
-</main>
+                <div class="etapa" data-passo="4">
+                    <div class="etapa-bolinha">
+                        <span class="etapa-numero">5</span>
+                        <svg class="etapa-icone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div class="etapa-texto">Devolvido</div>
+                </div>
+            </div>
 
-<div>
-    Footer
-</div>
+            <!-- Botão apenas para você testar a animação -->
+            <button class="btn-simular" id="btnAvancar" onclick="avancarEtapa()">Entrar em contato com o vendedor</button>
+        </section>
 
+        <!-- INFORMAÇÕES DO ALUGUEL -->
+        <div class="grid-infos">
+            <section class="card">
+                <h2>Resumo do aluguel</h2>
+                <p><strong>Ferramenta:</strong> Furadeira Bosch</p>
+                <p><strong>Período:</strong> 18/03/2026 até 20/03/2026</p>
+                <p><strong>Status interno:</strong> <span id="statusTexto" style="color:var(--cor-sucesso); font-weight:bold;">Pagamento Confirmado</span></p>
+            </section>
+
+            <section class="card">
+                <h2>Pagamento</h2>
+                <p><strong>Método:</strong> Pix</p>
+                <p><strong>Data de confirmação:</strong> 16/03/2026</p>
+                <p><strong>Valor pago:</strong> <span class="destaque-valor">R$ 55,00</span></p>
+            </section>
+
+            <section class="card">
+                <h2>Envio / Retirada</h2>
+                <p><strong>Forma de recebimento:</strong> Transportadora</p>
+                <p><strong>Código de rastreio:</strong> <span style="font-family: monospace; background:#eee; padding:2px 6px; border-radius:4px;">BR987654321PT</span></p>
+            </section>
+        </div>
+
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
 </body>
 </html>
