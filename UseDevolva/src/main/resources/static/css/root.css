@@ -1,6 +1,6 @@
  :root {
-            --cor-primaria-escura: #302885; /* Roxo Escuro */
-            --cor-primaria: #5248B3;        /* Roxo Principal */
+            --cor-primaria-escura: #302885; 
+            --cor-primaria: #5248B3;        
             --cor-texto-escuro: #323232;    
             --cor-texto-medio: #676767;    
             --cor-texto-claro: #7E7E7E;     
@@ -16,9 +16,32 @@
             --reg-cor-borda: #D1D5DB;
             --reg-bg-fundo: #F3F4F6;
             --reg-bg-card: #FFFFFF;
-
+            --auth-primary: #5248B3;
+            --auth-primary-dark: #302885;
+            --auth-text-main: #323232;
+            --auth-text-sub: #676767;
+            --auth-border: #D1D5DB;
+            --auth-bg-page: #F8F9FA;
+            --auth-white: #FFFFFF;
+            --search-primary: #5248B3;
+            --search-primary-dark: #302885;
+            --search-bg: #F3F4F6;
+            --search-card: #FFFFFF;
+            --search-text: #323232;
+            --search-text-light: #6B7280;
+            --search-border: #E5E7EB;
+            --search-accent: #10B981;
+            --tool-primary: #5248B3;
+            --tool-primary-dark: #302885;
+            --tool-bg: #F9FAFB;
+            --tool-card: #FFFFFF;
+            --tool-text: #1F2937;
+            --tool-text-light: #6B7280;
+            --tool-border: #E5E7EB;
+            --tool-success: #10B981;            
         }
 
+        
         * {
             margin: 0;
             padding: 0;

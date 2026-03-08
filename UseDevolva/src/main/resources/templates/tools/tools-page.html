@@ -4,131 +4,167 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalhes da Ferramenta - Use e Devolva</title>
+
+<link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/pages/tools.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 </head>
-<body>
 
-<div>
-    Header
-</div>
+<header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
+        </div>
 
-<main>
-
-    <section>
         <nav>
-            <a href="/">Home</a> /
-            <a href="/tools/tools-list">Ferramentas</a> /
-            <span>Furadeira Bosch</span>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
         </nav>
-    </section>
 
-    <section>
-        <h1>Furadeira</h1>
-        <p>Ferramenta ideal para pequenos reparos e instalações domésticas.</p>
-    </section>
-
-    <section>
-        <h2>Imagem da ferramenta</h2>
-        <div>
-            Área da imagem principal
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
         </div>
-        <div>
-            Área para imagens secundárias
+    </header>
+
+<nav class="breadcrumb">
+        <a href="/">Home</a> / <a href="/tools/tools-list">Ferramentas</a> / <span>Furadeira Bosch</span>
+    </nav>
+
+    <main class="tool-container">
+        
+        <!-- Esquerda -->
+        <div class="tool-main-content">
+            <div class="image-gallery">
+                🛠️
+            </div>
+
+            <div class="tool-description">
+                <span class="tool-badge">CONSTRUÇÃO</span>
+                <h1>Furadeira de Impacto Bosch GSB 450W</h1>
+                <p style="color: var(--tool-text-light);">Disponível em Santo Amaro, São Paulo</p>
+                
+                <div class="info-section" style="margin-top: 2rem;">
+                    <h2>Sobre a ferramenta</h2>
+                    <p>A Furadeira de Impacto Bosch GSB 450 RE é compacta e poderosa. Ideal para perfurações em alvenaria, madeira e metal. Acompanha chave de mandril e maleta para transporte.</p>
+                    <ul style="margin-top: 1rem; padding-left: 1.2rem;">
+                        <li>Potência: 450W</li>
+                        <li>Rotação: 0 - 3100 rpm</li>
+                        <li>Mandril: 3/8" (10mm)</li>
+                        <li>Peso: 1.2kg</li>
+                    </ul>
+                </div>
+
+                <div class="info-section" style="margin-top: 1.5rem;">
+                    <h2>Condições de uso</h2>
+                    <p>Peço que a ferramenta seja devolvida limpa. Uso residencial apenas. Em caso de quebra por mau uso, o custo de reparo será solicitado através da plataforma.</p>
+                </div>
+            </div>
         </div>
-    </section>
 
-    <section>
-        <h2>Informações da ferramenta</h2>
-        <p><strong>Categoria:</strong> Construção</p>
-        <p><strong>Estado de conservação:</strong> Ótimo estado</p>
-        <p><strong>Valor da diária:</strong> R$ 25,00</p>
-        <p><strong>Disponibilidade:</strong> Disponível</p>
-        <p><strong>Descrição:</strong> Furadeira elétrica com excelente desempenho para uso residencial e profissional leve.</p>
-    </section>
+        <!-- Direita (Widget de Reserva) -->
+        <aside class="reservation-card">
+            <div class="price-tag">
+                R$ 25,00 <span>/ dia</span>
+            </div>
 
-    <section>
-        <h2>Informações do proprietário</h2>
-        <p><strong>Nome:</strong> João Silva</p>
-        <p><strong>Reputação:</strong> 4.8/5</p>
-        <p><strong>Nível de confiabilidade:</strong> Verificado</p>
-        <p><strong>Tempo na plataforma:</strong> 1 ano e 3 meses</p>
-    </section>
+            <form>
+                <div class="form-group">
+                    <label for="dataInicio">Data de Início</label>
+                    <input type="date" id="dataInicio" required>
+                </div>
 
-    <section>
-        <h2>Localização aproximada</h2>
-        <p>Ferramenta localizada na região de São Paulo/SP.</p>
-        <div>
-            Área reservada para mapa com localização aproximada
+                <div class="form-group">
+                    <label for="dataFim">Data de Devolução</label>
+                    <input type="date" id="dataFim" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="obs">Mensagem ao proprietário</label>
+                    <textarea id="obs" rows="3" placeholder="Olá, gostaria de usar para..."></textarea>
+                </div>
+
+                <div class="booking-summary">
+                    <div class="summary-row">
+                        <span>2 diárias</span>
+                        <span>R$ 50,00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Taxa de serviço</span>
+                        <span>R$ 5,00</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>R$ 55,00</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-rent">Solicitar Empréstimo</button>
+            </form>
+
+            <div class="owner-info">
+                <div class="owner-avatar">JS</div>
+                <div class="owner-details">
+                    <span style="font-weight: 700;">João Silva</span>
+                    <span style="color: var(--tool-success);">⭐ 4.9 (12 aluguéis)</span>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
         </div>
-    </section>
 
-    <section>
-        <h2>Avaliações</h2>
-
-        <article>
-            <p><strong>Hevillyn Klein</strong></p>
-            <p>Nota: 5/5</p>
-            <p>Ferramenta em ótimo estado, retirada e devolução sem problemas.</p>
-        </article>
-
-        <article>
-            <p><strong>Vinicius Scott</strong></p>
-            <p>Nota: 4/5</p>
-            <p>Funcionou muito bem. Apenas a maleta estava um pouco desgastada.</p>
-        </article>
-    </section>
-
-    <section>
-        <h2>Solicitar aluguel</h2> <!-- acho que fica melhor uma popup? ou outra pagina? -->
-
-        <form>
-            <div>
-                <label for="dataInicio">Data de início</label>
-                <input type="date" id="dataInicio" name="dataInicio" />
-            </div>
-
-            <div>
-                <label for="dataFim">Data de devolução</label>
-                <input type="date" id="dataFim" name="dataFim" />
-            </div>
-
-            <div>
-                <label for="mensagemLocador">Mensagem para o proprietário</label>
-                <textarea id="mensagemLocador" name="mensagemLocador" rows="4" cols="50" placeholder="Escreva uma mensagem opcional"></textarea>
-            </div>
-
-            <div>
-                <p><strong>Valor estimado:</strong> R$ 50,00</p>
-                <p><strong>Taxa da plataforma:</strong> R$ 5,00</p>
-                <p><strong>Total estimado:</strong> R$ 55,00</p>
-            </div>
-
-            <button type="submit">Solicitar empréstimo</button>
-        </form>
-    </section>
-
-    <section>
-        <h2>Ferramentas parecidas</h2>
-
-        <article>
-            <h3>Parafusadeira Makita</h3>
-            <p>Categoria: Construção</p>
-            <p>Valor: R$ 20,00 por dia</p>
-            <a href="/tools/tools-page">Ver detalhes</a>
-        </article>
-
-        <article>
-            <h3>Martelo</h3>
-            <p>Categoria: Construção</p>
-            <p>Valor: R$ 40,00 por dia</p>
-            <a href="/tools/tools-page">Ver detalhes</a>
-        </article>
-    </section>
-
-</main>
-
-<div>
-    Footer
-</div>
-
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
 </body>
 </html>
