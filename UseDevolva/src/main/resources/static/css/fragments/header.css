@@ -1,0 +1,143 @@
+header {
+            background-color: var(--cor-branco);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo a {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--cor-primaria-escura);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Placeholder do Logo em CSS */
+        .logo a::before {
+            content: "🛠️"; /* Ícone temporário representando o logo */
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-weight: 600;
+            color: var(--cor-texto-medio);
+        }
+
+        nav a:hover {
+            color: var(--cor-primaria);
+        }
+
+        /* Dropdown de Categorias */
+        .dropdown {
+            position: relative;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--cor-texto-medio);
+            padding: 0.5rem 0;
+        }
+
+        .dropdown:hover {
+            color: var(--cor-primaria);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--cor-branco);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            min-width: 150px;
+            flex-direction: column;
+            gap: 0;
+            border: 1px solid var(--cor-fundo-claro);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: flex;
+        }
+
+        .dropdown-menu li a {
+            display: block;
+            padding: 0.5rem 1rem;
+            font-weight: 400;
+        }
+
+        .dropdown-menu li a:hover {
+            background-color: var(--cor-fundo-claro);
+            color: var(--cor-primaria-escura);
+        }
+
+        header form {
+            display: flex;
+            align-items: center;
+        }
+
+        header form input {
+            font-family: 'Poppins', sans-serif;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--cor-fundo-claro);
+            border-radius: 20px 0 0 20px;
+            outline: none;
+            color: var(--cor-texto-escuro);
+        }
+
+        header form input::placeholder {
+            color: var(--cor-texto-claro);
+        }
+
+        header form button {
+            padding: 0.5rem 1rem;
+            background-color: var(--cor-primaria);
+            color: var(--cor-branco);
+            border-radius: 0 20px 20px 0;
+            font-weight: 600;
+        }
+
+        header form button:hover {
+            background-color: var(--cor-primaria-escura);
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-area a {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-login {
+            color: var(--cor-primaria);
+        }
+
+        .btn-register {
+            background-color: var(--cor-primaria);
+            color: var(--cor-branco) !important;
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+        }
+
+        .btn-register:hover {
+            background-color: var(--cor-primaria-escura);
+        }
