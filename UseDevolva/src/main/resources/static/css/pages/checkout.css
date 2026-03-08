@@ -1,0 +1,282 @@
+body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--chk-bg);
+            color: var(--chk-text);
+        }
+
+        /* HEADER SIMPLIFICADO (Foco na conversão) */
+        .checkout-header {
+            background: var(--chk-card);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--chk-border);
+            margin-bottom: 2rem;
+        }
+
+        .checkout-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--chk-primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* LAYOUT PRINCIPAL */
+        .checkout-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1rem 4rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* COLUNA DA ESQUERDA - MÉTODOS DE PAGAMENTO */
+        .payment-box {
+            background: var(--chk-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--chk-border);
+        }
+
+        /* Tabs de Seleção de Pagamento */
+        .payment-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--chk-border);
+            border-radius: 12px;
+            background: transparent;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--chk-text-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            border-color: var(--chk-primary);
+            color: var(--chk-primary);
+            background: rgba(82, 72, 179, 0.05);
+        }
+
+        /* Conteúdo das Tabs */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Formulário de Cartão */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--chk-text);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--chk-border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--chk-primary);
+            box-shadow: 0 0 0 3px rgba(82, 72, 179, 0.1);
+        }
+
+        /* Área do PIX */
+        .pix-area {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            background: var(--chk-bg);
+            border: 2px dashed var(--chk-border);
+            border-radius: 12px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .pix-key-box {
+            background: var(--chk-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+
+        .btn-copy {
+            background: white;
+            border: 1px solid var(--chk-border);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+        }
+
+        /* COLUNA DA DIREITA - RESUMO (STICKY) */
+        .summary-box {
+            background: var(--chk-card);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--chk-border);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+
+        .tool-preview {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--chk-border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-img-mini {
+            width: 60px;
+            height: 60px;
+            background: var(--chk-bg);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .tool-preview h3 {
+            margin: 0 0 0.2rem 0;
+            font-size: 1rem;
+        }
+        
+        .tool-preview p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--chk-text-light);
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px dashed var(--chk-border);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--chk-primary-dark);
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--chk-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: background 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+main.checkout-container {
+    padding-top: 20px;
+}
+        .btn-checkout:hover {
+            background: var(--chk-primary-dark);
+        }
+
+        .security-badge {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--chk-text-light);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 900px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            .summary-box {
+                position: static;
+                order: -1; /* Coloca o resumo acima do pagamento no telemóvel */
+            }
+        }

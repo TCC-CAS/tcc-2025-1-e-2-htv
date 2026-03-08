@@ -4,113 +4,197 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Finalização do Aluguel - Use e Devolva</title>
+
+    <link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/pages/checkout.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<div>
-    Header
-</div>
-
-<main>
-
-    <section>
-        <h1>Finalização do aluguel</h1>
-        <p>
-            Revise os dados da locação e conclua o pagamento de forma segura.
-        </p>
-    </section>
-
-    <section>
-        <h2>Resumo da ferramenta</h2>
-        <p><strong>Ferramenta:</strong> Furadeira</p>
-        <p><strong>Descrição:</strong> Furadeira elétrica ideal para pequenos reparos e instalações.</p>
-        <p><strong>Imagem:</strong> Área reservada para imagem da ferramenta</p>
-    </section>
-
-    <section>
-        <h2>Resumo da locação</h2>
-        <p><strong>Período:</strong> 18/03/2026 até 20/03/2026</p>
-        <p><strong>Quantidade de diárias:</strong> 2</p>
-        <p><strong>Valor da diária:</strong> R$ 25,00</p>
-        <p><strong>Subtotal:</strong> R$ 50,00</p>
-        <p><strong>Taxa da plataforma (7%):</strong> R$ 3,50</p>
-        <p><strong>Total:</strong> R$ 53,50</p>
-    </section>
-
-    <section>
-        <h2>Método de pagamento</h2>
-
-        <form>
-            <div>
-                <input type="radio" id="pix" name="metodoPagamento" value="pix" />
-                <label for="pix">Pix</label>
-            </div>
-
-            <div>
-                <input type="radio" id="cartao" name="metodoPagamento" value="cartao" />
-                <label for="cartao">Cartão de crédito</label>
-            </div>
-
-            <div>
-                <input type="radio" id="boleto" name="metodoPagamento" value="boleto" />
-                <label for="boleto">Boleto</label>
-            </div>
-        </form>
-    </section>
-
-    <section>
-        <h2>Pagamento via Pix</h2>
-        <p>Escaneie o QR Code ou copie a chave Pix para concluir o pagamento.</p>
-
-        <div>
-            Área reservada para QR Code
+<header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
         </div>
 
-        <p><strong>Chave Pix:</strong> pix@useedevolva.com</p>
-        <button type="button">Copiar chave Pix</button>
-    </section>
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
 
-    <section>
-        <h2>Pagamento via cartão</h2>
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
 
-        <form>
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+<main class="checkout-container">
+        
+        <!-- COLUNA ESQUERDA: Pagamento -->
+        <section class="payment-box">
+            <h2 class="section-title">Como prefere pagar?</h2>
+            
+            <div class="payment-tabs">
+                <button class="tab-btn active" onclick="switchTab('cartao')">💳 Cartão de Crédito</button>
+                <button class="tab-btn" onclick="switchTab('pix')">💠 Pix</button>
+            </div>
+
+            <!-- Formulário Cartão -->
+            <div id="tab-cartao" class="tab-content active">
+                <form>
+                    <div class="form-group">
+                        <label for="nomeCartao">Nome impresso no cartão</label>
+                        <input type="text" id="nomeCartao" placeholder="Ex: JOAO M SILVA" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numeroCartao">Número do cartão</label>
+                        <input type="text" id="numeroCartao" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="validadeCartao">Validade</label>
+                            <input type="text" id="validadeCartao" placeholder="MM/AA" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvvCartao">CVV</label>
+                            <input type="text" id="cvvCartao" placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Área Pix -->
+            <div id="tab-pix" class="tab-content">
+                <div class="pix-area">
+                    <p style="margin-bottom: 1.5rem;">Escaneie o QR Code abaixo com a aplicação do seu banco.</p>
+                    
+                    <div class="qr-placeholder">
+                        📱
+                    </div>
+
+                    <p style="font-size: 0.9rem; color: var(--chk-text-light); margin-bottom: 0.5rem;">Ou copie a chave Pix:</p>
+                    <div class="pix-key-box">
+                        00020126580014br.gov.bcb.pix0136pix@useedevolva.com
+                    </div>
+                    <button class="btn-copy" onclick="alert('Chave copiada para a área de transferência!')">Copiar Chave Pix</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLUNA DIREITA: Resumo (Sticky) -->
+        <aside class="summary-box">
+            <h2 class="section-title">Resumo do Aluguel</h2>
+            
+            <div class="tool-preview">
+                <div class="tool-img-mini">🛠️</div>
+                <div>
+                    <h3>Furadeira Bosch GSB 450W</h3>
+                    <p>Proprietário: João Silva</p>
+                </div>
+            </div>
+
+            <div class="summary-line">
+                <span>Período</span>
+                <span style="font-weight: 500;">18/03 até 20/03</span>
+            </div>
+            <div class="summary-line">
+                <span>Diárias (2x R$ 25,00)</span>
+                <span>R$ 50,00</span>
+            </div>
+            <div class="summary-line">
+                <span>Taxa da plataforma (10%)</span>
+                <span>R$ 5,00</span>
+            </div>
+
+            <div class="summary-total">
+                <span>Total a pagar</span>
+                <span>R$ 55,00</span>
+            </div>
+
+            <button type="button" class="btn-checkout">
+                Confirmar Pagamento
+            </button>
+
+            <div class="security-badge">
+                🔒 Pagamento encriptado e seguro. O valor só é libertado após a entrega da ferramenta.
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Script Simples para alternar os separadores (tabs) -->
+    <script>
+        function switchTab(tabId) {
+            // Remove a classe 'active' de todos os botões e conteúdos
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Adiciona a classe 'active' ao botão clicado e ao conteúdo correspondente
+            if (tabId === 'cartao') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('tab-cartao').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('tab-pix').classList.add('active');
+            }
+        }
+    </script>
+
+    <footer>
+        <div class="footer-content">
             <div>
-                <label for="nomeCartao">Nome no cartão</label>
-                <input type="text" id="nomeCartao" name="nomeCartao" />
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
             </div>
 
             <div>
-                <label for="numeroCartao">Número do cartão</label>
-                <input type="text" id="numeroCartao" name="numeroCartao" />
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
             </div>
 
             <div>
-                <label for="validadeCartao">Validade</label>
-                <input type="text" id="validadeCartao" name="validadeCartao" placeholder="MM/AA" />
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
             </div>
+        </div>
 
-            <div>
-                <label for="cvvCartao">CVV</label>
-                <input type="text" id="cvvCartao" name="cvvCartao" />
-            </div>
-        </form>
-    </section>
-
-    <section>
-        <h2>Confirmação</h2>
-        <p>
-            Ao confirmar o pagamento, o sistema registrará a transação e atualizará o status do aluguel.
-        </p>
-
-        <button type="button">Confirmar pagamento</button>
-        <button type="button">Cancelar</button>
-    </section>
-
-</main>
-
-<div>
-    Footer
-</div>
-
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
 </body>
 </html>

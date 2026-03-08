@@ -38,7 +38,37 @@
             --tool-text: #1F2937;
             --tool-text-light: #6B7280;
             --tool-border: #E5E7EB;
-            --tool-success: #10B981;            
+            --tool-success: #10B981;     
+            --trk-primary: #5248B3;
+            --trk-primary-dark: #302885;
+            --trk-bg: #F3F4F6;
+            --trk-card: #FFFFFF;
+            --trk-text: #1F2937;
+            --trk-text-light: #6B7280;
+            --trk-border: #E5E7EB;
+            --trk-success: #10B981;
+            --trk-pending: #D1D5DB;
+            --chk-primary: #5248B3;
+            --chk-primary-dark: #302885;
+            --chk-bg: #F3F4F6;
+            --chk-card: #FFFFFF;
+            --chk-text: #1F2937;
+            --chk-text-light: #6B7280;
+            --chk-border: #E5E7EB;
+            --chk-success: #10B981;   
+            --req-primary: #5248B3;
+            --req-primary-dark: #302885;
+            --req-bg: #F3F4F6;
+            --req-card: #FFFFFF;
+            --req-text: #1F2937;
+            --req-text-light: #6B7280;
+            --req-border: #E5E7EB;
+            --status-pending-bg: #FEF3C7;
+            --status-pending-text: #92400E;
+            --status-approved-bg: #D1FAE5;
+            --status-approved-text: #065F46;
+            --status-rejected-bg: #FEE2E2;
+            --status-rejected-text: #991B1B;
         }
 
         
