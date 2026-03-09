@@ -4,114 +4,229 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meus Aluguéis - Use e Devolva</title>
+
+    <link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+<link rel="stylesheet" href="../../static/css/pages/users/my-rentals.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<div>
-    Header
-</div>
+<header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
+        </div>
 
-<main>
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
 
-    <section>
-        <h1>Meus aluguéis</h1>
-        <p>
-            Aqui você acompanha os aluguéis realizados, os valores pagos e o status de cada empréstimo.
-        </p>
-    </section>
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
 
-    <section>
-        <h2>Filtros</h2>
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
 
-        <form>
-            <div>
-                <label for="statusAluguel">Status</label>
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+  <main>
+        
+        <div class="page-header">
+            <h2>Minhas solicitações</h2>
+            <p>Acompanhe as ferramentas que requisitou, o estado atual e o seu histórico de pagamentos.</p>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                </div>
+                <div class="stat-info">
+                    <h3>Total de Alugueres</h3>
+                    <p>3</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #10B981; background-color: #D1FAE5;">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Gasto</h3>
+                    <p>R$ 120,00</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="filters-section">
+            <div class="filter-group">
+                <label for="statusAluguel">Estado</label>
                 <select id="statusAluguel" name="statusAluguel">
-                    <option value="">Todos</option>
-                    <option value="solicitado">Solicitado</option>
-                    <option value="aprovado">Aprovado</option>
-                    <option value="em-uso">Em uso</option>
-                    <option value="devolvido">Devolvido</option>
-                    <option value="cancelado">Cancelado</option>
+                    <option value="">Todos os estados</option>
+                    <option value="solicitado">Solicitados</option>
+                    <option value="aprovado">Aprovados</option>
+                    <option value="em-uso">Em Uso</option>
+                    <option value="devolvido">Devolvidos</option>
+                    <option value="cancelado">Cancelados</option>
                 </select>
             </div>
+            <div class="filter-group">
+                <label for="periodo">Mês</label>
+                <input type="month" id="periodo" name="periodo" value="2026-03" />
+            </div>
+            <button type="submit" class="btn-filter">Filtrar</button>
+        </section>
 
+        <section class="rentals-list">
+
+            <article class="rental-card">
+                <div class="rental-header">
+                    <div class="rental-title-group">
+                        <h3>Berbequim / Furadeira Bosch</h3>
+                        <p>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            Proprietário: Silva Ferramentas
+                        </p>
+                    </div>
+                    <span class="badge active">Em Uso</span>
+                </div>
+                <div class="rental-body">
+                    <div class="info-block">
+                        <span class="info-label">Período de Aluguel</span>
+                        <span class="info-value">18/03/2026 a 20/03/2026</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Forma de Pagamento</span>
+                        <span class="info-value">MB Way</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Valor Pago</span>
+                        <span class="price-value">R$ 55,00</span>
+                    </div>
+                </div>
+                <div class="rental-actions">
+                    <a href="/rentals/rental-tracking" class="btn-outline">Ver Histórico</a>
+                    <button class="btn-primary">Devolver Ferramenta</button>
+                </div>
+            </article>
+
+            <article class="rental-card">
+                <div class="rental-header">
+                    <div class="rental-title-group">
+                        <h3>Escada de Alumínio (5 degraus)</h3>
+                        <p>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            Proprietário: Maria Souza
+                        </p>
+                    </div>
+                    <span class="badge done">Devolvido</span>
+                </div>
+                <div class="rental-body">
+                    <div class="info-block">
+                        <span class="info-label">Período de Aluguel</span>
+                        <span class="info-value">01/03/2026 a 03/03/2026</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Forma de Pagamento</span>
+                        <span class="info-value">Cartão de Crédito</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Valor Pago</span>
+                        <span class="info-value" style="font-weight: 700;">R$ 65,00</span>
+                    </div>
+                </div>
+                <div class="rental-actions">
+                    <a href="/rentals/rental-tracking" class="btn-outline">Ver Histórico</a>
+                    <button class="btn-outline" style="color: #059669; border-color: #059669;">Avaliar Aluguer</button>
+                </div>
+            </article>
+
+            <article class="rental-card">
+                <div class="rental-header">
+                    <div class="rental-title-group">
+                        <h3>Aparador de Relva / Grama</h3>
+                        <p>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            Proprietário: Carlos Mendes
+                        </p>
+                    </div>
+                    <span class="badge pending">Aguardando Aprovação</span>
+                </div>
+                <div class="rental-body">
+                    <div class="info-block">
+                        <span class="info-label">Período Solicitado</span>
+                        <span class="info-value">25/03/2026 a 26/03/2026</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Estado</span>
+                        <span class="info-value" style="color: #92400E;">Aguardando resposta do proprietário</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Valor Previsto</span>
+                        <span class="info-value" style="font-weight: 700; color: #6B7280;">R$ 49,00</span>
+                    </div>
+                </div>
+                <div class="rental-actions">
+                    <a href="/rentals/rental-tracking" class="btn-outline">Ver Solicitação</a>
+                    <button class="btn-danger-outline">Cancelar Solicitação</button>
+                </div>
+            </article>
+
+        </section>
+    </main>
+
+   <footer>
+        <div class="footer-content">
             <div>
-                <label for="periodo">Período</label>
-                <input type="month" id="periodo" name="periodo" />
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
             </div>
 
             <div>
-                <button type="submit">Filtrar</button>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
             </div>
-        </form>
-    </section>
-
-    <section>
-        <h2>Lista de aluguéis</h2>
-
-        <article>
-            <h3>Furadeira</h3>
-            <p>Proprietário: João Silva</p>
-            <p>Período: 10/03/2026 até 12/03/2026</p>
-            <p>Valor pago: R$ 55,00</p>
-            <p>Status: Em uso</p>
-            <p>Forma de pagamento: Pix</p>
 
             <div>
-                <a href="/rentals/rental-tracking">Acompanhar aluguel</a>
-                <button type="button">Falar com o proprietário</button>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
             </div>
-        </article>
+        </div>
 
-        <article>
-            <h3>Escada</h3>
-            <p>Proprietário: Maria Souza</p>
-            <p>Período: 01/03/2026 até 03/03/2026</p>
-            <p>Valor pago: R$ 65,00</p>
-            <p>Status: Devolvido</p>
-            <p>Forma de pagamento: Cartão</p>
-
-            <div>
-                <a href="/rentals/rental-tracking">Ver histórico</a>
-                <button type="button">Avaliar aluguel</button>
-            </div>
-        </article>
-
-        <article>
-            <h3>Aparador de grama</h3>
-            <p>Proprietário: Carlos Mendes</p>
-            <p>Período: 18/03/2026 até 20/03/2026</p>
-            <p>Valor previsto: R$ 49,00</p>
-            <p>Status: Solicitado</p>
-            <p>Aguardando aprovação do proprietário</p>
-
-            <div>
-                <a href="/rentals/rental-tracking">Ver solicitação</a>
-                <button type="button">Cancelar solicitação</button>
-            </div>
-        </article>
-    </section>
-
-    <section>
-        <h2>Resumo financeiro</h2>
-        <p>Total de aluguéis realizados: 3</p>
-        <p>Total pago: R$ 169,00</p>
-        <p>Aluguéis em andamento: 1</p>
-        <p>Aluguéis finalizados: 1</p>
-    </section>
-
-    <section>
-        <h2>Quando não houver aluguéis</h2>
-        <p>Você ainda não realizou nenhum aluguel.</p>
-        <a href="/tools/tools-list">Explorar ferramentas</a>
-    </section>
-
-</main>
-
-<div>
-    Footer
-</div>
-
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
 </body>
 </html>
