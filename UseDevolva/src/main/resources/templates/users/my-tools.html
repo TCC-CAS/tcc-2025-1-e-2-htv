@@ -5,98 +5,229 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Minhas Ferramentas - Use e Devolva</title>
 </head>
+
+
+
+<link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+<link rel="stylesheet" href="../../static/css/pages/users/my-tools.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <body>
 
-<div>
-    Header
-</div>
-
-<main>
-
-    <section>
-        <h1>Minhas ferramentas</h1>
-        <p>
-            Aqui você acompanha as ferramentas que cadastrou, sua disponibilidade e o status de cada item.
-        </p>
-    </section>
-
-    <section>
-        <div>
-            <a href="/users/create-tool">Cadastrar nova ferramenta</a>
+<header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
         </div>
-    </section>
 
-    <section>
-        <h2>Ferramentas cadastradas</h2>
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
 
-        <article>
-            <h3>Furadeira</h3>
-            <p>Categoria: Construção</p>
-            <p>Estado: Ótimo estado</p>
-            <p>Valor da diária: R$ 25,00</p>
-            <p>Status: Disponível</p>
-            <p>Próxima disponibilidade: Imediata</p>
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+    <main>
+        
+        <div class="page-header">
+            <div class="page-title">
+                <h2>Minhas Ferramentas</h2>
+                <p>Faça a gestão do seu inventário e acompanhe a disponibilidade.</p>
+            </div>
+            <a href="/users/create-tool" class="btn-primary">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Adicionar Ferramenta
+            </a>
+        </div>
+
+        <!-- RESUMO DE ESTATÍSTICAS -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Total de Ferramentas</div>
+                <div class="stat-value">3</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Disponíveis</div>
+                <div class="stat-value" style="color: #059669;">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Alugadas</div>
+                <div class="stat-value" style="color: #2563EB;">1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Bloqueadas / Manutenção</div>
+                <div class="stat-value" style="color: #6B7280;">1</div>
+            </div>
+        </section>
+
+        <section class="tools-grid">
+
+            <article class="tool-card">
+                <div class="tool-image-container">
+                    [Imagem da Furadeira]
+                    <span class="tool-badge badge-available">Disponível</span>
+                </div>
+                <div class="tool-info">
+                    <div class="tool-category">Construção</div>
+                    <h3 class="tool-title">Furadeira Bosch</h3>
+                    
+                    <div class="tool-details">
+                        <div class="detail-item">
+                            <strong>Estado</strong>
+                            <span>Ótimo estado</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Disponibilidade</strong>
+                            <span>Imediata</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-tag">
+                        25,00 € <span>/ dia</span>
+                    </div>
+                </div>
+                <div class="tool-actions">
+                    <button class="action-btn" title="Ver Anúncio Público">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </button>
+                    <button class="action-btn" title="Editar">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </button>
+                    <button class="action-btn" title="Pausar / Bloquear">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
+                    <button class="action-btn danger" title="Eliminar">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </article>
+
+            <!-- CARTÃO 2: ALUGADA -->
+            <article class="tool-card">
+                <div class="tool-image-container">
+                    [Imagem da Serra]
+                    <span class="tool-badge badge-rented">Em Uso (Alugada)</span>
+                </div>
+                <div class="tool-info">
+                    <div class="tool-category">Marcenaria</div>
+                    <h3 class="tool-title">Serra Circular Makita</h3>
+                    
+                    <div class="tool-details">
+                        <div class="detail-item">
+                            <strong>Locatário</strong>
+                            <span>Carlos S.</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Devolução prevista</strong>
+                            <span>20/03/2026</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-tag">
+                        30,00 € <span>/ dia</span>
+                    </div>
+                </div>
+                <div class="tool-actions">
+                    <button class="action-btn" style="flex: 3; color: var(--primary); font-weight: 500;">
+                        Acompanhar Aluguer
+                    </button>
+                </div>
+            </article>
+
+            <!-- CARTÃO 3: BLOQUEADA -->
+            <article class="tool-card">
+                <div class="tool-image-container">
+                    [Imagem do Aparador]
+                    <span class="tool-badge badge-blocked">Bloqueada</span>
+                </div>
+                <div class="tool-info">
+                    <div class="tool-category">Jardinagem</div>
+                    <h3 class="tool-title">Aparador de Grama</h3>
+                    
+                    <div class="tool-details">
+                        <div class="detail-item">
+                            <strong>Estado</strong>
+                            <span>Muito bom</span>
+                        </div>
+                        <div class="detail-item">
+                            <strong>Motivo Bloqueio</strong>
+                            <span>Manutenção</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-tag">
+                        22,00 € <span>/ dia</span>
+                    </div>
+                </div>
+                <div class="tool-actions">
+                    <button class="action-btn" style="flex: 2; font-weight: 500; color: #059669;" title="Tornar disponível novamente">
+                        Reativar Anúncio
+                    </button>
+                    <button class="action-btn danger" title="Eliminar">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </article>
+
+        </section>
+
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
 
             <div>
-                <a href="/tools/tools-page">Ver página pública</a>
-                <a href="/users/edit-tool">Editar</a>
-                <button type="button">Bloquear temporariamente</button>
-                <button type="button">Excluir</button>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
             </div>
-        </article>
-
-        <article>
-            <h3>Escada</h3>
-            <p>Categoria: Construção</p>
-            <p>Estado: Bom estado</p>
-            <p>Valor da diária: R$ 30,00</p>
-            <p>Status: Alugada no momento</p>
-            <p>Próxima disponibilidade: 20/03/2026</p>
 
             <div>
-                <a href="/tools/tools-page">Ver página pública</a>
-                <a href="/users/edit-tool">Editar</a>
-                <button type="button">Bloquear temporariamente</button>
-                <button type="button">Excluir</button>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
             </div>
-        </article>
+        </div>
 
-        <article>
-            <h3>Aparador de grama</h3>
-            <p>Categoria: Jardinagem</p>
-            <p>Estado: Muito bom</p>
-            <p>Valor da diária: R$ 22,00</p>
-            <p>Status: Bloqueada temporariamente</p>
-            <p>Motivo: Manutenção</p>
-
-            <div>
-                <a href="/tools/tools-page">Ver página pública</a>
-                <a href="/users/edit-tool">Editar</a>
-                <button type="button">Reativar ferramenta</button>
-                <button type="button">Excluir</button>
-            </div>
-        </article>
-    </section>
-
-    <section>
-        <h2>Resumo</h2>
-        <p>Total de ferramentas cadastradas: 3</p>
-        <p>Ferramentas disponíveis: 1</p>
-        <p>Ferramentas alugadas: 1</p>
-        <p>Ferramentas bloqueadas: 1</p>
-    </section>
-
-    <section>
-        <h2>Quando não houver ferramentas cadastradas</h2>
-        <p>Você ainda não cadastrou nenhuma ferramenta.</p>
-        <a href="/users/create-tool">Cadastrar minha primeira ferramenta</a>
-    </section>
-
-</main>
-
-<div>
-    Footer
-</div>
-
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
 </body>
 </html>
