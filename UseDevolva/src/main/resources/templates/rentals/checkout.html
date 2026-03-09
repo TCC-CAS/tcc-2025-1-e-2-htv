@@ -6,9 +6,9 @@
     <title>Finalização do Aluguel - Use e Devolva</title>
 
     <link rel="stylesheet" href="../../static/css/fragments/header.css">
-<link rel="stylesheet" href="../../static/css/fragments/footer.css">
-<link rel="stylesheet" href="../../static/css/pages/checkout.css">
-<link rel="stylesheet" href="../../static/css/root.css">
+    <link rel="stylesheet" href="../../static/css/fragments/footer.css">
+    <link rel="stylesheet" href="../../static/css/pages/checkout.css">
+    <link rel="stylesheet" href="../../static/css/root.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -58,8 +58,42 @@
 
 <main class="checkout-container">
         
+
         <!-- COLUNA ESQUERDA: Pagamento -->
         <section class="payment-box">
+            <h2 class="section-title">Forma de recebimento</h2>
+
+<div class="delivery-options">
+
+    <label class="delivery-option">
+        <input type="radio" name="entrega" value="retirada" checked>
+
+        <div class="delivery-icon">
+            📍
+        </div>
+
+        <div class="delivery-info">
+            <strong>Retirada com o locador</strong>
+            <p>Você combina diretamente com o proprietário.</p>
+        </div>
+
+    </label>
+
+    <label class="delivery-option">
+        <input type="radio" name="entrega" value="transportadora">
+
+        <div class="delivery-icon">
+            🚚
+        </div>
+
+        <div class="delivery-info">
+            <strong>Entrega por transportadora</strong>
+            <p>A ferramenta será enviada para o seu endereço.</p>
+        </div>
+
+    </label>
+
+</div>
             <h2 class="section-title">Como prefere pagar?</h2>
             
             <div class="payment-tabs">
