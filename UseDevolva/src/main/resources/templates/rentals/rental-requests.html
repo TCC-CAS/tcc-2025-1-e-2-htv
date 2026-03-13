@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solicitações de Aluguel - Use e Devolva</title>
+
+        <link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/pages/rental-requests.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+
+
+<header class="dashboard-header">
+        <h1>Gestão de Solicitações</h1>
+        <p>Acompanhe e gira os pedidos de aluguel das suas ferramentas.</p>
+    </header>
+
+    <main class="dashboard-container">
+
+        <!-- Filtros -->
+        <section class="filters-bar">
+            <div class="filter-group">
+                <label for="statusSolicitacao">Estado</label>
+                <select id="statusSolicitacao" name="statusSolicitacao">
+                    <option value="">Todos os estados</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="aprovada">Aprovadas</option>
+                    <option value="recusada">Recusadas</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="ferramentaSolicitacao">Ferramenta</label>
+                <input type="text" id="ferramentaSolicitacao" placeholder="Procurar por ferramenta..." />
+            </div>
+
+            <button type="submit" class="btn-filter">Filtrar</button>
+        </section>
+
+        <!-- Grelha de Pedidos -->
+        <section class="requests-grid">
+
+            <!-- CARTÃO 1: PENDENTE -->
+            <article class="request-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Furadeira</h3>
+                        <span class="date">Pedido efetuado a 18/03/2026</span>
+                    </div>
+                    <span class="badge pending">Pendente</span>
+                </div>
+                
+                <div class="card-body">
+                    <div class="info-line">
+                        <strong>Solicitante:</strong>
+                        <span>Maria Silva</span>
+                    </div>
+                    <div class="info-line">
+                        <strong>Período:</strong>
+                        <span>18/03 a 20/03/2026</span>
+                    </div>
+                    <div class="info-line">
+                        <strong>Valor Estimado:</strong>
+                        <span style="font-weight: 600; color: var(--req-primary-dark);">R$ 55,00</span>
+                    </div>
+
+                    <div class="requester-msg">
+                        "Olá! Preciso da furadeira para instalar umas prateleiras em casa no fim de semana. Consigo devolver na segunda de manhã."
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-reject" onclick="openModal('reject')">Recusar</button>
+                    <button class="btn btn-approve" onclick="openModal('approve')">Aprovar</button>
+                </div>
+            </article>
+
+            <!-- CARTÃO 2: APROVADO -->
+            <article class="request-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Serra Circular</h3>
+                        <span class="date">Pedido efetuado a 15/03/2026</span>
+                    </div>
+                    <span class="badge approved">Aprovada</span>
+                </div>
+                
+                <div class="card-body">
+                    <div class="info-line">
+                        <strong>Solicitante:</strong>
+                        <span>Carlos Pereira</span>
+                    </div>
+                    <div class="info-line">
+                        <strong>Período:</strong>
+                        <span>20/03 a 22/03/2026</span>
+                    </div>
+                    <div class="info-line">
+                        <strong>Valor Estimado:</strong>
+                        <span style="font-weight: 600; color: var(--req-primary-dark);">R$ 90,00</span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-outline btn-full">Ver Detalhes do Aluguel</button>
+                </div>
+            </article>
+
+            <!-- CARTÃO 3: RECUSADO -->
+            <article class="request-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Aparador de Grama</h3>
+                        <span class="date">Pedido efetuado a 17/03/2026</span>
+                    </div>
+                    <span class="badge rejected">Recusada</span>
+                </div>
+                
+                <div class="card-body">
+                    <div class="info-line">
+                        <strong>Solicitante:</strong>
+                        <span>João Pedro</span>
+                    </div>
+                    <div class="info-line">
+                        <strong>Período:</strong>
+                        <span>25/03 a 26/03/2026</span>
+                    </div>
+                    <div class="info-line">
+                        <strong>Valor Estimado:</strong>
+                        <span style="font-weight: 600; color: var(--req-primary-dark);">R$ 22,00</span>
+                    </div>
+                    <div class="requester-msg" style="border-left-color: #EF4444;">
+                        <strong>Motivo da recusa:</strong> Ferramenta indisponível para esse período, me esqueci de pausar o anúncio.
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-outline btn-full">Ver Detalhes</button>
+                </div>
+            </article>
+
+        </section>
+
+    </main>
+
+    <!-- MODAL DE APROVAÇÃO -->
+    <div class="modal-overlay" id="modal-approve">
+        <div class="modal-content">
+            <h2 style="color: #10B981;">Aprovar Pedido?</h2>
+            <p style="font-size: 0.9rem; color: var(--req-text-light);">
+                Ao aprovar, a ferramenta ficará reservada para este utilizador nas datas selecionadas e o pagamento será processado.
+            </p>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('modal-approve')">Cancelar</button>
+                <button class="btn btn-approve" onclick="closeModal('modal-approve')">Confirmar Aprovação</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE RECUSA -->
+    <div class="modal-overlay" id="modal-reject">
+        <div class="modal-content">
+            <h2 style="color: #EF4444;">Recusar Pedido</h2>
+            <p style="font-size: 0.9rem; color: var(--req-text-light);">
+                Por favor, informe o utilizador do motivo da recusa (opcional, mas recomendado).
+            </p>
+            
+            <label style="font-size: 0.85rem; font-weight: 600;">Motivo da recusa</label>
+            <textarea rows="3" placeholder="Ex: A ferramenta está em manutenção..."></textarea>
+            
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeModal('modal-reject')">Voltar</button>
+                <button class="btn btn-reject" style="background: #EF4444; color: white;" onclick="closeModal('modal-reject')">Confirmar Recusa</button>
+            </div>
+        </div>
+    </div>
+
+        <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+    <script>
+        // Lógica simples para abrir e fechar modais na pré-visualização
+        function openModal(type) {
+            document.getElementById(`modal-${type}`).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+    </script>
+</body>
+
+
+</html>

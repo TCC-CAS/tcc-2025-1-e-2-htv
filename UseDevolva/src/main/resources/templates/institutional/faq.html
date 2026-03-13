@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Perguntas Frequentes - Use e Devolva</title>
+
+<link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/pages/institutional/institutional.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+</head>
+
+<body>
+ <header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+    <section class="faq-hero">
+        <h1>Como podemos ajudar?</h1>
+        <p>Encontre respostas rápidas para as dúvidas mais comuns sobre o Use e Devolva.</p>
+    </section>
+
+    <main class="faq-container">
+        <div class="faq-section">
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    Como funciona o Use e Devolva?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>A nossa plataforma conecta pessoas que possuem ferramentas paradas em casa com quem precisa delas para projetos temporários. É uma economia partilhada onde todos ganham: quem aluga poupa dinheiro e quem empresta ganha uma renda extra.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    É seguro alugar as minhas ferramentas?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Sim! Todos os utilizadores passam por uma verificação de identidade. Além disso, temos um sistema de avaliações mútuas e um contrato digital de responsabilidade que garante que a ferramenta deve ser devolvida no mesmo estado em que foi entregue.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    Como é feito o pagamento?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>O pagamento é processado diretamente pela nossa plataforma via cartão de crédito ou PIX. O valor só é libertado para o proprietário após a confirmação de que a ferramenta foi entregue com sucesso.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    O que acontece se a ferramenta se estragar?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Diferenciamos desgaste natural de mau uso. Em caso de danos por mau uso, o locatário é responsável pelo custo de reparação ou substituição, conforme os nossos Termos de Uso aceites no momento da reserva.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+                    Posso cancelar uma reserva?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Sim. Cancelamentos feitos com até 24 horas de antecedência recebem reembolso total. Após esse período, uma taxa administrativa poderá ser aplicada para compensar o proprietário.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="support-cta">
+            <h3>Ainda tem dúvidas?</h3>
+            <p>A nossa equipa de suporte está pronta para ajudar com qualquer questão específica.</p>
+            <a href="mailto:suporte@useedevolva.com" class="btn-contact">Contatar Suporte</a>
+        </div>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+</body>
+</html>

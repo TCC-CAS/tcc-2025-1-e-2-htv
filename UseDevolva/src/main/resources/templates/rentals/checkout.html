@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finalização do Aluguel - Use e Devolva</title>
+
+    <link rel="stylesheet" href="../../static/css/fragments/header.css">
+    <link rel="stylesheet" href="../../static/css/fragments/footer.css">
+    <link rel="stylesheet" href="../../static/css/pages/checkout.css">
+    <link rel="stylesheet" href="../../static/css/root.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+<main class="checkout-container">
+        
+
+        <!-- COLUNA ESQUERDA: Pagamento -->
+        <section class="payment-box">
+            <h2 class="section-title">Forma de recebimento</h2>
+
+<div class="delivery-options">
+
+    <label class="delivery-option">
+        <input type="radio" name="entrega" value="retirada" checked>
+
+        <div class="delivery-icon">
+            📍
+        </div>
+
+        <div class="delivery-info">
+            <strong>Retirada com o locador</strong>
+            <p>Você combina diretamente com o proprietário.</p>
+        </div>
+
+    </label>
+
+    <label class="delivery-option">
+        <input type="radio" name="entrega" value="transportadora">
+
+        <div class="delivery-icon">
+            🚚
+        </div>
+
+        <div class="delivery-info">
+            <strong>Entrega por transportadora</strong>
+            <p>A ferramenta será enviada para o seu endereço.</p>
+        </div>
+
+    </label>
+
+</div>
+            <h2 class="section-title">Como prefere pagar?</h2>
+            
+            <div class="payment-tabs">
+                <button class="tab-btn active" onclick="switchTab('cartao')">💳 Cartão de Crédito</button>
+                <button class="tab-btn" onclick="switchTab('pix')">💠 Pix</button>
+            </div>
+
+            <!-- Formulário Cartão -->
+            <div id="tab-cartao" class="tab-content active">
+                <form>
+                    <div class="form-group">
+                        <label for="nomeCartao">Nome impresso no cartão</label>
+                        <input type="text" id="nomeCartao" placeholder="Ex: JOAO M SILVA" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numeroCartao">Número do cartão</label>
+                        <input type="text" id="numeroCartao" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="validadeCartao">Validade</label>
+                            <input type="text" id="validadeCartao" placeholder="MM/AA" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvvCartao">CVV</label>
+                            <input type="text" id="cvvCartao" placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Área Pix -->
+            <div id="tab-pix" class="tab-content">
+                <div class="pix-area">
+                    <p style="margin-bottom: 1.5rem;">Escaneie o QR Code abaixo com a aplicação do seu banco.</p>
+                    
+                    <div class="qr-placeholder">
+                        📱
+                    </div>
+
+                    <p style="font-size: 0.9rem; color: var(--chk-text-light); margin-bottom: 0.5rem;">Ou copie a chave Pix:</p>
+                    <div class="pix-key-box">
+                        00020126580014br.gov.bcb.pix0136pix@useedevolva.com
+                    </div>
+                    <button class="btn-copy" onclick="alert('Chave copiada para a área de transferência!')">Copiar Chave Pix</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- COLUNA DIREITA: Resumo (Sticky) -->
+        <aside class="summary-box">
+            <h2 class="section-title">Resumo do Aluguel</h2>
+            
+            <div class="tool-preview">
+                <div class="tool-img-mini">🛠️</div>
+                <div>
+                    <h3>Furadeira Bosch GSB 450W</h3>
+                    <p>Proprietário: João Silva</p>
+                </div>
+            </div>
+
+            <div class="summary-line">
+                <span>Período</span>
+                <span style="font-weight: 500;">18/03 até 20/03</span>
+            </div>
+            <div class="summary-line">
+                <span>Diárias (2x R$ 25,00)</span>
+                <span>R$ 50,00</span>
+            </div>
+            <div class="summary-line">
+                <span>Taxa da plataforma (10%)</span>
+                <span>R$ 5,00</span>
+            </div>
+
+            <div class="summary-total">
+                <span>Total a pagar</span>
+                <span>R$ 55,00</span>
+            </div>
+
+            <button type="button" class="btn-checkout">
+                Confirmar Pagamento
+            </button>
+
+            <div class="security-badge">
+                🔒 Pagamento encriptado e seguro. O valor só é libertado após a entrega da ferramenta.
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Script Simples para alternar os separadores (tabs) -->
+    <script>
+        function switchTab(tabId) {
+            // Remove a classe 'active' de todos os botões e conteúdos
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Adiciona a classe 'active' ao botão clicado e ao conteúdo correspondente
+            if (tabId === 'cartao') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('tab-cartao').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('tab-pix').classList.add('active');
+            }
+        }
+    </script>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+</body>
+</html>

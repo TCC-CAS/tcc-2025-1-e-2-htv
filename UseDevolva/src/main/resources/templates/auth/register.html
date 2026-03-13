@@ -1,0 +1,74 @@
+<!--TELA DE CADASTRO-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="../../static/css/root.css">
+<link rel="stylesheet" href="../../static/css/auth/auth.css">
+</head>
+<body>
+
+    <div class="register-wrapper">
+        
+        <div class="register-card">
+            <h1 class="register-title">Criar conta</h1>
+            <p class="register-subtitle">Preencha seus dados para criar sua conta na plataforma.</p>
+
+            <form class="register-form">
+
+                <div class="register-field">
+                    <label class="register-label" for="nomeCompleto">Nome completo</label>
+                    <input class="register-input" type="text" id="nomeCompleto" name="nomeCompleto" />
+                </div>
+
+                <div class="register-field">
+                    <label class="register-label" for="email">E-mail</label>
+                    <input class="register-input" type="email" id="email" name="email" />
+                </div>
+
+                <div class="register-field">
+                    <label class="register-label" for="telefone">Telefone</label>
+                    <input class="register-input" type="text" id="telefone" name="telefone" />
+                </div>
+
+                <div class="register-field">
+                    <label class="register-label" for="cpf">CPF</label>
+                    <input class="register-input" type="text" id="cpf" name="cpf" />
+                </div>
+
+                <div class="register-field">
+                    <label class="register-label" for="senha">Senha</label>
+                    <input class="register-input" type="password" id="senha" name="senha" />
+                </div>
+
+                <div class="register-field">
+                    <label class="register-label" for="confirmarSenha">Confirmar senha</label>
+                    <input class="register-input" type="password" id="confirmarSenha" name="confirmarSenha" />
+                </div>
+
+                <div class="register-field">
+                    <label class="register-label" for="endereco">Endereço</label>
+                    <input class="register-input" type="text" id="endereco" name="endereco" />
+                </div>
+
+                <div class="register-terms">
+                    <input type="checkbox" id="aceiteTermos" name="aceiteTermos" />
+                    <label for="aceiteTermos">Li e aceito os termos de uso</label>
+                </div>
+
+                <button class="register-btn" type="submit">Cadastrar</button>
+
+            </form>
+
+            <p class="register-footer">
+                <a href="/auth/login">Já tenho uma conta</a>
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>

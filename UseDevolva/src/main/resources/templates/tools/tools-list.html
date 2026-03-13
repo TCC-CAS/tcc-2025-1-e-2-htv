@@ -1,0 +1,259 @@
+<!-- PÁGINA DE BUSCA -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buscar Ferramentas - Use e Devolva</title>
+
+<link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/pages/tools.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+<div class="search-container">
+        <!-- Cabeçalho -->
+        <header class="search-header">
+            <h1>Buscar ferramentas</h1>
+            <p>Mostrando resultados para "Todas as categorias"</p>
+        </header>
+
+        <!-- Filtros Sidebar -->
+        <aside class="search-filters">
+            <div class="filter-group">
+                <h3>Refinar busca</h3>
+                <label for="categoria">Categoria</label>
+                <select id="categoria">
+                    <option>Todas as categorias</option>
+                    <option>Construção</option>
+                    <option>Jardinagem</option>
+                    <option>Limpeza</option>
+                    <option>Marcenaria</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="preco">Preço máximo (dia)</label>
+                <input type="number" id="preco" placeholder="R$ 0,00">
+            </div>
+
+            <div class="filter-group">
+                <label for="distancia">Distância (até km)</label>
+                <select id="distancia">
+                    <option>5 km</option>
+                    <option>10 km</option>
+                    <option>20 km</option>
+                    <option>50 km</option>
+                </select>
+            </div>
+
+            <button class="btn-map">
+                📍 Ver no Mapa
+            </button>
+        </aside>
+
+        <main class="results-grid">
+            
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Construção</span>
+                    <a href="/tools/tools-page" class="tool-name">Furadeira Impacto Bosch</a>
+                    <div class="tool-price">R$ 35,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 1.2 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Jardinagem</span>
+                    <a href="/tools/tools-page" class="tool-name">Cortador de Relva Elétrico</a>
+                    <div class="tool-price">R$ 50,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 3.5 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Limpeza</span>
+                    <a href="/tools/tools-page" class="tool-name">Lava Jato Alta Pressão</a>
+                    <div class="tool-price">R$ 45,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 0.8 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Marcenaria</span>
+                    <a href="/tools/tools-page" class="tool-name">Serra Tico-Tico Pro</a>
+                    <div class="tool-price">R$ 28,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 5.0 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Construção</span>
+                    <a href="/tools/tools-page" class="tool-name">Escada Alumínio 5m</a>
+                    <div class="tool-price">R$ 20,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 2.1 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+<div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Construção</span>
+                    <a href="/tools/tools-page" class="tool-name">Furadeira Impacto Bosch</a>
+                    <div class="tool-price">R$ 35,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 1.2 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Jardinagem</span>
+                    <a href="/tools/tools-page" class="tool-name">Cortador de Relva Elétrico</a>
+                    <div class="tool-price">R$ 50,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 3.5 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Limpeza</span>
+                    <a href="/tools/tools-page" class="tool-name">Lava Jato Alta Pressão</a>
+                    <div class="tool-price">R$ 45,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 0.8 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Marcenaria</span>
+                    <a href="/tools/tools-page" class="tool-name">Serra Tico-Tico Pro</a>
+                    <div class="tool-price">R$ 28,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 5.0 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-image"><img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image"></div>
+                <div class="tool-info">
+                    <span class="tool-category">Construção</span>
+                    <a href="/tools/tools-page" class="tool-name">Escada Alumínio 5m</a>
+                    <div class="tool-price">R$ 20,00 <span>/dia</span></div>
+                    <div class="tool-meta">
+                        <span>📍 2.1 km</span>
+                        <span class="status-available">Disponível</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+</body>
+</html>

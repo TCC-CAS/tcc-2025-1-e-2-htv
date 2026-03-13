@@ -1,0 +1,151 @@
+<!--HOME-->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - Use e Devolva</title>
+
+<link rel="stylesheet" href="../../static/css/fragments/header.css">
+<link rel="stylesheet" href="../../static/css/fragments/footer.css">
+<link rel="stylesheet" href="../../static/css/pages/home.css">
+<link rel="stylesheet" href="../../static/css/root.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="/">Use e Devolva</a>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <form>
+                        <input type="text" placeholder="Buscar ferramentas..." />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+            
+    
+          
+        </div>
+    </header>
+
+    <main>
+  
+        <section class="hero-banner">
+            <h1>Compartilhe ferramentas com segurança</h1>
+            <p>Encontre ferramentas perto de você ou disponibilize as suas para locação de forma simples, econômica e sustentável.</p>
+            <div class="btn-group">
+                <a href="/tools/tools-list" class="btn-primary-inverse">Explorar ferramentas</a>
+                <a href="/auth/register" class="btn-outline-inverse">Criar conta</a>
+            </div>
+        </section>
+
+   
+        <section class="card-section">
+            <h2>Encontre ferramentas próximas</h2>
+            <p>Use a busca por localização para encontrar ferramentas disponíveis perto de você ou em uma região escolhida no mapa.</p>
+            <button type="button" class="btn-action">📍 Abrir mapa interativo</button>
+        </section>
+
+  
+        <section>
+            <h2>Ferramentas em destaque</h2>
+            <p>As ferramentas mais procuradas na sua região.</p>
+            
+            <div class="tools-grid">
+                <article class="tool-card">
+                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image">
+                    <div class="tool-info">
+                        <h3>Furadeira Bosch</h3>
+                        <p>Categoria: Construção</p>
+                        <p><strong>R$ 25,00</strong> / dia</p>
+                        <p>📍 Aprox. 2,4 km</p>
+                        <a href="/tools/tools-page" class="btn-details">Ver detalhes</a>
+                    </div>
+                </article>
+
+                <article class="tool-card">
+                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Escada extensível" class="tool-image">
+                    <div class="tool-info">
+                        <h3>Escada extensível</h3>
+                        <p>Categoria: Construção</p>
+                        <p><strong>R$ 30,00</strong> / dia</p>
+                        <p>📍 Aprox. 4,1 km</p>
+                        <a href="/tools/tools-page" class="btn-details">Ver detalhes</a>
+                    </div>
+                </article>
+
+                <article class="tool-card">
+                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Aparador de grama" class="tool-image">
+                    <div class="tool-info">
+                        <h3>Aparador de grama</h3>
+                        <p>Categoria: Jardinagem</p>
+                        <p><strong>R$ 22,00</strong> / dia</p>
+                        <p>📍 Aprox. 3,0 km</p>
+                        <a href="/tools/tools-page" class="btn-details">Ver detalhes</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="card-section">
+            <h2>Quer anunciar suas ferramentas?</h2>
+            <p>Transforme suas ferramentas paradas em uma fonte de renda extra. Cadastre-se e comece a alugar hoje mesmo.</p>
+            <a href="/auth/register" class="btn-action">Anunciar Ferramenta</a>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+</body>
+</html>
