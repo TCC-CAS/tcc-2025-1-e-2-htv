@@ -1,21 +1,3 @@
-        :root {
-            --primary: #5248B3;
-            --primary-hover: #302885;
-            --bg-color: #F3F4F6;
-            --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --border-color: #E5E7EB;
-            --danger: #DC2626;
-            
-            /* Status Colors */
-            --status-pending-bg: #FEF3C7;
-            --status-pending-text: #92400E;
-            --status-active-bg: #DBEAFE;
-            --status-active-text: #1E40AF;
-            --status-done-bg: #D1FAE5;
-            --status-done-text: #065F46;
-        }
 
         * {
             box-sizing: border-box;

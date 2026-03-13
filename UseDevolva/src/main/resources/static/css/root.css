@@ -69,6 +69,29 @@
             --status-approved-text: #065F46;
             --status-rejected-bg: #FEE2E2;
             --status-rejected-text: #991B1B;
+
+
+            /* PASTA USERS */
+            --primary: #5248B3;
+            --primary-hover: #302885;
+            --bg-color: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #D1D5DB;
+            --border-focus: #93C5FD;
+            --danger: #DC2626;
+            --danger-bg: #FEF2F2;
+            --status-available-bg: #D1FAE5;
+            --status-available-text: #065F46;
+            --status-unavailable-bg: #F3F4F6;
+            --status-unavailable-text: #4B5563;
+            --status-pending-bg: #FEF3C7;
+            --status-pending-text: #92400E;
+            --status-active-bg: #DBEAFE;
+            --status-active-text: #1E40AF;
+            --status-done-bg: #D1FAE5;
+            --status-done-text: #065F46;
         }
 
         
