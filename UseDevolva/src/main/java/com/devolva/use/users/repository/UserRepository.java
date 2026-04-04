@@ -10,5 +10,6 @@ public interface UserRepository { //adicionar jpa repository para conexão com b
     List<UserModel> findAll();
     Optional<UserModel> findById(Long id);
     Optional<UserModel> findByEmail(String email);
+    boolean existsByEmail(String email);
     void deleteById(Long id);
 }
