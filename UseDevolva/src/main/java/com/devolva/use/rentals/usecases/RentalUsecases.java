@@ -13,9 +13,12 @@ import com.devolva.use.rentals.repository.RentalRepository;
 import com.devolva.use.tools.domain.ToolModel;
 import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
+import com.devolva.use.users.domain.UserStatus;
 import com.devolva.use.users.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -23,8 +26,9 @@ import java.util.List;
 @Service
 public class RentalUsecases {
 
-    private static final double SERVICE_FEE_PERCENT = 0.07;
-    private static final double LATE_FEE_PERCENT_PER_DAY = 0.20;
+    private static final BigDecimal SERVICE_FEE_PERCENT = new BigDecimal("0.07");
+    private static final BigDecimal LATE_FEE_PERCENT_PER_DAY = new BigDecimal("0.20");
+    private static final int MAX_SIMULTANEOUS_REQUESTS = 10;
 
     private final RentalRepository rentalRepository;
     private final ToolRepository toolRepository;
@@ -44,53 +48,48 @@ public class RentalUsecases {
     }
 
     public RentalModel createRentalRequest(CreateRentalDto dto) {
-        if (dto.startDate() == null || dto.endDate() == null) {
-            throw new RuntimeException("As datas de início e fim são obrigatórias.");
+        validateRentalDates(dto);
+
+        ToolModel tool = findToolOrThrow(dto.toolId());
+        UserModel tenant = findUserOrThrow(dto.tenantId());
+        UserModel owner = findUserOrThrow(tool.getOwnerId());
+
+        validateActiveUser(tenant, "Locatário");
+        validateActiveUser(owner, "Proprietário");
+
+        if (!tenant.isVerificado()) {
+            throw new RuntimeException("O locatário precisa estar verificado para realizar transações.");
         }
 
-        if (dto.endDate().isBefore(dto.startDate())) {
-            throw new RuntimeException("A data final não pode ser menor que a data inicial.");
-        }
-
-        ToolModel tool = toolRepository.findById(dto.toolId())
-                .orElseThrow(() -> new RuntimeException("Ferramenta não encontrada."));
-
-        UserModel tenant = userRepository.findById(dto.tenantId())
-                .orElseThrow(() -> new RuntimeException("Usuário locatário não encontrado."));
-
-        if (tool.getProprietarioId() == null) {
+        if (tool.getOwnerId() == null) {
             throw new RuntimeException("A ferramenta não possui proprietário vinculado.");
         }
 
-        if (tool.getProprietarioId().equals(tenant.getId())) {
+        if (tool.getOwnerId().equals(tenant.getId())) {
             throw new RuntimeException("O usuário não pode alugar a própria ferramenta.");
         }
 
-        if (!tool.isDisponivel()) {
+        if (!tool.isAtivo()) {
+            throw new RuntimeException("A ferramenta está inativa.");
+        }
+
+        if (!tool.isDisponivel() || tool.isBloqueadaTemporariamente()) {
             throw new RuntimeException("A ferramenta não está disponível.");
         }
 
         long activeRequests = rentalRepository.findAll().stream()
                 .filter(r -> r.getTenantId().equals(tenant.getId()))
-                .filter(r -> r.getStatus() == RentalStatus.PENDING
-                        || r.getStatus() == RentalStatus.AWAITING_PAYMENT
-                        || r.getStatus() == RentalStatus.PAID
-                        || r.getStatus() == RentalStatus.IN_USE)
+                .filter(this::isActiveRentalFlow)
                 .count();
 
-        if (activeRequests >= 10) {
+        if (activeRequests >= MAX_SIMULTANEOUS_REQUESTS) {
             throw new RuntimeException("O usuário já atingiu o limite de 10 solicitações simultâneas.");
         }
 
         boolean hasConflict = rentalRepository.findAll().stream()
                 .filter(r -> r.getToolId().equals(dto.toolId()))
-                .filter(r -> r.getStatus() == RentalStatus.PENDING
-                        || r.getStatus() == RentalStatus.AWAITING_PAYMENT
-                        || r.getStatus() == RentalStatus.PAID
-                        || r.getStatus() == RentalStatus.IN_USE)
-                .anyMatch(r ->
-                        !(dto.endDate().isBefore(r.getStartDate()) || dto.startDate().isAfter(r.getEndDate()))
-                );
+                .filter(this::isActiveRentalFlow)
+                .anyMatch(r -> hasDateConflict(dto.startDate(), dto.endDate(), r.getStartDate(), r.getEndDate()));
 
         if (hasConflict) {
             throw new RuntimeException("A ferramenta não está disponível para o período informado.");
@@ -98,31 +97,31 @@ public class RentalUsecases {
 
         long totalDays = ChronoUnit.DAYS.between(dto.startDate(), dto.endDate()) + 1;
 
-        double dailyRate = tool.getValorDiaria();
-        double baseValue = dailyRate * totalDays;
-        double serviceFee = baseValue * SERVICE_FEE_PERCENT;
-        double totalValue = baseValue + serviceFee;
+        BigDecimal dailyRate = toBigDecimal(tool.getValorDiaria());
+        BigDecimal baseValue = dailyRate.multiply(BigDecimal.valueOf(totalDays));
+        BigDecimal serviceFee = calculateServiceFee(baseValue);
+        BigDecimal totalValue = baseValue.add(serviceFee);
 
         RentalModel rental = new RentalModel();
         rental.setToolId(tool.getId());
-        rental.setOwnerId(tool.getProprietarioId());
+        rental.setOwnerId(tool.getOwnerId());
         rental.setTenantId(tenant.getId());
         rental.setStartDate(dto.startDate());
         rental.setEndDate(dto.endDate());
         rental.setTotalDays((int) totalDays);
-        rental.setDailyRate(dailyRate);
-        rental.setBaseValue(baseValue);
-        rental.setServiceFee(serviceFee);
-        rental.setTotalValue(totalValue);
-        rental.setOwnerNetValue(baseValue);
+        rental.setDailyRate(dailyRate.doubleValue());
+        rental.setBaseValue(baseValue.doubleValue());
+        rental.setServiceFee(serviceFee.doubleValue());
+        rental.setTotalValue(totalValue.doubleValue());
+        rental.setOwnerNetValue(baseValue.doubleValue());
         rental.setStatus(RentalStatus.PENDING);
 
         return rentalRepository.save(rental);
     }
 
     public RentalModel approveOrRejectRental(Long rentalId, ApproveRentalDto dto) {
-        RentalModel rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+        RentalModel rental = findRentalOrThrow(rentalId);
+        ToolModel tool = findToolOrThrow(rental.getToolId());
 
         if (!rental.getOwnerId().equals(dto.ownerId())) {
             throw new RuntimeException("Somente o proprietário pode aprovar ou recusar a solicitação.");
@@ -130,6 +129,20 @@ public class RentalUsecases {
 
         if (rental.getStatus() != RentalStatus.PENDING) {
             throw new RuntimeException("A solicitação já foi processada.");
+        }
+
+        if (!tool.isDisponivel() || tool.isBloqueadaTemporariamente()) {
+            throw new RuntimeException("A ferramenta não está disponível para aprovação.");
+        }
+
+        boolean hasConflict = rentalRepository.findAll().stream()
+                .filter(r -> !r.getId().equals(rental.getId()))
+                .filter(r -> r.getToolId().equals(rental.getToolId()))
+                .filter(this::isActiveRentalFlow)
+                .anyMatch(r -> hasDateConflict(rental.getStartDate(), rental.getEndDate(), r.getStartDate(), r.getEndDate()));
+
+        if (hasConflict) {
+            throw new RuntimeException("Existe conflito de agenda para esta ferramenta.");
         }
 
         rental.setRespondedAt(LocalDateTime.now());
@@ -143,6 +156,7 @@ public class RentalUsecases {
             payment.setServiceFee(rental.getServiceFee());
             payment.setNetAmount(rental.getOwnerNetValue());
             payment.setStatus(PaymentStatus.PENDING);
+            payment.setCreatedAt(LocalDateTime.now());
 
             PaymentModel savedPayment = paymentRepository.save(payment);
             rental.setPaymentId(savedPayment.getId());
@@ -154,8 +168,11 @@ public class RentalUsecases {
     }
 
     public RentalModel markAsPaid(Long rentalId) {
-        RentalModel rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+        RentalModel rental = findRentalOrThrow(rentalId);
+
+        if (rental.getStatus() != RentalStatus.AWAITING_PAYMENT) {
+            throw new RuntimeException("A locação não está aguardando pagamento.");
+        }
 
         if (rental.getPaymentId() == null) {
             throw new RuntimeException("Não existe pagamento vinculado para esta locação.");
@@ -175,8 +192,8 @@ public class RentalUsecases {
     }
 
     public RentalModel startRental(Long rentalId, StartRentalDto dto) {
-        RentalModel rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+        RentalModel rental = findRentalOrThrow(rentalId);
+        ToolModel tool = findToolOrThrow(rental.getToolId());
 
         if (!rental.getOwnerId().equals(dto.ownerId())) {
             throw new RuntimeException("Somente o proprietário pode iniciar a locação.");
@@ -189,12 +206,16 @@ public class RentalUsecases {
         rental.setStartedAt(LocalDateTime.now());
         rental.setStatus(RentalStatus.IN_USE);
 
+        tool.setDisponivel(false);
+        tool.setUpdatedAt(LocalDateTime.now());
+        toolRepository.save(tool);
+
         return rentalRepository.save(rental);
     }
 
     public RentalModel returnRental(Long rentalId, ReturnRentalDto dto) {
-        RentalModel rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+        RentalModel rental = findRentalOrThrow(rentalId);
+        ToolModel tool = findToolOrThrow(rental.getToolId());
 
         if (!rental.getOwnerId().equals(dto.ownerId())) {
             throw new RuntimeException("Somente o proprietário pode finalizar a devolução.");
@@ -204,19 +225,30 @@ public class RentalUsecases {
             throw new RuntimeException("A locação não está em um estado válido para devolução.");
         }
 
+        if (dto.actualReturnDate() == null) {
+            throw new RuntimeException("A data real de devolução é obrigatória.");
+        }
+
         rental.setActualReturnDate(dto.actualReturnDate());
         rental.setReturnedAt(LocalDateTime.now());
 
-        if (dto.actualReturnDate() != null && dto.actualReturnDate().isAfter(rental.getEndDate())) {
+        if (dto.actualReturnDate().isAfter(rental.getEndDate())) {
             long lateDays = ChronoUnit.DAYS.between(rental.getEndDate(), dto.actualReturnDate());
-            double dailyLateFee = rental.getDailyRate() * LATE_FEE_PERCENT_PER_DAY;
-            double lateFee = dailyLateFee * lateDays;
 
-            rental.setLateFee(lateFee);
+            BigDecimal dailyRate = toBigDecimal(rental.getDailyRate());
+            BigDecimal dailyLateFee = dailyRate.multiply(LATE_FEE_PERCENT_PER_DAY);
+            BigDecimal lateFee = dailyLateFee.multiply(BigDecimal.valueOf(lateDays));
+
+            rental.setLateFee(scale(lateFee).doubleValue());
             rental.setStatus(RentalStatus.LATE_RETURNED);
         } else {
+            rental.setLateFee(0.0);
             rental.setStatus(RentalStatus.RETURNED);
         }
+
+        tool.setDisponivel(true);
+        tool.setUpdatedAt(LocalDateTime.now());
+        toolRepository.save(tool);
 
         return rentalRepository.save(rental);
     }
@@ -226,8 +258,7 @@ public class RentalUsecases {
     }
 
     public RentalModel findById(Long rentalId) {
-        return rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+        return findRentalOrThrow(rentalId);
     }
 
     public List<RentalModel> findByTenantId(Long tenantId) {
@@ -240,5 +271,68 @@ public class RentalUsecases {
         return rentalRepository.findAll().stream()
                 .filter(r -> r.getOwnerId().equals(ownerId))
                 .toList();
+    }
+
+    private void validateRentalDates(CreateRentalDto dto) {
+        if (dto.startDate() == null || dto.endDate() == null) {
+            throw new RuntimeException("As datas de início e fim são obrigatórias.");
+        }
+
+        if (dto.startDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("A data de início não pode estar no passado.");
+        }
+
+        if (dto.endDate().isBefore(dto.startDate())) {
+            throw new RuntimeException("A data final não pode ser menor que a data inicial.");
+        }
+    }
+
+    private ToolModel findToolOrThrow(Long toolId) {
+        return toolRepository.findById(toolId)
+                .orElseThrow(() -> new RuntimeException("Ferramenta não encontrada."));
+    }
+
+    private UserModel findUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+    }
+
+    private RentalModel findRentalOrThrow(Long rentalId) {
+        return rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+    }
+
+    private void validateActiveUser(UserModel user, String label) {
+        if (user.getStatus() != UserStatus.ATIVO) {
+            throw new RuntimeException(label + " não está ativo.");
+        }
+    }
+
+    private boolean isActiveRentalFlow(RentalModel rental) {
+        return rental.getStatus() == RentalStatus.PENDING
+                || rental.getStatus() == RentalStatus.AWAITING_PAYMENT
+                || rental.getStatus() == RentalStatus.PAID
+                || rental.getStatus() == RentalStatus.IN_USE;
+    }
+
+    private boolean hasDateConflict(
+            LocalDateTime requestedStart,
+            LocalDateTime requestedEnd,
+            LocalDateTime existingStart,
+            LocalDateTime existingEnd
+    ) {
+        return !(requestedEnd.isBefore(existingStart) || requestedStart.isAfter(existingEnd));
+    }
+
+    private BigDecimal calculateServiceFee(BigDecimal baseValue) {
+        return scale(baseValue.multiply(SERVICE_FEE_PERCENT));
+    }
+
+    private BigDecimal toBigDecimal(double value) {
+        return BigDecimal.valueOf(value);
+    }
+
+    private BigDecimal scale(BigDecimal value) {
+        return value.setScale(2, RoundingMode.HALF_UP);
     }
 }
