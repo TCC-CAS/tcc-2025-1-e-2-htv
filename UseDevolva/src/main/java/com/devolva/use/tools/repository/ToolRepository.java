@@ -9,5 +9,6 @@ public interface ToolRepository { // adicionar jpa repository para conexão com 
     ToolModel save(ToolModel tool);
     List<ToolModel> findAll();
     Optional<ToolModel> findById(Long id);
+    List<ToolModel> findByOwnerId(Long ownerId);
     void deleteById(Long id);
 }
