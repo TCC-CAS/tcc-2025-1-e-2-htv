@@ -17,8 +17,10 @@ import com.devolva.use.users.domain.UserStatus;
 import com.devolva.use.users.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -97,7 +99,7 @@ public class RentalUsecases {
 
         long totalDays = ChronoUnit.DAYS.between(dto.startDate(), dto.endDate()) + 1;
 
-        BigDecimal dailyRate = toBigDecimal(tool.getValorDiaria());
+        BigDecimal dailyRate = tool.getValorDiaria();
         BigDecimal baseValue = dailyRate.multiply(BigDecimal.valueOf(totalDays));
         BigDecimal serviceFee = calculateServiceFee(baseValue);
         BigDecimal totalValue = baseValue.add(serviceFee);
@@ -278,7 +280,7 @@ public class RentalUsecases {
             throw new RuntimeException("As datas de início e fim são obrigatórias.");
         }
 
-        if (dto.startDate().isBefore(LocalDateTime.now())) {
+        if (dto.startDate().isBefore(LocalDate.now())) {
             throw new RuntimeException("A data de início não pode estar no passado.");
         }
 
@@ -316,14 +318,13 @@ public class RentalUsecases {
     }
 
     private boolean hasDateConflict(
-            LocalDateTime requestedStart,
-            LocalDateTime requestedEnd,
-            LocalDateTime existingStart,
-            LocalDateTime existingEnd
+            LocalDate requestedStart,
+            LocalDate requestedEnd,
+            LocalDate existingStart,
+            LocalDate existingEnd
     ) {
         return !(requestedEnd.isBefore(existingStart) || requestedStart.isAfter(existingEnd));
     }
-
     private BigDecimal calculateServiceFee(BigDecimal baseValue) {
         return scale(baseValue.multiply(SERVICE_FEE_PERCENT));
     }
