@@ -1,12 +1,12 @@
 package com.devolva.use.tools.dtos;
 
+import java.math.BigDecimal;
+
 public record CreateToolDto(
         String nome,
         String descricao,
         String categoria,
         String estadoConservacao,
-        Double valorDiaria,
-        boolean disponivel,
-        Long ownerId
-) {
-}
+        BigDecimal valorDiaria,
+        int quantidadeFotos
+) {}
