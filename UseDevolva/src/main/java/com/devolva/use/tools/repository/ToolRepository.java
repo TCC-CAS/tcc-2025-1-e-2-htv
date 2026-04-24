@@ -12,5 +12,5 @@ public interface ToolRepository { // adicionar jpa repository para conexão com 
     List<ToolModel> findByOwnerId(Long ownerId);
     void deleteById(Long id);
 
-    long countActiveToolsByOwnerId(Long ownerId);
+    long countActiveToolsByOwnerId(java.lang.Long ownerId);
 }
