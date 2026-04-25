@@ -1,5 +1,6 @@
 package com.devolva.use.payments.domain;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,8 +8,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Entity
 public class PaymentModel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long rentalId;
 
@@ -19,6 +23,7 @@ public class PaymentModel {
     private String paymentMethod;
     private String transactionId;
 
+    @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime confirmedAt;

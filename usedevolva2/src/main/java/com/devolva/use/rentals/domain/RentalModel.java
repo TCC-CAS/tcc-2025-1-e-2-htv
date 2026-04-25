@@ -1,6 +1,7 @@
 package com.devolva.use.rentals.domain;
 
 import com.devolva.use.rentals.domain.RentalStatus;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,8 +10,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Entity
+@Table(name = "rentals")
 public class RentalModel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long toolId;
     private Long ownerId;
@@ -27,6 +32,7 @@ public class RentalModel {
     private Double ownerNetValue;
     private Double lateFee;
 
+    @Enumerated(EnumType.STRING)
     private RentalStatus status;
 
     private LocalDateTime requestedAt;

@@ -1,15 +1,14 @@
 package com.devolva.use.users.repository;
 
 import com.devolva.use.users.domain.UserModel;
-
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
-public interface UserRepository { //adicionar jpa repository para conexão com bd depois
-    UserModel save(UserModel user);
-    List<UserModel> findAll();
-    Optional<UserModel> findById(Long id);
+@Repository
+public interface UserRepository extends JpaRepository<UserModel, Long> {
+
     Optional<UserModel> findByEmail(String email);
+
     boolean existsByEmail(String email);
-    void deleteById(Long id);
 }

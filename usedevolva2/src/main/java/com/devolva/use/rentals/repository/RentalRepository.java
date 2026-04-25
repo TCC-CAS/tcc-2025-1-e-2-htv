@@ -1,13 +1,11 @@
 package com.devolva.use.rentals.repository;
 
 import com.devolva.use.rentals.domain.RentalModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface RentalRepository {
-    RentalModel save(RentalModel rental);
-    List<RentalModel> findAll();
-    Optional<RentalModel> findById(Long id);
-    void deleteById(Long id);
+@Repository
+public interface RentalRepository extends JpaRepository<RentalModel, Long> {
+    // Não precisa declarar os métodos save, findAll, findById, etc.
+    // O JpaRepository já entrega todos eles prontos.
 }
