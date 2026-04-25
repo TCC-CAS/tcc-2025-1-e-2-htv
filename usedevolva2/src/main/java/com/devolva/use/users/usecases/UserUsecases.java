@@ -32,7 +32,7 @@ public class UserUsecases {
         user.setNomeCompleto(dto.nomeCompleto());
         user.setEmail(dto.email());
         user.setTelefone(dto.telefone());
-        user.setSenha(dto.senha()); // depois trocar por senha criptografada
+        user.setSenha(dto.senha());
         user.setDocumento(dto.documento());
         user.setDataNascimento(dto.dataNascimento());
         user.setVerificado(false);
