@@ -37,8 +37,8 @@ public class UserModel {
 
     public UserModel() {
         this.createdAt = LocalDateTime.now();
-        this.status = UserStatus.ACTIVE; // Ou seu valor padrão
+        this.updatedAt = LocalDateTime.now();
+        this.status = UserStatus.ATIVO;
+        this.verificado = false;
     }
-
-    // Mantenha seu construtor personalizado se precisar
 }
