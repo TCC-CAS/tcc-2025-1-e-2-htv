@@ -1,0 +1,44 @@
+package com.devolva.use.users.domain;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "users")
+public class UserModel {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nomeCompleto;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    private String telefone;
+    private String senha;
+    private String documento;
+    private LocalDate dataNascimento;
+    private boolean verificado;
+    private boolean aceitouTermosUso;
+    private boolean aceitouPoliticaPrivacidade;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public UserModel() {
+        this.createdAt = LocalDateTime.now();
+        this.status = UserStatus.ACTIVE; // Ou seu valor padrão
+    }
+
+    // Mantenha seu construtor personalizado se precisar
+}
