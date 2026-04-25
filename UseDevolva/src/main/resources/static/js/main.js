@@ -14,9 +14,7 @@ searchForm.addEventListener("submit", function (event) {
   alert(`Buscando por: ${termo}`);
 });
 
-// ==========================
-// 📍 DETALHE DA FERRAMENTA
-// ==========================
+
 const cepButtons = document.querySelectorAll(".location-box__input button, .cep-check button");
 
 if (cepButtons.length > 0) {
@@ -47,5 +45,53 @@ if (rentButton) {
     alert("Solicitação de aluguel iniciada. Faça login ou crie uma conta para continuar.");
     window.location.href = "login.html";
   });
+}
+
+
+const carouselTrack = document.querySelector(".carousel-track");
+const carouselImages = document.querySelectorAll(".carousel-track img");
+const prevCarouselBtn = document.querySelector(".carousel-btn.prev");
+const nextCarouselBtn = document.querySelector(".carousel-btn.next");
+const carouselDots = document.querySelectorAll(".carousel-dots .dot");
+
+let carouselIndex = 0;
+
+function updateCarousel() {
+  if (!carouselTrack || carouselImages.length === 0) return;
+
+  carouselTrack.style.transform = `translateX(-${carouselIndex * 100}%)`;
+
+  carouselDots.forEach((dot, index) => {
+    dot.classList.toggle("active", index === carouselIndex);
+  });
+}
+
+if (carouselTrack && carouselImages.length > 0) {
+  if (nextCarouselBtn) {
+    nextCarouselBtn.addEventListener("click", () => {
+      carouselIndex = (carouselIndex + 1) % carouselImages.length;
+      updateCarousel();
+    });
+  }
+
+  if (prevCarouselBtn) {
+    prevCarouselBtn.addEventListener("click", () => {
+      carouselIndex =
+        (carouselIndex - 1 + carouselImages.length) % carouselImages.length;
+      updateCarousel();
+    });
+  }
+
+  carouselDots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      carouselIndex = index;
+      updateCarousel();
+    });
+  });
+
+  setInterval(() => {
+    carouselIndex = (carouselIndex + 1) % carouselImages.length;
+    updateCarousel();
+  }, 5000);
 }
 

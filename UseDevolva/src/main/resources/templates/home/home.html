@@ -2,16 +2,18 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home - Use e Devolva</title>
 
-<link rel="stylesheet" href="../../static/css/fragments/header.css">
-<link rel="stylesheet" href="../../static/css/fragments/footer.css">
-<link rel="stylesheet" href="../../static/css/pages/home.css">
-<link rel="stylesheet" href="../../static/css/root.css">
+    <link rel="stylesheet" href="../../static/css/fragments/header.css">
+    <link rel="stylesheet" href="../../static/css/fragments/footer.css">
+    <link rel="stylesheet" href="../../static/css/pages/home.css">
+    <link rel="stylesheet" href="../../static/css/root.css">
 </head>
+
 <body>
 
     <header>
@@ -48,38 +50,55 @@
         <div class="user-area">
             <a href="/auth/login" class="btn-login">Entrar</a>
             <a href="/auth/register" class="btn-register">Criar conta</a>
-            
-    
-          
+
+
+
         </div>
     </header>
 
     <main>
-  
-        <section class="hero-banner">
-            <h1>Compartilhe ferramentas com segurança</h1>
-            <p>Encontre ferramentas perto de você ou disponibilize as suas para locação de forma simples, econômica e sustentável.</p>
-            <div class="btn-group">
-                <a href="/tools/tools-list" class="btn-primary-inverse">Explorar ferramentas</a>
-                <a href="/auth/register" class="btn-outline-inverse">Criar conta</a>
+        <section class="tools-carousel-section">
+            <div class="carousel-content">
+                <h2>Encontre ferramentas próximas</h2>
+                <p>
+                    Use a busca por localização para encontrar ferramentas disponíveis perto de você
+                    ou em uma região escolhida no mapa.
+                </p>
+                <button type="button" class="btn-action">📍 Abrir mapa interativo</button>
+            </div>
+
+            <div class="carousel" aria-label="Carrossel de ferramentas">
+                <button class="carousel-btn prev" type="button" aria-label="Imagem anterior">‹</button>
+
+                <div class="carousel-track-container">
+                    <div class="carousel-track">
+                        <img src="assets/images/pexels-polina-tankilevitch-5583081.jpg"
+                            alt="Alicates sobre mesa de madeira">
+                        <img src="assets/images/pexels-cottonbro-4709389.jpg"
+                            alt="Ferramentas de eletrônica sobre bancada">
+                        <img src="assets/images/pexels-sylwester-ficek-154797634-31501005.jpg"
+                            alt="Conjunto de ferramentas metálicas">
+                    </div>
+                </div>
+
+                <button class="carousel-btn next" type="button" aria-label="Próxima imagem">›</button>
+
+                <div class="carousel-dots">
+                    <button type="button" class="dot active" aria-label="Imagem 1"></button>
+                    <button type="button" class="dot" aria-label="Imagem 2"></button>
+                    <button type="button" class="dot" aria-label="Imagem 3"></button>
+                </div>
             </div>
         </section>
 
-   
-        <section class="card-section">
-            <h2>Encontre ferramentas próximas</h2>
-            <p>Use a busca por localização para encontrar ferramentas disponíveis perto de você ou em uma região escolhida no mapa.</p>
-            <button type="button" class="btn-action">📍 Abrir mapa interativo</button>
-        </section>
-
-  
         <section>
             <h2>Ferramentas em destaque</h2>
             <p>As ferramentas mais procuradas na sua região.</p>
-            
+
             <div class="tools-grid">
                 <article class="tool-card">
-                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Furadeira Bosch" class="tool-image">
+                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta"
+                        alt="Furadeira Bosch" class="tool-image">
                     <div class="tool-info">
                         <h3>Furadeira Bosch</h3>
                         <p>Categoria: Construção</p>
@@ -90,7 +109,8 @@
                 </article>
 
                 <article class="tool-card">
-                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Escada extensível" class="tool-image">
+                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta"
+                        alt="Escada extensível" class="tool-image">
                     <div class="tool-info">
                         <h3>Escada extensível</h3>
                         <p>Categoria: Construção</p>
@@ -101,7 +121,8 @@
                 </article>
 
                 <article class="tool-card">
-                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta" alt="Aparador de grama" class="tool-image">
+                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta"
+                        alt="Aparador de grama" class="tool-image">
                     <div class="tool-info">
                         <h3>Aparador de grama</h3>
                         <p>Categoria: Jardinagem</p>
@@ -115,7 +136,8 @@
 
         <section class="card-section">
             <h2>Quer anunciar suas ferramentas?</h2>
-            <p>Transforme suas ferramentas paradas em uma fonte de renda extra. Cadastre-se e comece a alugar hoje mesmo.</p>
+            <p>Transforme suas ferramentas paradas em uma fonte de renda extra. Cadastre-se e comece a alugar hoje
+                mesmo.</p>
             <a href="/auth/register" class="btn-action">Anunciar Ferramenta</a>
         </section>
     </main>
@@ -124,7 +146,8 @@
         <div class="footer-content">
             <div>
                 <h3>Use e Devolva</h3>
-                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia
+                    circular.</p>
             </div>
 
             <div>
@@ -148,4 +171,5 @@
     </footer>
 
 </body>
+
 </html>
