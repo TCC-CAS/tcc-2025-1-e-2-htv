@@ -197,3 +197,22 @@ if (audioBtn) {
 }
 
 
+if (audioBtn) {
+  audioBtn.addEventListener("click", () => {
+    const pageTitle = document.title || "Use e Devolva";
+
+    const texto = `
+      Página ${pageTitle}.
+      Esta página apresenta ferramentas disponíveis para aluguel,
+      permite buscar ferramentas, navegar por categorias,
+      visualizar ferramentas em destaque e acessar a criação de conta.
+    `;
+
+    const fala = new SpeechSynthesisUtterance(texto);
+    fala.lang = "pt-BR";
+    fala.rate = 0.9;
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(fala);
+  });
+}
