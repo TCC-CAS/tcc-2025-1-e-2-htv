@@ -195,3 +195,5 @@ if (audioBtn) {
     window.speechSynthesis.speak(fala);
   });
 }
+
+
