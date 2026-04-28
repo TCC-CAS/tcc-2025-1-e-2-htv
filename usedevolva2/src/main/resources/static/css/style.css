@@ -547,6 +547,24 @@ body.large-font .login-header h1 {
   font-size: 34px;
 }
 
+body.high-contrast .form-group label {
+  color: #ffffff;
+}
+
+body.high-contrast input {
+  color: #ffffff;
+  background: #000000;
+  border-color: #ffffff;
+}
+
+body.high-contrast input::placeholder {
+  color: #cccccc;
+}
+
+body.high-contrast .terms span {
+  color: #ffffff;
+}
+
 body.large-font .login-header p,
 body.large-font .form-group label,
 body.large-font .login-form input,

@@ -2,93 +2,155 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Conta | Use&Devolva</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta | Use&Devolva</title>
 
-    <link rel="stylesheet" href="../../static/css/style.css">
+  <link rel="stylesheet" href="../../static/css/style.css">
 </head>
 
 <body>
 
 <main class="register-page">
-    <section class="register-card">
-        <div class="logo-area">
-            <img src="../../static/assets/logo-use-devolva.png" alt="Use&Devolva">
-        </div>
+  <section class="register-card" aria-labelledby="registerTitle">
 
-        <div class="register-header">
-            <h1>Criar conta</h1>
-            <p>Cadastre-se para alugar ou disponibilizar ferramentas com segurança.</p>
-        </div>
+    <div class="register-header">
+      <h1 id="registerTitle">Criar conta</h1>
+      <p>Cadastre-se para alugar ou disponibilizar ferramentas com segurança.</p>
+    </div>
 
-        <form class="register-form" id="registerForm">
-            <div class="form-group">
-                <label for="nome">Nome completo</label>
-                <input type="text" id="nome" placeholder="Digite seu nome completo">
-            </div>
+    <div class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
+      <button type="button" id="contrastBtn">Alto contraste</button>
+      <button type="button" id="fontBtn">Aumentar fonte</button>
+      <button type="button" id="audioBtn">Ouvir tela</button>
+    </div>
 
-            <div class="form-group">
-                <label for="cpf">CPF</label>
-                <input type="text" id="cpf" placeholder="000.000.000-00">
-            </div>
+    <form class="register-form" id="registerForm" novalidate>
 
-            <div class="form-group">
-                <label for="telefone">Telefone</label>
-                <input type="text" id="telefone" placeholder="(00) 00000-0000">
-            </div>
+      <div class="form-group">
+        <label for="nome">Nome completo</label>
+        <input 
+          type="text" 
+          id="nome" 
+          name="nome"
+          placeholder="Digite seu nome completo"
+          autocomplete="name"
+          aria-describedby="nomeHelp"
+          required
+        >
+        <small id="nomeHelp" class="sr-only">Digite seu nome completo.</small>
+      </div>
 
-            <div class="form-group">
-                <label for="dataNascimento">Data de nascimento</label>
-                <input type="date" id="dataNascimento">
-            </div>
+      <div class="form-group">
+        <label for="cpf">CPF</label>
+        <input 
+          type="text" 
+          id="cpf" 
+          name="cpf"
+          placeholder="000.000.000-00"
+          aria-describedby="cpfHelp"
+          required
+        >
+        <small id="cpfHelp" class="sr-only">Digite seu CPF no formato 000.000.000-00.</small>
+      </div>
 
-            <div class="form-group">
-                <label for="email">Endereço de e-mail</label>
-                <input type="email" id="email" placeholder="seuemail@email.com">
-            </div>
+      <div class="form-group">
+        <label for="telefone">Telefone</label>
+        <input 
+          type="tel" 
+          id="telefone" 
+          name="telefone"
+          placeholder="(00) 00000-0000"
+          autocomplete="tel"
+          aria-describedby="telefoneHelp"
+          required
+        >
+        <small id="telefoneHelp" class="sr-only">Digite seu telefone com DDD.</small>
+      </div>
 
-            <div class="form-group">
-                <label for="senha">Senha</label>
-                <input type="password" id="senha" placeholder="Crie uma senha">
-            </div>
+      <div class="form-group">
+        <label for="dataNascimento">Data de nascimento</label>
+        <input 
+          type="date" 
+          id="dataNascimento" 
+          name="dataNascimento"
+          aria-describedby="dataNascimentoHelp"
+          required
+        >
+        <small id="dataNascimentoHelp" class="sr-only">Informe sua data de nascimento.</small>
+      </div>
 
-            <div class="form-group">
-                <label for="confirmarSenha">Confirmar senha</label>
-                <input type="password" id="confirmarSenha" placeholder="Confirme sua senha">
-            </div>
+      <div class="form-group">
+        <label for="email">Endereço de e-mail</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          placeholder="seuemail@email.com"
+          autocomplete="email"
+          aria-describedby="emailHelp"
+          required
+        >
+        <small id="emailHelp" class="sr-only">Digite um e-mail válido, como nome@email.com.</small>
+      </div>
 
-            <div class="terms">
-                <label>
-                    <input type="checkbox" id="aceitouTermosUso">
-                    <span>
-                        Aceito os Termos de Uso e a Política de Privacidade.
-                    </span>
-                </label>
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input 
+          type="password" 
+          id="senha" 
+          name="senha"
+          placeholder="Crie uma senha"
+          autocomplete="new-password"
+          aria-describedby="senhaHelp"
+          required
+        >
+        <small id="senhaHelp" class="sr-only">Crie uma senha segura.</small>
+      </div>
 
-                <label>
-                    <input type="checkbox" id="aceitouPoliticaPrivacidade">
-                    <span>
-                        Declaro que li e aceito a Política de Privacidade.
-                    </span>
-                </label>
-            </div>
+      <div class="form-group">
+        <label for="confirmarSenha">Confirmar senha</label>
+        <input 
+          type="password" 
+          id="confirmarSenha" 
+          name="confirmarSenha"
+          placeholder="Confirme sua senha"
+          autocomplete="new-password"
+          aria-describedby="confirmarSenhaHelp"
+          required
+        >
+        <small id="confirmarSenhaHelp" class="sr-only">Repita a senha criada anteriormente.</small>
+      </div>
 
-            <button type="submit" class="submit-btn">
-                Criar conta
-            </button>
+      <div class="terms" aria-label="Aceites obrigatórios">
+        <label>
+          <input type="checkbox" id="aceitouTermosUso" name="aceitouTermosUso" required>
+          <span>Aceito os Termos de Uso e a Política de Privacidade.</span>
+        </label>
 
-            <p class="login-text">
-                Já possui conta?
-                <a href="login.html">Entrar agora</a>
-            </p>
-        </form>
-    </section>
+        <label>
+          <input type="checkbox" id="aceitouPoliticaPrivacidade" name="aceitouPoliticaPrivacidade" required>
+          <span>Declaro que li e aceito a Política de Privacidade.</span>
+        </label>
+      </div>
+
+      <p class="form-message" role="alert" aria-live="assertive"></p>
+
+      <button type="submit" class="submit-btn">
+        Criar conta
+      </button>
+
+      <p class="login-text">
+        Já possui conta?
+        <a href="login.html">Entrar agora</a>
+      </p>
+    </form>
+  </section>
 </main>
 
-<script src="js/api.js" defer></script>
-<script src="js/register.js" defer></script>
+<script src="../../static/js/main.js" defer></script>
+<script src="../../static/js/api.js" defer></script>
+<script src="../../static/js/register.js" defer></script>
 
 </body>
-
 </html>
