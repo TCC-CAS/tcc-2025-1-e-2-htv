@@ -68,48 +68,8 @@
             <h2 id="featuredToolsTitle">Ferramentas em destaque</h2>
             <p>As ferramentas mais procuradas na sua região.</p>
 
-            <div class="tools-grid">
-                <article class="tool-card">
-                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta"
-                        alt="Furadeira Bosch" class="tool-image">
-                    <div class="tool-info">
-                        <h3>Furadeira Bosch</h3>
-                        <p>Categoria: Construção</p>
-                        <p><strong>R$ 25,00</strong> / dia</p>
-                        <p>📍 Aprox. 2,4 km</p>
-                        <a href="/tools/tools-page" class="btn-details" aria-label="Ver detalhes da Furadeira Bosch">
-                            Ver detalhes
-                        </a>
-                    </div>
-                </article>
-
-                <article class="tool-card">
-                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta"
-                        alt="Escada extensível" class="tool-image">
-                    <div class="tool-info">
-                        <h3>Escada extensível</h3>
-                        <p>Categoria: Construção</p>
-                        <p><strong>R$ 30,00</strong> / dia</p>
-                        <p>📍 Aprox. 4,1 km</p>
-                        <a href="/tools/tools-page" class="btn-details" aria-label="Ver detalhes da Escada extensível">
-                            Ver detalhes
-                        </a>
-                    </div>
-                </article>
-
-                <article class="tool-card">
-                    <img src="https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta"
-                        alt="Aparador de grama" class="tool-image">
-                    <div class="tool-info">
-                        <h3>Aparador de grama</h3>
-                        <p>Categoria: Jardinagem</p>
-                        <p><strong>R$ 22,00</strong> / dia</p>
-                        <p>📍 Aprox. 3,0 km</p>
-                        <a href="/tools/tools-page" class="btn-details" aria-label="Ver detalhes do Aparador de grama">
-                            Ver detalhes
-                        </a>
-                    </div>
-                </article>
+            <div class="tools-grid" id="featuredToolsContainer">
+                <p>Carregando ferramentas...</p>
             </div>
         </section>
 
@@ -123,36 +83,8 @@
         </section>
     </main>
 
-    <footer>
-        <div class="footer-content">
-            <div>
-                <h3>Use e Devolva</h3>
-                <p>
-                    Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia
-                    circular.
-                </p>
-            </div>
-
-            <div>
-                <h4>Links úteis</h4>
-                <ul>
-                    <li><a href="../institutional/faq.html">FAQ</a></li>
-                    <li><a href="../institutional/termos-de-uso.html">Termos de Uso</a></li>
-                    <li><a href="../institutional/politica-de-privacidade.html">Política de Privacidade</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4>Contato</h4>
-                <p>Email: suporte@useedevolva.com</p>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
-        </div>
-    </footer>
-
+<div th:replace="fragments/footer :: footer"></div>
+<script src="/js/home.js" defer></script>
 </body>
 
 </html>
