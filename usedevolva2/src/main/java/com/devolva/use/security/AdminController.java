@@ -15,14 +15,12 @@ public class AdminController {
     @Autowired
     private AdminUsecases adminUsecases;
 
-    // Endpoint para criar um admin
     @PostMapping("/create")
     public ResponseEntity<AdminModel> createAdmin(@RequestBody AdminDto dto) {
         AdminModel admin = adminUsecases.createAdmin(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(admin);
     }
 
-    // Endpoint para autenticar admin
     @PostMapping("/login")
     public ResponseEntity<AdminModel> authenticate(@RequestBody AdminDto dto) {
         AdminModel admin = adminUsecases.authenticate(dto.email(), dto.senha());
