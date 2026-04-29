@@ -17,14 +17,11 @@ public class AdminUsecases {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // Criação de Admin
     public AdminModel createAdmin(AdminDto dto) {
-        // Verificar se o email já está cadastrado
         if (adminRepository.findByEmail(dto.email()).isPresent()) {
             throw new IllegalArgumentException("O e-mail já está cadastrado.");
         }
 
-        // Criptografar senha antes de salvar
         String encryptedPassword = passwordEncoder.encode(dto.senha());
 
         AdminModel admin = new AdminModel();
@@ -36,7 +33,6 @@ public class AdminUsecases {
         return adminRepository.save(admin);
     }
 
-    // Autenticação de Admin
     public AdminModel authenticate(String email, String senha) {
         Optional<AdminModel> optionalAdmin = adminRepository.findByEmail(email);
 
@@ -46,7 +42,6 @@ public class AdminUsecases {
 
         AdminModel admin = optionalAdmin.get();
 
-        // Verificar senha
         if (!passwordEncoder.matches(senha, admin.getSenha())) {
             throw new IllegalArgumentException("Senha incorreta.");
         }
