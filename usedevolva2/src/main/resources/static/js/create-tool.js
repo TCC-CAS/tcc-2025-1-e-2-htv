@@ -78,10 +78,23 @@ document.addEventListener("DOMContentLoaded", () => {
             estadoConservacao: document.getElementById("estadoConservacao").value,
             valorDiaria: Number(document.getElementById("valorDiaria").value),
             descricao: document.getElementById("descricao").value.trim(),
-            quantidadeFotos: quantidadeFotos
+            quantidadeFotos: quantidadeFotos,
+
+            localizacao: document.getElementById("localizacao").value.trim(),
+            dataInicioDisponibilidade: document.getElementById("dataInicioDisponibilidade").value,
+            dataFimDisponibilidade: document.getElementById("dataFimDisponibilidade").value || null,
+            observacoes: document.getElementById("observacoes").value.trim()
         };
 
-        if (!toolData.nome || !toolData.categoria || !toolData.estadoConservacao || !toolData.valorDiaria || !toolData.descricao) {
+        if (
+            !toolData.nome ||
+            !toolData.categoria ||
+            !toolData.estadoConservacao ||
+            !toolData.valorDiaria ||
+            !toolData.descricao ||
+            !toolData.localizacao ||
+            !toolData.dataInicioDisponibilidade
+        ) {
             message.textContent = "Preencha todos os campos obrigatórios.";
             return;
         }

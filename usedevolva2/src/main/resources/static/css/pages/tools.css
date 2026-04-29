@@ -209,17 +209,14 @@
             gap: 2rem;
         }
 
-        .image-gallery {
-            background: #E5E7EB;
-            border-radius: 16px;
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 5rem;
-            overflow: hidden;
-            border: 1px solid var(--tool-border);
-        }
+   .image-gallery {
+       display: block;
+       height: auto;
+       background: transparent;
+       border: none;
+       border-radius: 16px;
+       overflow: visible;
+   }
 
         .tool-description h1 {
             font-size: 2.2rem;
@@ -362,3 +359,47 @@
                 position: static;
             }
         }
+
+   .tool-main-image {
+       width: 100%;
+       height: 380px;
+       border-radius: 18px;
+       overflow: hidden;
+       background: #f3f4f6;
+   }
+
+   .tool-main-image img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       display: block;
+   }
+
+   .tool-thumbs {
+       display: flex;
+       gap: 10px;
+       margin-top: 12px;
+       flex-wrap: wrap;
+   }
+
+   .tool-thumb-btn {
+       width: 74px;
+       height: 74px;
+       border: 2px solid transparent;
+       border-radius: 10px;
+       padding: 0;
+       overflow: hidden;
+       cursor: pointer;
+       background: #f3f4f6;
+   }
+
+   .tool-thumb-btn:hover {
+       border-color: var(--primary);
+   }
+
+   .tool-thumb-btn img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       display: block;
+   }
