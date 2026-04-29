@@ -1,11 +1,19 @@
-# Desenvolvimento_TCC
-Repositório padrão para inicio do desenvovimento de TCC
+# Use&Devolva - Front-end
 
-Ênfase no acompanhamento e desenvolvimento do projeto de TCC 1 (proposta) e 2 (aplicação.
+Estrutura organizada em modelo de projeto real para a tela inicial da plataforma Use&Devolva.
 
-Prezado alunos(as), Tudo bem?
+## Estrutura
 
-A partir de agora o acompanhamento do desenvolvimento de seu TCC 1 ou 2 será tanto em sala de aula como aqui, com o uso deste recurso. Vocês devem fazer um desenvolvimento contínuo, respeitando as datas das entregas previstas por seu professor.
+- `index.html`: estrutura principal da página
+- `css/style.css`: estilos da tela
+- `js/main.js`: interações em JavaScript
+- `assets/images`: imagens do projeto
+- `assets/icons`: pasta reservada para ícones
 
-## Atenção!
-Este arquivo deve ser alterado no decorrer do desenvolvimento de seu TCC.
+## Como executar
+
+Abra o arquivo `index.html` diretamente no navegador.
+
+## Observação
+
+As imagens de referência do layout foram mantidas dentro de `assets/images` quando disponíveis.

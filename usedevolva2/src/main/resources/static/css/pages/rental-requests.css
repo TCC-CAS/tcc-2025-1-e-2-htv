@@ -1,0 +1,240 @@
+ body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--req-bg);
+            color: var(--req-text);
+        }
+
+        .dashboard-header {
+            background: #5248B3;
+            padding: 2rem 1rem;
+            border-bottom: 1px solid var(--req-border);
+            text-align: center;
+        }
+
+        .dashboard-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.8rem;
+            color: white
+        }
+
+        .dashboard-header p {
+            margin: 0;
+            color: white
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* BARRA DE FILTROS */
+        .filters-bar {
+            background: var(--req-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--req-border);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--req-text);
+        }
+
+        .filter-group select, 
+        .filter-group input {
+            padding: 0.8rem;
+            border: 1px solid var(--req-border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .btn-filter {
+            padding: 0.8rem 1.5rem;
+            background: var(--req-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            height: 45px;
+        }
+
+        .btn-filter:hover {
+            background: var(--req-primary-dark);
+        }
+
+        /* GRELHA DE CARTÕES DE PEDIDO */
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .request-card {
+            background: var(--req-card);
+            border-radius: 16px;
+            border: 1px solid var(--req-border);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--req-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-header h3 {
+            margin: 0 0 0.3rem 0;
+            font-size: 1.1rem;
+            color: var(--req-text);
+        }
+
+        .card-header .date {
+            font-size: 0.8rem;
+            color: var(--req-text-light);
+        }
+
+        /* ETIQUETAS DE STATUS (BADGES) */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge.pending { background: var(--status-pending-bg); color: var(--status-pending-text); }
+        .badge.approved { background: var(--status-approved-bg); color: var(--status-approved-text); }
+        .badge.rejected { background: var(--status-rejected-bg); color: var(--status-rejected-text); }
+
+        .card-body {
+            padding: 1.2rem;
+            flex-grow: 1;
+        }
+
+        .info-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .info-line strong {
+            color: var(--req-text);
+        }
+
+        .info-line span {
+            color: var(--req-text-light);
+            text-align: right;
+        }
+
+        .requester-msg {
+            background: var(--req-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--req-text-light);
+            margin-top: 1rem;
+            font-style: italic;
+            border-left: 3px solid var(--req-border);
+        }
+
+        .card-footer {
+            padding: 1.2rem;
+            border-top: 1px solid var(--req-border);
+            display: flex;
+            gap: 0.8rem;
+            background: #FAFAFA;
+        }
+
+        /* BOTÕES DE AÇÃO */
+        .btn {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-align: center;
+        }
+        .btn:hover { opacity: 0.9; }
+        
+        .btn-approve { background: #10B981; color: white; }
+        .btn-reject { background: white; color: #EF4444; border: 1px solid #EF4444; }
+        .btn-outline { background: white; color: var(--req-text); border: 1px solid var(--req-border); }
+        .btn-full { width: 100%; }
+
+        /* MODAIS DE CONFIRMAÇÃO */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h2 { margin-top: 0; }
+        .modal-content textarea {
+            width: 100%; padding: 0.8rem; border: 1px solid var(--req-border);
+            border-radius: 8px; margin: 1rem 0; font-family: inherit; box-sizing: border-box;
+        }
+
+        .modal-actions {
+            display: flex; gap: 1rem; margin-top: 1.5rem;
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 768px) {
+            .filters-bar { flex-direction: column; align-items: stretch; }
+            .btn-filter { height: auto; }
+        }

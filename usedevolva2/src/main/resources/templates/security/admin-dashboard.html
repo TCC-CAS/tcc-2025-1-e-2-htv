@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Use e Devolva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/css/pages/admin.css">
+
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <a href="#">Use e Devolva <span class="admin-badge">Painel de Controlo</span></a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="font-weight: 600; font-size: 0.9rem;">Olá, Admin</span>
+        <div class="avatar" style="background: var(--cor-primaria-escura); color: white;">AD</div>
+    </div>
+</header>
+
+<main>
+    <section class="card">
+        <div class="card-header">
+            <h2>Fila de Denúncias</h2>
+            <span style="color: var(--cor-texto-medio); font-size: 0.9rem;">24 Pendentes</span>
+        </div>
+
+        <div class="table-toolbar">
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <input type="text" placeholder="Filtrar denúncias..." style="padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; width: 250px;">
+                <select style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <option>Todos os Tipos</option>
+                    <option>Apenas Utilizadores</option>
+                    <option>Apenas Ferramentas</option>
+                </select>
+            </div>
+
+            <div class="bulk-actions" id="bulkActions">
+                <button class="btn btn-outline" onclick="alert('Denúncias ignoradas!')">🗑️ Ignorar Selecionados</button>
+                <button class="btn btn-danger" onclick="alert('Ações em massa aplicadas!')">⚠️ Sancionar Selecionados</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="reportsTable">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll"></th>
+                    <th>Prioridade</th>
+                    <th>Tipo</th>
+                    <th>ID / Contexto</th>
+                    <th>Motivo</th>
+                    <th>Denunciante</th>
+                    <th>Alvo (Denunciado)</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Linha 1: Utilizador -->
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td><span class="badge badge-alta">🔴 Alta</span></td>
+                    <td><span class="badge badge-tipo-user">👤 Utilizador</span></td>
+                    <td>
+                        <a href="#" class="preview-link">
+                            #R-9021 <br><span style="font-size: 0.8rem; font-weight: normal; color: var(--cor-texto-medio);">No chat de aluguer...</span>
+                        </a>
+                    </td>
+                    <td><strong>Comportamento Agressivo</strong></td>
+                    <td>
+                        <div class="clickable-entity" onclick="loadDetails('user', 'João Silva', 'JS', '#U-881', 85, 0, '12 Jan 2024')">
+                            <div class="avatar">JS</div>
+                            <span>João S.</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="clickable-entity" onclick="loadDetails('user', 'Carlos Mau', 'CM', '#U-992', 20, 3, '05 Mai 2024')">
+                            <div class="avatar" style="background: var(--danger-bg); color: var(--danger);">CM</div>
+                            <span>Carlos M. (3x)</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-pendente">Pendente</span></td>
+                    <td style="display: flex; gap: 4px;">
+                        <button class="btn btn-outline" style="padding: 6px;" title="Manter/Ignorar">✅</button>
+                        <button class="btn btn-danger" style="padding: 6px;" title="Banir User">🚫</button>
+                    </td>
+                </tr>
+
+                <!-- Linha 2: Ferramenta -->
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox"></td>
+                    <td><span class="badge badge-alta">🔴 Alta</span></td>
+                    <td><span class="badge badge-tipo-tool">🛠️ Ferramenta</span></td>
+                    <td>
+                        <a href="#" class="preview-link">
+                            #R-9022 <br><span style="font-size: 0.8rem; font-weight: normal; color: var(--cor-texto-medio);">Anúncio Falso</span>
+                        </a>
+                    </td>
+                    <td><strong>Item Defeituoso / Perigoso</strong></td>
+                    <td>
+                        <div class="clickable-entity" onclick="loadDetails('user', 'Ana Costa', 'AC', '#U-112', 95, 0, '20 Fev 2023')">
+                            <div class="avatar">AC</div>
+                            Ana C.
+                        </div>
+                    </td>
+                    <td>
+                        <div class="clickable-entity" onclick="loadDetails('tool', 'Serra Circular XYZ', '🛠️', '#F-554', 40, 2, 'Dono: Marcos P.')">
+                            <div class="avatar tool">🛠️</div>
+                            Serra Circular XYZ
+                        </div>
+                    </td>
+                    <td><span class="badge badge-pendente">Pendente</span></td>
+                    <td style="display: flex; gap: 4px;">
+                        <button class="btn btn-outline" style="padding: 6px;" title="Manter Anúncio">✅</button>
+                        <button class="btn btn-danger" style="padding: 6px;" title="Remover Ferramenta">🗑️</button>
+                    </td>
+                </tr>
+
+                <!-- Linha 3: Utilizador (Spam) -->
+                <tr style="opacity: 0.7;">
+                    <td><input type="checkbox" class="row-checkbox" disabled></td>
+                    <td><span class="badge badge-media">🟡 Média</span></td>
+                    <td><span class="badge badge-tipo-user">👤 Utilizador</span></td>
+                    <td>#R-9018</td>
+                    <td>Spam Comercial</td>
+                    <td>
+                        <div class="clickable-entity" onclick="loadDetails('user', 'Sistema', 'SI', '#SYS', 100, 0, '-')">
+                            <div class="avatar" style="background: #333; color: white;">SI</div> Sist.
+                        </div>
+                    </td>
+                    <td>
+                        <div class="clickable-entity" onclick="loadDetails('user', 'Bot123', 'BT', '#U-555', 0, 5, 'Hoje')">
+                            <div class="avatar">BT</div> Bot123
+                        </div>
+                    </td>
+                    <td><span class="badge badge-resolvido">Resolvido</span></td>
+                    <td>-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- SEÇÃO INFERIOR: PAINEL DE INVESTIGAÇÃO (DADOS DETALHADOS) -->
+    <section class="card" id="investigationSection">
+        <div class="card-header" style="margin-bottom: 1rem;">
+            <h3 id="panelTitle">Painel de Detalhes (Modo Investigação)</h3>
+            <span class="badge badge-baixa">Clique num Alvo ou Denunciante na tabela para carregar</span>
+        </div>
+
+        <div class="investigation-panel" id="investigationPanel">
+
+            <div class="profile-header">
+                <div class="avatar" id="invAvatar">--</div>
+                <div class="profile-info">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h3 id="invName">Selecione um item</h3>
+                        <span class="badge" id="invTypeBadge" style="display: none;"></span>
+                    </div>
+                    <p id="invId">ID: #----</p>
+                    <p id="invSubtitle" style="margin-top: 4px; font-weight: 600; color: var(--cor-texto-medio);">--</p>
+                </div>
+            </div>
+
+            <div class="inv-grid">
+                <!-- Coluna 1: Métricas -->
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-label" id="metricLabel">Métrica Principal</span>
+                        <span class="stat-value" id="metricText">--</span>
+                        <div class="meter-bg">
+                            <div class="meter-fill" id="metricBar" style="width: 0%; background: var(--success);"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item" style="margin-top: 1.5rem;">
+                        <span class="stat-label">Denúncias Recebidas</span>
+                        <span class="stat-value" id="reportsReceived" style="color: var(--danger)">0</span>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Histórico/Timeline -->
+                <div class="timeline-container">
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--cor-texto-medio);">Histórico Recente</h4>
+                        <div class="timeline" id="invTimeline">
+                            <!-- Preenchido via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Ações do Administrador -->
+                <div class="timeline-container">
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--cor-texto-medio);">Ações Disponíveis</h4>
+                        <div class="action-buttons" id="invActions">
+                            <!-- Botões gerados via JS dependendo do tipo -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2025 Use e Devolva - Ferramenta Administrativa Interna</p>
+</footer>
+
+<script>
+    // Lógica de Seleção em Massa
+    const selectAll = document.getElementById('selectAll');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox:not([disabled])');
+    const bulkActions = document.getElementById('bulkActions');
+
+    function updateBulkActionsVisibility() {
+        const anyChecked = Array.from(rowCheckboxes).some(cb => cb.checked);
+        if (anyChecked) {
+            bulkActions.classList.add('active');
+        } else {
+            bulkActions.classList.remove('active');
+        }
+    }
+
+    selectAll.addEventListener('change', (e) => {
+        rowCheckboxes.forEach(cb => {
+            cb.checked = e.target.checked;
+            const row = cb.closest('tr');
+            if(e.target.checked) row.classList.add('selected');
+            else row.classList.remove('selected');
+        });
+        updateBulkActionsVisibility();
+    });
+
+    rowCheckboxes.forEach(cb => {
+        cb.addEventListener('change', (e) => {
+            const row = e.target.closest('tr');
+            if(e.target.checked) row.classList.add('selected');
+            else row.classList.remove('selected');
+
+            const allChecked = Array.from(rowCheckboxes).every(c => c.checked);
+            selectAll.checked = allChecked;
+            updateBulkActionsVisibility();
+        });
+    });
+
+    // Lógica do Painel de Investigação (Fundo da Página)
+    function loadDetails(type, name, initials, idStr, metricValue, reportsCount, subtitleStr) {
+        const panel = document.getElementById('investigationPanel');
+
+        // Fade Out
+        panel.style.opacity = '0';
+
+        setTimeout(() => {
+            // Atualizar Cabeçalho
+            document.getElementById('invName').innerText = name;
+            document.getElementById('invId').innerText = "ID: " + idStr;
+            document.getElementById('reportsReceived').innerText = reportsCount;
+            document.getElementById('invSubtitle').innerText = (type === 'user') ? "Criado em: " + subtitleStr : subtitleStr;
+
+            const avatarEl = document.getElementById('invAvatar');
+            avatarEl.innerText = initials;
+
+            const typeBadge = document.getElementById('invTypeBadge');
+            typeBadge.style.display = 'inline-flex';
+
+            // Elementos Dinâmicos baseados no TIPO (User ou Tool)
+            const metricLabel = document.getElementById('metricLabel');
+            const metricText = document.getElementById('metricText');
+            const metricBar = document.getElementById('metricBar');
+            const timeline = document.getElementById('invTimeline');
+            const actions = document.getElementById('invActions');
+
+            if (type === 'user') {
+                avatarEl.className = 'avatar';
+                typeBadge.className = 'badge badge-tipo-user';
+                typeBadge.innerText = '👤 Perfil de Utilizador';
+
+                metricLabel.innerText = "Índice de Confiança";
+                metricText.innerText = metricValue + "%";
+                metricBar.style.width = metricValue + "%";
+
+                if (metricValue < 40) metricBar.style.background = 'var(--danger)';
+                else if (metricValue < 70) metricBar.style.background = 'var(--warning)';
+                else metricBar.style.background = 'var(--success)';
+
+                timeline.innerHTML = `
+                        <div class="timeline-item danger">
+                            <strong>Hoje</strong> - Denunciado na fila atual
+                        </div>
+                        <div class="timeline-item warning">
+                            <strong>Há 2 meses</strong> - Recebeu Aviso Formal
+                        </div>
+                    `;
+
+                actions.innerHTML = `
+                        <button class="btn btn-outline" style="width: 100%; border-color: var(--warning); color: var(--warning);">⚠️ Enviar Aviso ao Utilizador</button>
+                        <button class="btn btn-danger" style="width: 100%;">🚫 Suspender Conta</button>
+                        <a href="#" class="btn btn-outline" style="width: 100%; justify-content: center;">Ver Perfil Completo ↗</a>
+                    `;
+
+            } else if (type === 'tool') {
+                avatarEl.className = 'avatar tool';
+                typeBadge.className = 'badge badge-tipo-tool';
+                typeBadge.innerText = '🛠️ Anúncio de Ferramenta';
+
+                metricLabel.innerText = "Qualidade do Anúncio / Item";
+                metricText.innerText = (metricValue > 50) ? "Regular" : "Crítica";
+                metricBar.style.width = metricValue + "%";
+
+                if (metricValue < 50) metricBar.style.background = 'var(--danger)';
+                else metricBar.style.background = 'var(--success)';
+
+                timeline.innerHTML = `
+                        <div class="timeline-item danger">
+                            <strong>Ontem</strong> - Denunciado por "Defeito não informado"
+                        </div>
+                        <div class="timeline-item">
+                            <strong>Há 1 mês</strong> - Alugada por 3 dias sem problemas
+                        </div>
+                    `;
+
+                actions.innerHTML = `
+                        <button class="btn btn-outline" style="width: 100%; border-color: var(--warning); color: var(--warning);">⚠️ Ocultar Anúncio Temporariamente</button>
+                        <button class="btn btn-danger" style="width: 100%;">🗑️ Eliminar Ferramenta</button>
+                        <a href="#" class="btn btn-outline" style="width: 100%; justify-content: center;">Ver Anúncio da Ferramenta ↗</a>
+                    `;
+            }
+
+            // Fade In e Scroll automático
+            panel.style.opacity = '1';
+            panel.style.pointerEvents = 'auto';
+
+            // Rolar a página suavemente até o painel
+            document.getElementById('investigationSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        }, 300);
+    }
+</script>
+</body>
+</html>

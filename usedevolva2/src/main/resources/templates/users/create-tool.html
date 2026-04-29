@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastrar Ferramenta - Use e Devolva</title>
+
+
+    <link rel="stylesheet" href="/css/fragments/header.css">
+    <link rel="stylesheet" href="/css/fragments/footer.css">
+    <link rel="stylesheet" href="/css/root.css">
+    <link rel="stylesheet" href="/css/pages/users/create-tool.css">
+
+
+<!--        <link rel="stylesheet" href="../../static/css/fragments/header.css">-->
+<!--<link rel="stylesheet" href="../../static/css/fragments/footer.css">-->
+<!--<link rel="stylesheet" href="../../static/css/root.css">-->
+<!--<link rel="stylesheet" href="../../static/css/pages/users/create-tool.css">-->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+
+
+    <main>
+        <div class="page-header">
+            <h2>Cadastrar Nova Ferramenta</h2>
+            <p>Preencha as informações abaixo para disponibilizar a sua ferramenta na plataforma e começar a ganhar.</p>
+        </div>
+
+        <form class="edit-form" id="createToolForm" novalidate>
+
+            <section class="form-section">
+                <h3>Informações Básicas</h3>
+                
+                <div class="form-group">
+                    <label for="nomeFerramenta">Nome da ferramenta</label>
+                    <input type="text" id="nomeFerramenta" name="nomeFerramenta" placeholder="Ex: Furadeira Bosch 600W, Escada 5 degraus..." required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="categoria">Categoria</label>
+                        <select id="categoria" name="categoria" required>
+                            <option value="" disabled selected>Selecione uma categoria</option>
+                            <option value="construcao">Construção</option>
+                            <option value="jardinagem">Jardinagem</option>
+                            <option value="eletrica">Elétrica</option>
+                            <option value="limpeza">Limpeza</option>
+                            <option value="marcenaria">Marcenaria</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="valorDiaria">Valor da diária (R$)</label>
+                        <input type="number" id="valorDiaria" name="valorDiaria" placeholder="0.00" step="0.50" min="1" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descrição detalhada</label>
+                    <textarea id="descricao" name="descricao" placeholder="Descreva a ferramenta, a sua potência, uso indicado, acessórios incluídos, estado de conservação, etc." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="estadoConservacao">Estado de conservação</label>
+                    <select id="estadoConservacao" name="estadoConservacao" required>
+                        <option value="" disabled selected>Selecione o estado</option>
+                        <option value="Novo">Novo</option>
+                        <option value="Ótimo estado">Ótimo estado</option>
+                        <option value="Bom estado">Bom estado</option>
+                        <option value="Usado com marcas de uso">Usado com marcas de uso</option>
+                    </select>
+                </div>
+
+
+            </section>
+
+            <section class="form-section">
+                <h3>Fotos</h3>
+                
+                <div class="file-upload-wrapper">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <input type="file" id="fotos" name="fotos" multiple accept="image/*" />
+                    <label for="fotos">Clique para adicionar fotos</label>
+                    <p>Arraste e solte as imagens aqui (Máx. 10 fotos, PNG ou JPG)</p>
+                    <div id="imagePreviewContainer" class="image-preview-container"></div>
+
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h3>Localização e Disponibilidade</h3>
+
+                <div class="form-group">
+                    <label for="localizacao">Localização aproximada para retirada</label>
+                    <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Avenida Sabará" required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dataInicioDisponibilidade">Disponível a partir de</label>
+                        <input type="date" id="dataInicioDisponibilidade" name="dataInicioDisponibilidade" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataFimDisponibilidade">Disponível até</label>
+                        <input type="date" id="dataFimDisponibilidade" name="dataFimDisponibilidade" />
+                        <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Deixe em branco para disponibilidade contínua</span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="observacoes">Condições ou Observações (Opcional)</label>
+                    <textarea id="observacoes" name="observacoes" placeholder="Ex: Apenas entrego ao fim de semana; Devolver limpa; Exige caução..."></textarea>
+                </div>
+            </section>
+
+            <p class="form-message" role="alert" aria-live="assertive"></p>
+
+            <div class="form-actions">
+                <button type="reset" class="btn btn-outline">Limpar campos</button>
+                <button type="submit" class="btn btn-primary">Publicar Ferramenta</button>
+            </div>
+
+        </form>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Use e Devolva</h3>
+                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
+            </div>
+
+            <div>
+                <h4>Links úteis</h4>
+                <ul>
+                    <li><a href="/institutional/faq">FAQ</a></li>
+                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
+                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contato</h4>
+                <p>Email: suporte@useedevolva.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+<script src="/js/main.js" defer></script>
+<script src="/js/create-tool.js" defer></script>
+
+</body>
+
+</html>

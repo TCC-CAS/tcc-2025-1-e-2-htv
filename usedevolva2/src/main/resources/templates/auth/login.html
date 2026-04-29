@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Use&Devolva</title>
+  <link rel="stylesheet" href="/css/style.css">
+ <!-- <link rel="stylesheet" href="../../static/css/style.css"> -->
+</head>
+
+<body>
+
+  <main class="register-page login-page">
+    <section class="register-card login-card" aria-labelledby="loginTitle">
+      <div class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
+        <button type="button" id="contrastBtn">Alto contraste</button>
+        <button type="button" id="fontBtn">Aumentar fonte</button>
+        <button type="button" id="audioBtn">Ouvir tela</button>
+      </div>
+      <div class="register-header login-header">
+        <h1 id="loginTitle">Entrar</h1>
+        <p>Acesse sua conta para alugar ou disponibilizar ferramentas com segurança.</p>
+      </div>
+
+      <form class="login-form" novalidate>
+
+        <div class="form-group">
+          <label for="loginEmail">Endereço de e-mail</label>
+          <input type="email" id="loginEmail" name="email" placeholder="seuemail@email.com" autocomplete="email"
+            aria-describedby="emailHelp" required>
+          <small id="emailHelp" class="sr-only">Digite um e-mail válido, como nome@email.com.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="loginSenha">Senha</label>
+          <input type="password" id="loginSenha" name="senha" placeholder="Digite sua senha"
+            autocomplete="current-password" aria-describedby="senhaHelp" required>
+          <small id="senhaHelp" class="sr-only">Digite sua senha cadastrada.</small>
+        </div>
+
+        <div class="login-options">
+          <label>
+            <input type="checkbox" name="lembrar">
+            <span>Lembrar de mim</span>
+          </label>
+
+          <a href="/auth/forgot-password">Esqueci minha senha</a>
+        </div>
+
+        <p class="form-message" role="alert" aria-live="assertive"></p>
+
+        <button type="submit" class="submit-btn">Entrar na plataforma</button>
+
+        <p class="login-text">
+          Ainda não possui conta?
+          <a href="/auth/register">Criar conta</a>
+        </p>
+
+      </form>
+
+    </section>
+  </main>
+
+  <script src="/js/main.js" defer></script>
+  <script src="/js/login.js" defer></script>
+  <!-- <script src="../../static/js/main.js" defer></script> -->
+</body>
+
+</html>
