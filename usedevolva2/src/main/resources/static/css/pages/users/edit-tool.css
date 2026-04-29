@@ -344,4 +344,65 @@
             transform: translateY(-12px);
         }
 
-        
+        .photo-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-remove-photo {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            z-index: 3;
+            font-weight: 700;
+            color: #d62828;
+        }
+
+        .main-image-badge,
+        .btn-set-main-photo {
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border-radius: 6px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 5px 6px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .main-image-badge {
+            background: rgba(0, 0, 0, 0.72);
+            color: #fff;
+        }
+
+        .btn-set-main-photo {
+            background: #111827;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-set-main-photo:hover {
+            background: #2563eb;
+        }
+
+        .main-image {
+            border: 2px solid #22c55e;
+        }

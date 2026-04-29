@@ -1,44 +1,31 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastrar Ferramenta - Use e Devolva</title>
-
-<!--        <link rel="stylesheet" href="../../static/css/fragments/header.css">-->
-<!--<link rel="stylesheet" href="../../static/css/fragments/footer.css">-->
-<!--<link rel="stylesheet" href="../../static/css/root.css">-->
-<!--<link rel="stylesheet" href="../../static/css/pages/users/edit-tool.css">-->
+    <title>Editar Ferramenta - Use e Devolva</title>
 
     <link rel="stylesheet" href="/css/fragments/header.css">
     <link rel="stylesheet" href="/css/fragments/footer.css">
     <link rel="stylesheet" href="/css/root.css">
     <link rel="stylesheet" href="/css/pages/users/edit-tool.css">
 
-
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-
 </head>
+
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 
-
 <main>
-        <div class="page-header">
-            <h2>Editar Ferramenta</h2>
-            <p>Atualize as informações da sua ferramenta para a manter atrativa para os locatários.</p>
-        </div>
+    <div class="page-header">
+        <h2>Editar Ferramenta</h2>
+        <p>Atualize as informações da sua ferramenta para mantê-la atrativa para os locatários.</p>
+    </div>
 
     <form class="edit-form" id="editToolForm" novalidate>
 
-        <p class="form-message" role="alert" aria-live="assertive"></p>
-
-   
         <section class="form-section">
             <h3>Informações Básicas</h3>
 
@@ -68,6 +55,11 @@
             </div>
 
             <div class="form-group">
+                <label for="descricao">Descrição detalhada</label>
+                <textarea id="descricao" name="descricao" required></textarea>
+            </div>
+
+            <div class="form-group">
                 <label for="estadoConservacao">Estado de conservação</label>
                 <select id="estadoConservacao" name="estadoConservacao" required>
                     <option value="">Selecione o estado</option>
@@ -77,28 +69,58 @@
                     <option value="Usado com marcas de uso">Usado com marcas de uso</option>
                 </select>
             </div>
-
-            <div class="form-group">
-                <label for="descricao">Descrição detalhada</label>
-                <textarea id="descricao" name="descricao" required></textarea>
-            </div>
         </section>
 
-
         <section class="form-section">
-            <h3>Fotos</h3>
+            <h3>Fotos cadastradas</h3>
+
+            <p class="section-helper">
+                Escolha uma imagem principal para destacar esta ferramenta nas listagens e na página de detalhes.
+            </p>
 
             <div class="photo-gallery" id="currentImagesContainer"></div>
 
+            <h3 style="margin-top: 24px;">Adicionar novas fotos</h3>
+
             <div class="file-upload-wrapper">
                 <input type="file" id="fotos" name="fotos" multiple accept="image/*" />
-                <label for="fotos">Adicionar novas fotos</label>
-                <p>Você pode adicionar novas imagens à ferramenta (máx. 10)</p>
+                <label for="fotos">Clique para adicionar fotos</label>
+                <p>Você pode adicionar novas imagens à ferramenta. Máximo de 10 fotos no total.</p>
             </div>
 
             <div id="newImagesPreviewContainer" class="image-preview-container"></div>
         </section>
 
+        <section class="form-section">
+            <h3>Localização e Disponibilidade</h3>
+
+            <div class="form-group">
+                <label for="localizacao">Localização aproximada para retirada</label>
+                <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Avenida Sabará" required />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dataInicioDisponibilidade">Disponível a partir de</label>
+                    <input type="date" id="dataInicioDisponibilidade" name="dataInicioDisponibilidade" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="dataFimDisponibilidade">Disponível até</label>
+                    <input type="date" id="dataFimDisponibilidade" name="dataFimDisponibilidade" />
+                    <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                        Deixe em branco para disponibilidade contínua
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="observacoes">Condições ou Observações (Opcional)</label>
+                <textarea id="observacoes" name="observacoes"></textarea>
+            </div>
+        </section>
+
+        <p class="form-message" role="alert" aria-live="assertive"></p>
 
         <div class="form-actions">
             <button type="button" class="btn btn-outline" onclick="window.location.href='/users/my-tools'">
@@ -111,9 +133,15 @@
         </div>
 
     </form>
-    </main>
+</main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
+<script th:inline="javascript">
+    const TOOL_ID = [[${toolId}]];
+</script>
+
+<script src="/js/main.js" defer></script>
+<script src="/js/edit-tool.js" defer></script>
 </body>
 </html>

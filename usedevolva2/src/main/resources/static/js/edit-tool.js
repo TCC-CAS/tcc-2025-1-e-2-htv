@@ -47,10 +47,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    currentImagesContainer.addEventListener("click", async (event) => {
+        const removeButton = event.target.closest(".btn-remove-photo");
+        const mainButton = event.target.closest(".btn-set-main-photo");
+
+        if (removeButton) {
+            const imageId = removeButton.dataset.imageId;
+            await deleteExistingImage(imageId, removeButton);
+        }
+
+        if (mainButton) {
+            const imageId = mainButton.dataset.imageId;
+            await setMainImage(imageId);
+        }
+    });
+
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         message.textContent = "";
+
+        const currentImagesCount = currentImagesContainer.querySelectorAll(".photo-item").length;
+        const totalImages = currentImagesCount + selectedFiles.length;
 
         const toolData = {
             nome: document.getElementById("nomeFerramenta").value.trim(),
@@ -58,11 +76,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             estadoConservacao: document.getElementById("estadoConservacao").value,
             valorDiaria: Number(document.getElementById("valorDiaria").value),
             descricao: document.getElementById("descricao").value.trim(),
-            quantidadeFotos: 1
+            quantidadeFotos: totalImages,
+            localizacao: document.getElementById("localizacao").value.trim(),
+            dataInicioDisponibilidade: document.getElementById("dataInicioDisponibilidade").value,
+            dataFimDisponibilidade: document.getElementById("dataFimDisponibilidade").value || null,
+            observacoes: document.getElementById("observacoes").value.trim()
         };
 
-        if (!toolData.nome || !toolData.categoria || !toolData.estadoConservacao || !toolData.valorDiaria || !toolData.descricao) {
+        if (
+            !toolData.nome ||
+            !toolData.categoria ||
+            !toolData.estadoConservacao ||
+            !toolData.valorDiaria ||
+            !toolData.descricao ||
+            !toolData.localizacao ||
+            !toolData.dataInicioDisponibilidade
+        ) {
             message.textContent = "Preencha todos os campos obrigatórios.";
+            return;
+        }
+
+        if (totalImages < 1) {
+            message.textContent = "A ferramenta precisa ter pelo menos uma imagem.";
+            return;
+        }
+
+        if (totalImages > 10) {
+            message.textContent = "A ferramenta pode ter no máximo 10 imagens no total.";
             return;
         }
 
@@ -130,6 +170,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("estadoConservacao").value = tool.estadoConservacao || "";
             document.getElementById("valorDiaria").value = tool.valorDiaria || "";
             document.getElementById("descricao").value = tool.descricao || "";
+            document.getElementById("localizacao").value = tool.localizacao || "";
+            document.getElementById("dataInicioDisponibilidade").value = tool.dataInicioDisponibilidade || "";
+            document.getElementById("dataFimDisponibilidade").value = tool.dataFimDisponibilidade || "";
+            document.getElementById("observacoes").value = tool.observacoes || "";
 
         } catch (error) {
             console.error(error);
@@ -157,11 +201,41 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentImagesContainer.innerHTML = "";
 
             images.forEach(image => {
-                currentImagesContainer.innerHTML += `
-                    <div class="photo-item">
-                        <img src="${image.filePath}" alt="Imagem da ferramenta">
-                    </div>
-                `;
+                const photoItem = document.createElement("div");
+                photoItem.classList.add("photo-item");
+                photoItem.dataset.imageId = image.id;
+
+                if (image.principal) {
+                    photoItem.classList.add("main-image");
+                }
+
+                photoItem.innerHTML = `
+    <img src="${image.filePath}" alt="Imagem da ferramenta">
+
+    <button
+        type="button"
+        class="btn-remove-photo"
+        data-image-id="${image.id}"
+        aria-label="Remover imagem"
+        title="Remover imagem"
+    >
+        ×
+    </button>
+
+    ${
+                    image.principal
+                        ? `<span class="main-image-badge">Imagem principal</span>`
+                        : `<button
+                    type="button"
+                    class="btn-set-main-photo"
+                    data-image-id="${image.id}"
+                >
+                    Tornar principal
+               </button>`
+                }
+`;
+
+                currentImagesContainer.appendChild(photoItem);
             });
 
         } catch (error) {
@@ -213,3 +287,133 @@ function showToast(message) {
         toast.remove();
     }, 2900);
 }
+
+async function deleteExistingImage(imageId, buttonElement) {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id) {
+        window.location.href = "/auth/login";
+        return;
+    }
+    const currentImagesContainer = document.getElementById("currentImagesContainer");
+    const totalImages = currentImagesContainer.querySelectorAll(".photo-item").length;
+
+    if (totalImages <= 1) {
+        showToast("A ferramenta precisa ter pelo menos uma imagem cadastrada.");
+        return;
+    }
+    const confirmDelete = confirm( "Essa imagem será removida permanentemente agora, mesmo que você não salve as alterações da ferramenta. Deseja continuar?");
+
+    if (!confirmDelete) return;
+
+    try {
+        const response = await fetch(`/tools/images/${imageId}/owner/${user.id}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro ao remover imagem.");
+        }
+
+        const photoItem = buttonElement.closest(".photo-item");
+
+        if (photoItem) {
+            photoItem.remove();
+        }
+
+        const currentImagesContainer = document.getElementById("currentImagesContainer");
+
+        if (!currentImagesContainer.querySelector(".photo-item")) {
+            currentImagesContainer.innerHTML = "<p>Nenhuma imagem cadastrada.</p>";
+        }
+
+        showToast("Imagem removida com sucesso!");
+
+    } catch (error) {
+        console.error(error);
+        showToast("Não foi possível remover a imagem.");
+    }
+}
+
+async function setMainImage(imageId) {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id) {
+        window.location.href = "/auth/login";
+        return;
+    }
+
+    try {
+        const response = await fetch(`/tools/images/${imageId}/owner/${user.id}/main`, {
+            method: "PATCH"
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro ao definir imagem principal.");
+        }
+
+        await reloadImagesAfterMainChange();
+
+        showToast("Imagem principal atualizada!");
+
+    } catch (error) {
+        console.error(error);
+        showToast("Não foi possível definir a imagem principal.");
+    }
+}
+
+async function reloadImagesAfterMainChange() {
+    const currentImagesContainer = document.getElementById("currentImagesContainer");
+
+    try {
+        const response = await fetch(`/tools/${TOOL_ID}/images`);
+
+        if (!response.ok) return;
+
+        const images = await response.json();
+
+        currentImagesContainer.innerHTML = "";
+
+        images.forEach(image => {
+            const photoItem = document.createElement("div");
+            photoItem.classList.add("photo-item");
+            photoItem.dataset.imageId = image.id;
+
+            if (image.principal) {
+                photoItem.classList.add("main-image");
+            }
+
+            photoItem.innerHTML = `
+                <img src="${image.filePath}" alt="Imagem da ferramenta">
+
+                <button
+                    type="button"
+                    class="btn-remove-photo"
+                    data-image-id="${image.id}"
+                    aria-label="Remover imagem"
+                    title="Remover imagem"
+                >
+                    ×
+                </button>
+
+                ${
+                image.principal
+                    ? `<span class="main-image-badge">Imagem principal</span>`
+                    : `<button
+                                type="button"
+                                class="btn-set-main-photo"
+                                data-image-id="${image.id}"
+                            >
+                                Tornar principal
+                           </button>`
+            }
+            `;
+
+            currentImagesContainer.appendChild(photoItem);
+        });
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
