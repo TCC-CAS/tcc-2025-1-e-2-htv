@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Getter
 @Setter
@@ -22,6 +24,8 @@ public class UserModel {
     private String email;
 
     private String telefone;
+
+    @JsonIgnore
     private String senha;
     private String documento;
     private LocalDate dataNascimento;
