@@ -176,15 +176,22 @@ function updateBookingSummary() {
 }
 
 function formatAvailability(tool) {
-    const start = tool.dataInicioDisponibilidade
-        ? formatDate(tool.dataInicioDisponibilidade)
-        : "data não informada";
+    const hasStart = !!tool.dataInicioDisponibilidade;
+    const hasEnd = !!tool.dataFimDisponibilidade;
 
-    const end = tool.dataFimDisponibilidade
-        ? formatDate(tool.dataFimDisponibilidade)
-        : "disponibilidade contínua";
+    if (!hasStart && !hasEnd) {
+        return "Disponibilidade não informada.";
+    }
 
-    return `Disponível de ${start} até ${end}.`;
+    if (hasStart && !hasEnd) {
+        return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
+    }
+
+    if (!hasStart && hasEnd) {
+        return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
+    }
+
+    return `Disponível de ${formatDate(tool.dataInicioDisponibilidade)} até ${formatDate(tool.dataFimDisponibilidade)}.`;
 }
 
 function formatDate(dateString) {

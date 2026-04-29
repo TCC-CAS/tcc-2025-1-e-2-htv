@@ -21,7 +21,7 @@ async function loadFeaturedTools() {
 
         container.innerHTML = "";
 
-        const featuredTools = tools.slice(0, 6);
+        const featuredTools = tools.slice(0, 15);
 
         for (const tool of featuredTools) {
             const imageUrl = await getMainImage(tool.id);
@@ -105,4 +105,26 @@ function formatCategory(category) {
     };
 
     return categories[category] || category;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    handleAnnounceButton();
+});
+
+function handleAnnounceButton() {
+    const btn = document.getElementById("announceBtn");
+
+    if (!btn) return;
+
+    btn.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user && user.id) {
+            window.location.href = "/users/create-tool";
+        } else {
+            window.location.href = "/auth/register";
+        }
+    });
 }
