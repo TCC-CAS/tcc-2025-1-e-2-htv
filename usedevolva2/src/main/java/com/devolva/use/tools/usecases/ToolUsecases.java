@@ -4,6 +4,7 @@ import com.devolva.use.tools.domain.ToolModel;
 import com.devolva.use.tools.dtos.BlockToolDto;
 import com.devolva.use.tools.dtos.CreateToolDto;
 import com.devolva.use.tools.dtos.UpdateToolDto;
+import com.devolva.use.tools.repository.ToolImageRepository;
 import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.domain.UserStatus;
@@ -13,6 +14,17 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.devolva.use.tools.domain.ToolImageModel;
+import com.devolva.use.tools.repository.ToolImageRepository;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 @Service
 public class ToolUsecases {
@@ -20,9 +32,16 @@ public class ToolUsecases {
     private final ToolRepository toolRepository;
     private final UserRepository userRepository;
 
-    public ToolUsecases(ToolRepository toolRepository, UserRepository userRepository) {
+    private final ToolImageRepository toolImageRepository;
+
+    public ToolUsecases(
+            ToolRepository toolRepository,
+            UserRepository userRepository,
+            ToolImageRepository toolImageRepository
+    ) {
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
+        this.toolImageRepository = toolImageRepository;
     }
 
     public ToolModel createTool(Long ownerId, CreateToolDto dto) {
@@ -160,5 +179,67 @@ public class ToolUsecases {
         if (quantidadeFotos < 1 || quantidadeFotos > 10) {
             throw new IllegalArgumentException("A ferramenta deve ter entre 1 e 10 fotos.");
         }
+    }
+
+    public void uploadImages(Long toolId, Long ownerId, MultipartFile[] files) {
+        ToolModel tool = findOwnedTool(toolId, ownerId);
+
+        if (files == null || files.length < 1) {
+            throw new IllegalArgumentException("A ferramenta deve ter pelo menos uma foto.");
+        }
+
+        if (files.length > 10) {
+            throw new IllegalArgumentException("A ferramenta pode ter no máximo 10 fotos.");
+        }
+
+        try {
+            Path uploadPath = Paths.get("uploads", "tools", String.valueOf(toolId))
+                    .toAbsolutePath()
+                    .normalize();
+
+            Files.createDirectories(uploadPath);
+
+            for (MultipartFile file : files) {
+                if (file.isEmpty()) continue;
+
+                String contentType = file.getContentType();
+
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    throw new IllegalArgumentException("Apenas arquivos de imagem são permitidos.");
+                }
+
+                String originalName = file.getOriginalFilename();
+                String extension = "";
+
+                if (originalName != null && originalName.contains(".")) {
+                    extension = originalName.substring(originalName.lastIndexOf("."));
+                }
+
+                String fileName = UUID.randomUUID() + extension;
+
+                Path destination = uploadPath.resolve(fileName).normalize();
+
+                Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+
+                ToolImageModel image = new ToolImageModel();
+                image.setToolId(toolId);
+                image.setFileName(fileName);
+                image.setFilePath("/uploads/tools/" + toolId + "/" + fileName);
+                image.setContentType(contentType);
+
+                toolImageRepository.save(image);
+            }
+
+            tool.setQuantidadeFotos(files.length);
+            tool.setUpdatedAt(LocalDateTime.now());
+            toolRepository.save(tool);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao salvar imagem da ferramenta.", e);
+        }
+    }
+
+    public List<ToolImageModel> listImages(Long toolId) {
+        return toolImageRepository.findByToolId(toolId);
     }
 }
