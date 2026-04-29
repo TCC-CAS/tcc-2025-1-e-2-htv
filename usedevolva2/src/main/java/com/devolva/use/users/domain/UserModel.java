@@ -35,14 +35,23 @@ public class UserModel {
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+    @Enumerated(EnumType.STRING)
+    private Plano plano;
+
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public enum Plano {
+        FREE, BRONZE, PRATA, OURO, DIAMANTE
+    }
     public UserModel() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.status = UserStatus.ATIVO;
         this.verificado = false;
+        this.plano = Plano.FREE;
     }
+
+
 }

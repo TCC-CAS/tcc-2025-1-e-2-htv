@@ -23,8 +23,10 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserModel> createUser(@RequestBody CreateUserDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userUsecases.createUser(dto));
+        UserModel user = userUsecases.createUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<UserModel> login(@RequestBody LoginUserDto dto) {

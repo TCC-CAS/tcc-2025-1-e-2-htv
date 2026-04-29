@@ -16,16 +16,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.devolva.use.tools.domain.ToolImageModel;
-import com.devolva.use.tools.repository.ToolImageRepository;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
+
+import static com.devolva.use.users.domain.UserModel.Plano.*;
 
 @Service
 public class ToolUsecases {
@@ -54,8 +54,10 @@ public class ToolUsecases {
         }
 
         long activeTools = toolRepository.countActiveToolsByOwnerId(ownerId);
-        if (activeTools >= 50) {
-            throw new IllegalStateException("Limite de 50 ferramentas ativas atingido.");
+        int limit = getToolLimitByPlan(owner.getPlano());
+
+        if (activeTools >= limit) {
+            throw new IllegalStateException("Limite de ferramentas do plano atingido.");
         }
 
         validateTool(
@@ -88,7 +90,22 @@ public class ToolUsecases {
 
         return toolRepository.save(tool);
     }
-
+    private int getToolLimitByPlan(UserModel.Plano plano) {
+        switch (plano) {
+            case FREE:
+                return 3;
+            case BRONZE:
+                return 10;
+            case PRATA:
+                return 30;
+            case OURO:
+                return 50;
+            case DIAMANTE:
+                return 100;
+            default:
+                return 0;
+        }
+    }
     public ToolModel updateTool(Long toolId, Long ownerId, UpdateToolDto dto) {
         ToolModel tool = findOwnedTool(toolId, ownerId);
 
