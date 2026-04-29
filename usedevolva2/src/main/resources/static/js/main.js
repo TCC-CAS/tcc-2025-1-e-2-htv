@@ -201,3 +201,24 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
   }
 });
+
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "toast-message";
+  toast.textContent = message;
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 50);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    toast.classList.add("hide");
+  }, 3000);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3400);
+}
