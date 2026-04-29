@@ -19,7 +19,7 @@ public class RentalModel {
     private Long id;
     private Long toolId;
     private Long ownerId;
-    private Long tenantId;
+    private Long renterId;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -58,7 +58,7 @@ public class RentalModel {
         this.id = id;
         this.toolId = toolId;
         this.ownerId = ownerId;
-        this.tenantId = tenantId;
+        this.renterId = tenantId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.totalDays = totalDays;

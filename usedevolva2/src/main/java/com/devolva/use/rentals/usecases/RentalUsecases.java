@@ -80,7 +80,7 @@ public class RentalUsecases {
         }
 
         long activeRequests = rentalRepository.findAll().stream()
-                .filter(r -> r.getTenantId().equals(tenant.getId()))
+                .filter(r -> r.getRenterId().equals(tenant.getId()))
                 .filter(this::isActiveRentalFlow)
                 .count();
 
@@ -107,7 +107,7 @@ public class RentalUsecases {
         RentalModel rental = new RentalModel();
         rental.setToolId(tool.getId());
         rental.setOwnerId(tool.getOwnerId());
-        rental.setTenantId(tenant.getId());
+        rental.setRenterId(tenant.getId());
         rental.setStartDate(dto.startDate());
         rental.setEndDate(dto.endDate());
         rental.setTotalDays((int) totalDays);
@@ -265,7 +265,7 @@ public class RentalUsecases {
 
     public List<RentalModel> findByTenantId(Long tenantId) {
         return rentalRepository.findAll().stream()
-                .filter(r -> r.getTenantId().equals(tenantId))
+                .filter(r -> r.getRenterId().equals(tenantId))
                 .toList();
     }
 
