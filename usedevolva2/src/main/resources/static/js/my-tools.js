@@ -199,7 +199,7 @@ async function deleteTool(toolId, ownerId) {
 }
 
 function viewTool(toolId) {
-    window.location.href = `/tools/${toolId}`;
+    window.location.href = `/tools/page/${toolId}`;
 }
 
 function editTool(toolId) {
