@@ -6,10 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Criar Conta | Use&Devolva</title>
   <link rel="stylesheet" href="/css/style.css">
-  <!--<link rel="stylesheet" href="../../static/css/style.css"> -->
+  <!-- <link rel="stylesheet" href="../../static/css/style.css"> -->
+
 </head>
 
-<body>
+<body class="create-body-root">
 
 <main class="register-page">
   <section class="register-card" aria-labelledby="registerTitle">
@@ -19,11 +20,12 @@
       <p>Cadastre-se para alugar ou disponibilizar ferramentas com segurança.</p>
     </div>
 
-    <div class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
-      <button type="button" id="contrastBtn">Alto contraste</button>
-      <button type="button" id="fontBtn">Aumentar fonte</button>
-      <button type="button" id="audioBtn">Ouvir tela</button>
-    </div>
+    <br>
+      <button type="button" id="contrastBtn" class="create-btn-tool">Alto contraste</button>
+      <button type="button" id="fontBtn" class="create-btn-tool">Aumentar fonte</button>
+      <button type="button" id="audioBtn" class="create-btn-tool">Ouvir tela</button>
+    <br>
+    <br>
 
     <form class="register-form" id="registerForm" novalidate>
 
@@ -35,10 +37,9 @@
           name="nome"
           placeholder="Digite seu nome completo"
           autocomplete="name"
-          aria-describedby="nomeHelp"
           required
         >
-        <small id="nomeHelp" class="sr-only">Digite seu nome completo.</small>
+        <small class="create-sr-only">Digite seu nome sem abreviações.</small>
       </div>
 
       <div class="form-group">
@@ -48,10 +49,9 @@
           id="cpf" 
           name="cpf"
           placeholder="000.000.000-00"
-          aria-describedby="cpfHelp"
           required
         >
-        <small id="cpfHelp" class="sr-only">Digite seu CPF no formato 000.000.000-00.</small>
+        <small class="create-sr-only">Informe apenas os números do seu CPF.</small>
       </div>
 
       <div class="form-group">
@@ -62,10 +62,8 @@
           name="telefone"
           placeholder="(00) 00000-0000"
           autocomplete="tel"
-          aria-describedby="telefoneHelp"
           required
         >
-        <small id="telefoneHelp" class="sr-only">Digite seu telefone com DDD.</small>
       </div>
 
       <div class="form-group">
@@ -74,10 +72,8 @@
           type="date" 
           id="dataNascimento" 
           name="dataNascimento"
-          aria-describedby="dataNascimentoHelp"
           required
         >
-        <small id="dataNascimentoHelp" class="sr-only">Informe sua data de nascimento.</small>
       </div>
 
       <div class="form-group">
@@ -88,10 +84,8 @@
           name="email"
           placeholder="seuemail@email.com"
           autocomplete="email"
-          aria-describedby="emailHelp"
           required
         >
-        <small id="emailHelp" class="sr-only">Digite um e-mail válido, como nome@email.com.</small>
       </div>
 
       <div class="form-group">
@@ -102,10 +96,8 @@
           name="senha"
           placeholder="Crie uma senha"
           autocomplete="new-password"
-          aria-describedby="senhaHelp"
           required
         >
-        <small id="senhaHelp" class="sr-only">Crie uma senha segura.</small>
       </div>
 
       <div class="form-group">
@@ -116,13 +108,11 @@
           name="confirmarSenha"
           placeholder="Confirme sua senha"
           autocomplete="new-password"
-          aria-describedby="confirmarSenhaHelp"
           required
         >
-        <small id="confirmarSenhaHelp" class="sr-only">Repita a senha criada anteriormente.</small>
       </div>
 
-      <div class="terms" aria-label="Aceites obrigatórios">
+      <div class="terms">
         <label>
           <input type="checkbox" id="aceitouTermosUso" name="aceitouTermosUso" required>
           <span>Aceito os Termos de Uso e a Política de Privacidade.</span>
@@ -134,18 +124,22 @@
         </label>
       </div>
 
-      <p class="form-message" role="alert" aria-live="assertive"></p>
+      <p class="form-message create-status-msg"></p>
 
-      <button type="submit" class="submit-btn">
+      <button type="submit" class="submit-btn create-main-action">
         Criar conta
       </button>
 
       <p class="login-text">
         Já possui conta?
-        <a href="/auth/login">Entrar agora</a>      </p>
+        <a href="/auth/login">Entrar agora</a>
+      </p>
     </form>
   </section>
 </main>
+<!-- <script src="../../static/js/main.js" defer></script>
+<script src="../../static/js/api.js" defer></script>
+<script src="../../static/js/register.js" defer></script> -->
 
 <script src="/js/main.js" defer></script>
 <script src="/js/api.js" defer></script>

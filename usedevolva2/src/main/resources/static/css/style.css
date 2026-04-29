@@ -259,7 +259,6 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #fff6f6, #ffffff);
   padding: 40px 20px;
 }
 
@@ -284,11 +283,182 @@ img {
   width: 230px;
 }
 
-
-
-.register-header {
-  margin-bottom: 20px;
+/* ============================================================
+   ESTILOS GERAIS (RESET E BASE)
+   ============================================================ */
+:root {
+    --create-base-size: 16px;
+    --primary-color: #007bff;
+    --bg-light: #f4f7f6;
+    --card-bg: #ffffff;
+    --text-main: #333333;
 }
+
+html {
+    font-size: var(--create-base-size);
+    transition: font-size 0.2s ease;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.register-card {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 450px;
+    width: 100%;
+}
+
+/* ============================================================
+   BARRA DE ACESSIBILIDADE (PREFIXO CREATE-)
+   ============================================================ */
+.create-accessibility-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #eef1f2;
+    border-radius: 8px;
+}
+
+.create-btn-tool {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.create-btn-tool:hover {
+    background-color: #ddd;
+}
+
+/* Esconde textos apenas para ouvintes de tela */
+.create-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* ============================================================
+   ESTILOS DO FORMULÁRIO
+   ============================================================ */
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.terms {
+    font-size: 0.85rem;
+    margin: 15px 0;
+}
+
+/* ============================================================
+   MODO ALTO CONTRASTE (CORREÇÃO FUNDO PRETO)
+   ============================================================ */
+body.create-high-contrast {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+}
+
+/* Força fundo preto no card e remove sombras */
+body.create-high-contrast .register-card {
+    background-color: #000000 !important;
+    border: 2px solid #FFFF00 !important;
+    box-shadow: none !important;
+}
+
+/* Ajusta textos e labels para Amarelo */
+body.create-high-contrast h1, 
+body.create-high-contrast p, 
+body.create-high-contrast label,
+body.create-high-contrast span {
+    color: #FFFF00 !important;
+}
+
+/* Inputs em Alto Contraste */
+body.create-high-contrast input {
+    background-color: #000000 !important;
+    color: #FFFF00 !important;
+    border: 1px solid #FFFF00 !important;
+}
+
+body.create-high-contrast input::placeholder {
+    color: #aaaaaa !important;
+}
+
+/* Botões da barra de ferramentas em Alto Contraste */
+body.create-high-contrast .create-btn-tool {
+    background-color: #000000 !important;
+    color: #FFFF00 !important;
+    border: 2px solid #FFFF00 !important;
+}
+
+body.create-high-contrast .create-btn-tool:hover {
+    background-color: #FFFF00 !important;
+    color: #000000 !important;
+}
+
+/* Botão principal em Alto Contraste */
+body.create-high-contrast .submit-btn {
+    background-color: #FFFF00 !important;
+    color: #000000 !important;
+    border: 2px solid #FFFFFF !important;
+    font-weight: bold;
+}
+
+/* Barra de fundo dos botões */
+body.create-high-contrast .create-accessibility-bar {
+    background-color: #1a1a1a !important;
+    border: 1px solid #FFFF00 !important;
+}
+
+
 
 .register-header h1 {
   font-size: 26px;
@@ -478,6 +648,54 @@ img {
   }
 }
 
+
+/* --- Configurações Base --- */
+:root {
+  --create-base-size: 16px;
+}
+
+html {
+  font-size: var(--create-base-size);
+  transition: font-size 0.2s ease;
+}
+
+/* --- Classe de Alto Contraste --- */
+body.create-high-contrast {
+  background-color: #000000 !important;
+  color: #FFFF00 !important; /* Amarelo para leitura facilitada */
+}
+
+body.create-high-contrast * {
+  background-color: transparent !important;
+  color: inherit !important;
+  border-color: #FFFF00 !important;
+}
+
+body.create-high-contrast button, 
+body.create-high-contrast .submit-btn {
+  background-color: #FFFF00 !important;
+  color: #000000 !important;
+  font-weight: bold;
+  border: 2px solid #FFFF00;
+}
+
+
+.create-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+
+.create-reading-highlight {
+  outline: 3px solid #007bff;
+}
 .accessibility-tools {
   display: flex;
   gap: 8px;

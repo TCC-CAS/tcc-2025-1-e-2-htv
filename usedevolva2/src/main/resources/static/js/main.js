@@ -222,3 +222,49 @@ function showToast(message) {
     toast.remove();
   }, 3400);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Alternar Alto Contraste
+  const contrastBtn = document.getElementById('contrastBtn');
+  contrastBtn?.addEventListener('click', () => {
+    // Aplica a classe "create-high-contrast" no body
+    document.body.classList.toggle('create-high-contrast');
+    
+    const isEnabled = document.body.classList.contains('create-high-contrast');
+    localStorage.setItem('createContrastPref', isEnabled);
+  });
+
+  // 2. Gerenciar Tamanho da Fonte
+  const fontBtn = document.getElementById('fontBtn');
+  let currentScale = 100;
+
+  fontBtn?.addEventListener('click', () => {
+    currentScale += 10;
+    if (currentScale > 150) currentScale = 100; // Reseta ao chegar no limite
+    
+    document.documentElement.style.fontSize = `${currentScale}%`;
+  });
+
+  // 3. Função "Ouvir Tela" (Text-to-Speech)
+  const audioBtn = document.getElementById('audioBtn');
+  audioBtn?.addEventListener('click', () => {
+    // Seleciona o conteúdo principal para ler
+    const content = document.querySelector('.register-page').innerText;
+    
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(content);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 1.0;
+    
+    window.speechSynthesis.speak(utterance);
+  });
+
+  // Persistência: Verifica se o usuário já usava alto contraste antes
+  if (localStorage.getItem('createContrastPref') === 'true') {
+    document.body.classList.add('create-high-contrast');
+  }
+});
