@@ -7,6 +7,7 @@ import com.devolva.use.users.dtos.LoginUserDto;
 import com.devolva.use.users.dtos.UpdateUserDto;
 import com.devolva.use.users.dtos.VerifyUserDto;
 import com.devolva.use.users.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,9 +17,11 @@ import java.time.LocalDateTime;
 public class UserUsecases {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserUsecases(UserRepository userRepository) {
+    public UserUsecases(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserModel createUser(CreateUserDto dto) {
@@ -32,7 +35,7 @@ public class UserUsecases {
         user.setNomeCompleto(dto.nomeCompleto());
         user.setEmail(dto.email());
         user.setTelefone(dto.telefone());
-        user.setSenha(dto.senha());
+        user.setSenha(passwordEncoder.encode(dto.senha()));
         user.setDocumento(dto.documento());
         user.setDataNascimento(dto.dataNascimento());
         user.setVerificado(false);
@@ -49,7 +52,7 @@ public class UserUsecases {
         UserModel user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
 
-        if (!user.getSenha().equals(dto.senha())) {
+        if (!passwordEncoder.matches(dto.senha(), user.getSenha())) {
             throw new IllegalArgumentException("Senha inválida.");
         }
 
