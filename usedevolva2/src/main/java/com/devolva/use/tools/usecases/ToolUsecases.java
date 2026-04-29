@@ -1,5 +1,8 @@
 package com.devolva.use.tools.usecases;
 
+import com.devolva.use.rentals.domain.RentalModel;
+import com.devolva.use.rentals.domain.RentalStatus;
+import com.devolva.use.rentals.repository.RentalRepository;
 import com.devolva.use.tools.domain.ToolModel;
 import com.devolva.use.tools.dtos.BlockToolDto;
 import com.devolva.use.tools.dtos.CreateToolDto;
@@ -32,16 +35,17 @@ public class ToolUsecases {
 
     private final ToolRepository toolRepository;
     private final UserRepository userRepository;
-
+    private final RentalRepository rentalRepository;
     private final ToolImageRepository toolImageRepository;
 
     public ToolUsecases(
             ToolRepository toolRepository,
-            UserRepository userRepository,
+            UserRepository userRepository, RentalRepository rentalRepository,
             ToolImageRepository toolImageRepository
     ) {
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
+        this.rentalRepository = rentalRepository;
         this.toolImageRepository = toolImageRepository;
     }
 
@@ -146,19 +150,6 @@ public class ToolUsecases {
         tool.setUpdatedAt(LocalDateTime.now());
 
         toolRepository.save(tool);
-    }
-
-    public ToolModel blockTool(Long toolId, Long ownerId, BlockToolDto dto) {
-        ToolModel tool = findOwnedTool(toolId, ownerId);
-
-        tool.setBloqueadaTemporariamente(dto.bloqueadaTemporariamente());
-        if (dto.bloqueadaTemporariamente()) {
-            tool.setDisponivel(false);
-        }
-
-        tool.setUpdatedAt(LocalDateTime.now());
-
-        return toolRepository.save(tool);
     }
 
     public List<ToolModel> listOwnerTools(Long ownerId) {
@@ -344,5 +335,38 @@ public class ToolUsecases {
     public List<ToolModel> listAvailableTools() {
         return toolRepository.findByAtivoTrueAndDisponivelTrue();
     }
-    
+
+    public boolean hasPendingRentals(Long toolId) {
+        List<RentalModel> rentals = rentalRepository.findByToolId(toolId);
+
+        for (RentalModel rental : rentals) {
+            if (rental.getStatus() == RentalStatus.IN_USE || rental.getStatus() == RentalStatus.PENDING) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    public ToolModel findToolOrThrow(Long toolId) {
+        return toolRepository.findById(toolId)
+                .orElseThrow(() -> new IllegalArgumentException("Ferramenta não encontrada"));
+    }
+
+    public ToolModel blockTool(Long toolId, Long ownerId, BlockToolDto dto) {
+        ToolModel tool = findOwnedTool(toolId, ownerId);
+
+        if (hasPendingRentals(toolId)) {
+            throw new IllegalStateException("Não é possível bloquear a ferramenta. Existem pendências de aluguel ou reservas em andamento.");
+        }
+
+        tool.setBloqueadaTemporariamente(dto.bloqueadaTemporariamente());
+        if (dto.bloqueadaTemporariamente()) {
+            tool.setDisponivel(false);  
+        }
+
+        tool.setUpdatedAt(LocalDateTime.now());
+        return toolRepository.save(tool);
+    }
+
+
 }
