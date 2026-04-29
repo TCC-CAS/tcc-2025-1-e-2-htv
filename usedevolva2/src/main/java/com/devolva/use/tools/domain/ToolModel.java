@@ -33,11 +33,12 @@ public class ToolModel {
 
     public ToolModel() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.ativo = true;
         this.disponivel = true;
     }
 
-    @PreUpdate // Atualiza o updatedAt automaticamente antes de salvar
+    @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }

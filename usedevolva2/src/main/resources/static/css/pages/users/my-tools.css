@@ -103,12 +103,17 @@
             color: var(--text-main);
         }
 
-        /* LISTA DE FERRAMENTAS */
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
+
+        .tool-card {
+            width: 100%;
+        }
+
+
 
         .tool-card {
             background: var(--card-bg);
@@ -128,13 +133,18 @@
 
         /* Imagem e Badge */
         .tool-image-container {
-            height: 180px;
-            background-color: #E5E7EB;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #9CA3AF;
+            width: 100%;
+            height: 200px; /* altura fixa do card */
+            overflow: hidden; /* ISSO É O MAIS IMPORTANTE */
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tool-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* corta proporcionalmente */
+            display: block;
         }
 
         .tool-badge {

@@ -4,36 +4,59 @@ document.addEventListener("DOMContentLoaded", () => {
     const fotosInput = document.getElementById("fotos");
     const previewContainer = document.getElementById("imagePreviewContainer");
 
-    if (!form) return;
+    let selectedFiles = [];
 
+    if (!form) return;
 
     if (fotosInput && previewContainer) {
         fotosInput.addEventListener("change", () => {
-            previewContainer.innerHTML = "";
+            const newFiles = Array.from(fotosInput.files);
 
-            const files = Array.from(fotosInput.files);
-
-            files.forEach((file) => {
+            newFiles.forEach((file) => {
                 if (!file.type.startsWith("image/")) return;
 
-                const reader = new FileReader();
+                if (selectedFiles.length >= 10) {
+                    message.textContent = "Você pode adicionar no máximo 10 fotos.";
+                    return;
+                }
 
-                reader.onload = (event) => {
-                    const previewItem = document.createElement("div");
-                    previewItem.classList.add("image-preview-item");
-
-                    previewItem.innerHTML = `
-                        <img src="${event.target.result}" alt="Prévia da imagem">
-                    `;
-
-                    previewContainer.appendChild(previewItem);
-                };
-
-                reader.readAsDataURL(file);
+                selectedFiles.push(file);
             });
+
+            fotosInput.value = "";
+            renderPreviews();
         });
     }
 
+    function renderPreviews() {
+        previewContainer.innerHTML = "";
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const previewItem = document.createElement("div");
+                previewItem.classList.add("image-preview-item");
+
+                previewItem.innerHTML = `
+                    <img src="${event.target.result}" alt="Prévia da imagem">
+                    <button type="button" class="remove-preview-btn" data-index="${index}">×</button>
+                `;
+
+                previewContainer.appendChild(previewItem);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    previewContainer.addEventListener("click", (event) => {
+        if (event.target.classList.contains("remove-preview-btn")) {
+            const index = Number(event.target.dataset.index);
+            selectedFiles.splice(index, 1);
+            renderPreviews();
+        }
+    });
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -47,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         message.textContent = "";
 
-        const quantidadeFotos = fotosInput?.files?.length || 0;
+        const quantidadeFotos = selectedFiles.length;
 
         const toolData = {
             nome: document.getElementById("nomeFerramenta").value.trim(),
@@ -58,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
             quantidadeFotos: quantidadeFotos
         };
 
-
         if (!toolData.nome || !toolData.categoria || !toolData.estadoConservacao || !toolData.valorDiaria || !toolData.descricao) {
             message.textContent = "Preencha todos os campos obrigatórios.";
             return;
@@ -66,6 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (quantidadeFotos < 1) {
             message.textContent = "Adicione pelo menos uma foto da ferramenta.";
+            fotosInput.focus();
             return;
         }
 
@@ -75,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-
             const response = await fetch(`/tools/owner/${user.id}`, {
                 method: "POST",
                 headers: {
@@ -91,12 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const createdTool = await response.json();
 
-
             const formData = new FormData();
 
-            for (const file of fotosInput.files) {
+            selectedFiles.forEach((file) => {
                 formData.append("files", file);
-            }
+            });
 
             const imageResponse = await fetch(`/tools/${createdTool.id}/owner/${user.id}/images`, {
                 method: "POST",
@@ -106,7 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!imageResponse.ok) {
                 throw new Error("Ferramenta criada, mas erro ao enviar imagens.");
             }
-
 
             showToast("Ferramenta cadastrada com sucesso!");
 
@@ -120,7 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
 
 function showToast(message) {
     const toast = document.createElement("div");
@@ -142,3 +161,4 @@ function showToast(message) {
         toast.remove();
     }, 3400);
 }
+

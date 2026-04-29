@@ -25,4 +25,20 @@ public class AuthController {
     public String homePage() {
         return "home/home";
     }
+
+    @GetMapping("/users/profile")
+    public String profile() {
+        return "users/profile";
+    }
+
+    @GetMapping("/users/my-tools")
+    public String myTools() {
+        return "users/my-tools";
+    }
+
+    @GetMapping("/users/create-tool")
+    public String createTool() {
+        return "users/create-tool";
+    }
+
 }

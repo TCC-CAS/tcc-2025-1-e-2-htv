@@ -1,5 +1,6 @@
 package com.devolva.use.tools;
 
+import com.devolva.use.tools.domain.ToolImageModel;
 import com.devolva.use.tools.domain.ToolModel;
 import com.devolva.use.tools.dtos.BlockToolDto;
 import com.devolva.use.tools.dtos.CreateToolDto;
@@ -8,6 +9,7 @@ import com.devolva.use.tools.usecases.ToolUsecases;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -59,4 +61,20 @@ public class ToolController {
     public ResponseEntity<ToolModel> findById(@PathVariable Long toolId) {
         return ResponseEntity.ok(toolUsecases.findById(toolId));
     }
+
+    @PostMapping("/{toolId}/owner/{ownerId}/images")
+    public ResponseEntity<Void> uploadImages(
+            @PathVariable Long toolId,
+            @PathVariable Long ownerId,
+            @RequestParam("files") MultipartFile[] files
+    ) {
+        toolUsecases.uploadImages(toolId, ownerId, files);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{toolId}/images")
+    public ResponseEntity<List<ToolImageModel>> listImages(@PathVariable Long toolId) {
+        return ResponseEntity.ok(toolUsecases.listImages(toolId));
+    }
+
 }
