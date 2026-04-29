@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,6 +17,12 @@ public class AdminModel {
 
     @Column(unique = true)
     private String email;
+
     private String senha;
 
+    private boolean ativo;
+
+    public AdminModel() {
+        this.ativo = true;  // Por padrão, administrador estará ativo.
+    }
 }
