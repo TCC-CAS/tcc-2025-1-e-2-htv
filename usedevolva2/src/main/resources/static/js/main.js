@@ -114,51 +114,6 @@ if (carouselTrack && carouselImages.length > 0) {
 
   carouselInterval = setInterval(nextCarouselSlide, 5000);
 }
-
-// ==========================
-// LOGIN
-// ==========================
-
-const loginForm = document.querySelector(".login-form");
-
-if (loginForm) {
-  const loginEmail = document.getElementById("loginEmail");
-  const loginSenha = document.getElementById("loginSenha");
-  const formMessage = document.querySelector(".form-message");
-
-  loginForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const email = loginEmail ? loginEmail.value.trim() : "";
-    const senha = loginSenha ? loginSenha.value.trim() : "";
-
-    if (formMessage) {
-      formMessage.textContent = "";
-    }
-
-    if (!email || !senha) {
-      if (formMessage) {
-        formMessage.textContent = "Preencha e-mail e senha para continuar.";
-      } else {
-        alert("Preencha e-mail e senha para continuar.");
-      }
-      return;
-    }
-
-    if (!email.includes("@")) {
-      if (formMessage) {
-        formMessage.textContent = "Digite um e-mail válido.";
-      } else {
-        alert("Digite um e-mail válido.");
-      }
-      return;
-    }
-
-    alert("Login realizado com sucesso!");
-    window.location.href = "index.html";
-  });
-}
-
 // ==========================
 // ACESSIBILIDADE
 // ==========================
@@ -216,3 +171,35 @@ if (audioBtn) {
     window.speechSynthesis.speak(fala);
   });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const user = localStorage.getItem("user");
+
+  const userArea = document.querySelector(".user-area");
+
+  if (!userArea) return;
+
+  if (user) {
+    userArea.innerHTML = `
+            <a href="/users/profile">Meu perfil</a>
+            <a href="/users/my-rentals">Meus aluguéis</a>
+            <a href="/users/my-tools">Minhas ferramentas</a>
+            <a href="/users/favorites">❤️</a>
+            <a href="#" id="logoutBtn">Sair</a>
+        `;
+  } else {
+    userArea.innerHTML = `
+            <a href="/auth/login">Entrar</a>
+            <a href="/auth/register">Criar conta</a>
+        `;
+  }
+
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("user");
+      window.location.href = "/";
+    });
+  }
+});

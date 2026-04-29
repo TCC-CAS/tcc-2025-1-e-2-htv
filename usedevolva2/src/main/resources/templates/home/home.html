@@ -6,52 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home - Use e Devolva</title>
 
+  <!--  <link rel="stylesheet" href="../../static/css/fragments/header.css">
     <link rel="stylesheet" href="../../static/css/fragments/header.css">
     <link rel="stylesheet" href="../../static/css/fragments/footer.css">
     <link rel="stylesheet" href="../../static/css/pages/home.css">
     <link rel="stylesheet" href="../../static/css/root.css">
-    <script src="../../static/js/main.js" defer></script>
+     <script src="../../static/js/main.js" defer></script>-->
+
+    <link rel="stylesheet" href="/css/fragments/header.css">
+    <link rel="stylesheet" href="/css/fragments/header.css">
+    <link rel="stylesheet" href="/css/fragments/footer.css">
+    <link rel="stylesheet" href="/css/pages/home.css">
+    <link rel="stylesheet" href="/css/root.css">
+    <script src="/js/main.js" defer></script>
+
 </head>
 
 
 <body>
-    <header>
-        <div class="logo">
-          <a href="../home/home.html">Home</a> aria-label="Ir para a página inicial">Use e Devolva</a>
-        </div>
-
-        <nav aria-label="Menu principal"> 
-            <ul>
-                <li>
-                         <a href="../home/home.html">Home</a>
-                </li>
-
-                <li class="dropdown">
-                    <span>Categorias ▾</span>
-                    <ul class="dropdown-menu">
-                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
-                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
-                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
-                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
-                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <form role="search" aria-label="Busca de ferramentas">
-                        <label for="homeSearchInput" class="sr-only">Buscar ferramentas</label>
-                        <input id="homeSearchInput" type="text" placeholder="Buscar ferramentas..." />
-                        <button type="submit">Buscar</button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="user-area" aria-label="Área do usuário">
-            <a href="../auth/login.html" class="btn-login">Entrar</a>
-            <a href="../auth/register.html" class="btn-register">Criar conta</a>
-        </div>
-    </header>
+<div th:replace="fragments/header :: header"></div>
 
     <main id="conteudo-principal">
 

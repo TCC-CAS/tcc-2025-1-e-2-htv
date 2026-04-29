@@ -1,5 +1,5 @@
-<header>
-    <div>
+<header th:fragment="header">    <div>
+
         <!-- Logo -->
         <a href="/">Use e Devolva</a>
     </div>
@@ -32,8 +32,8 @@
         </ul>
     </nav>
 
-    <div>
-        <!-- Área do usuário -->
+    <div class="user-area">        <!-- Área do usuário -->
+        
 
         <!-- quando NÃO estiver logado -->
         <a href="/auth/login">Entrar</a>
