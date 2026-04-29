@@ -29,7 +29,6 @@ public class AuthController {
     public String homePage() {
         return "home/home";
     }
-
     @GetMapping("/users/profile")
     public String profile() {
         return "users/profile";

@@ -9,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<PaymentModel, Long> {
-    // O JpaRepository já traz save, findAll, findById e deleteById prontos.
-    // Você não precisa declarar esses métodos manualmente aqui.
+
 }
