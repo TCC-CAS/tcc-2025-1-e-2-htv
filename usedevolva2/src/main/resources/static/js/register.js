@@ -39,10 +39,9 @@ form.addEventListener("submit", async function (event) {
             throw new Error(errorText || "Erro ao criar conta.");
         }
 
-        message.textContent = "Conta criada com sucesso! Redirecionando para o login...";
-
+        showToast("Conta criada com sucesso!");
         setTimeout(() => {
-            window.location.href = "login.html";
+            window.location.href = "/auth/login";
         }, 1500);
 
     } catch (error) {
