@@ -76,5 +76,25 @@ public class ToolController {
     public ResponseEntity<List<ToolImageModel>> listImages(@PathVariable Long toolId) {
         return ResponseEntity.ok(toolUsecases.listImages(toolId));
     }
+    @DeleteMapping("/images/{imageId}/owner/{ownerId}")
+    public ResponseEntity<Void> deleteImage(
+            @PathVariable Long imageId,
+            @PathVariable Long ownerId
+    ) {
+        toolUsecases.deleteImage(imageId, ownerId);
+        return ResponseEntity.noContent().build();
+    }
 
+    @PatchMapping("/images/{imageId}/owner/{ownerId}/main")
+    public ResponseEntity<Void> setMainImage(
+            @PathVariable Long imageId,
+            @PathVariable Long ownerId
+    ) {
+        toolUsecases.setMainImage(imageId, ownerId);
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping
+    public ResponseEntity<List<ToolModel>> listAvailableTools() {
+        return ResponseEntity.ok(toolUsecases.listAvailableTools());
+    }
 }

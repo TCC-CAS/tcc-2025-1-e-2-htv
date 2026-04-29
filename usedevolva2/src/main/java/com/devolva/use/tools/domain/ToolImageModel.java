@@ -21,4 +21,7 @@ public class ToolImageModel {
     private String filePath;
 
     private String contentType;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean principal = false;
 }

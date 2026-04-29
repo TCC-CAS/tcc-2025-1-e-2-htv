@@ -4,6 +4,7 @@ import jakarta.persistence.*; // Importante para o Spring Boot 3+
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -27,7 +28,12 @@ public class ToolModel {
     private boolean disponivel;
     private boolean bloqueadaTemporariamente;
     private int quantidadeFotos;
+    private String localizacao;
+    private LocalDate dataInicioDisponibilidade;
+    private LocalDate dataFimDisponibilidade;
 
+    @Column(length = 1000)
+    private String observacoes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

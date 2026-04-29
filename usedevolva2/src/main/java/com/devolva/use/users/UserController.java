@@ -45,4 +45,6 @@ public class UserController {
     public ResponseEntity<UserModel> findById(@PathVariable Long id) {
         return ResponseEntity.ok(userUsecases.findById(id));
     }
+
+    
 }

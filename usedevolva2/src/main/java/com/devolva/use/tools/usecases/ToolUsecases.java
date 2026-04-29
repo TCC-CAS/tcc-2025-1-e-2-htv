@@ -10,8 +10,9 @@ import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.domain.UserStatus;
 import com.devolva.use.users.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import com.devolva.use.tools.domain.ToolImageModel;
@@ -57,8 +58,16 @@ public class ToolUsecases {
             throw new IllegalStateException("Limite de 50 ferramentas ativas atingido.");
         }
 
-        validateTool(dto.nome(), dto.descricao(), dto.categoria(), dto.estadoConservacao(), dto.valorDiaria(), dto.quantidadeFotos());
-
+        validateTool(
+                dto.nome(),
+                dto.descricao(),
+                dto.categoria(),
+                dto.estadoConservacao(),
+                dto.valorDiaria(),
+                dto.quantidadeFotos(),
+                dto.localizacao(),
+                dto.dataInicioDisponibilidade()
+        );
         ToolModel tool = new ToolModel();
         tool.setNome(dto.nome());
         tool.setDescricao(dto.descricao());
@@ -72,6 +81,10 @@ public class ToolUsecases {
         tool.setQuantidadeFotos(dto.quantidadeFotos());
         tool.setCreatedAt(LocalDateTime.now());
         tool.setUpdatedAt(LocalDateTime.now());
+        tool.setLocalizacao(dto.localizacao());
+        tool.setDataInicioDisponibilidade(dto.dataInicioDisponibilidade());
+        tool.setDataFimDisponibilidade(dto.dataFimDisponibilidade());
+        tool.setObservacoes(dto.observacoes());
 
         return toolRepository.save(tool);
     }
@@ -80,12 +93,14 @@ public class ToolUsecases {
         ToolModel tool = findOwnedTool(toolId, ownerId);
 
         validateTool(
-                dto.nome() != null ? dto.nome() : tool.getNome(),
-                dto.descricao() != null ? dto.descricao() : tool.getDescricao(),
-                dto.categoria() != null ? dto.categoria() : tool.getCategoria(),
-                dto.estadoConservacao() != null ? dto.estadoConservacao() : tool.getEstadoConservacao(),
-                dto.valorDiaria() != null ? dto.valorDiaria() : tool.getValorDiaria(),
-                dto.quantidadeFotos() > 0 ? dto.quantidadeFotos() : tool.getQuantidadeFotos()
+                dto.nome(),
+                dto.descricao(),
+                dto.categoria(),
+                dto.estadoConservacao(),
+                dto.valorDiaria(),
+                dto.quantidadeFotos(),
+                dto.localizacao(),
+                dto.dataInicioDisponibilidade()
         );
 
         if (dto.nome() != null) tool.setNome(dto.nome());
@@ -95,6 +110,10 @@ public class ToolUsecases {
         if (dto.valorDiaria() != null) tool.setValorDiaria(dto.valorDiaria());
         if (dto.quantidadeFotos() > 0) tool.setQuantidadeFotos(dto.quantidadeFotos());
         if (dto.disponivel() != null) tool.setDisponivel(dto.disponivel());
+        if (dto.localizacao() != null) tool.setLocalizacao(dto.localizacao());
+        if (dto.dataInicioDisponibilidade() != null) tool.setDataInicioDisponibilidade(dto.dataInicioDisponibilidade());
+        if (dto.dataFimDisponibilidade() != null) tool.setDataFimDisponibilidade(dto.dataFimDisponibilidade());
+        if (dto.observacoes() != null) tool.setObservacoes(dto.observacoes());
 
         tool.setUpdatedAt(LocalDateTime.now());
 
@@ -154,7 +173,9 @@ public class ToolUsecases {
             String categoria,
             String estadoConservacao,
             BigDecimal valorDiaria,
-            int quantidadeFotos
+            int quantidadeFotos,
+            String localizacao,
+            LocalDate dataInicioDisponibilidade
     ) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Nome da ferramenta é obrigatório.");
@@ -179,6 +200,14 @@ public class ToolUsecases {
         if (quantidadeFotos < 1 || quantidadeFotos > 10) {
             throw new IllegalArgumentException("A ferramenta deve ter entre 1 e 10 fotos.");
         }
+
+        if (localizacao == null || localizacao.isBlank()) {
+            throw new IllegalArgumentException("Localização é obrigatória.");
+        }
+
+        if (dataInicioDisponibilidade == null) {
+            throw new IllegalArgumentException("Data inicial de disponibilidade é obrigatória.");
+        }
     }
 
     public void uploadImages(Long toolId, Long ownerId, MultipartFile[] files) {
@@ -198,6 +227,8 @@ public class ToolUsecases {
                     .normalize();
 
             Files.createDirectories(uploadPath);
+
+            boolean mainImageAlreadyDefined = toolImageRepository.existsByToolId(toolId);
 
             for (MultipartFile file : files) {
                 if (file.isEmpty()) continue;
@@ -227,10 +258,18 @@ public class ToolUsecases {
                 image.setFilePath("/uploads/tools/" + toolId + "/" + fileName);
                 image.setContentType(contentType);
 
+                if (!mainImageAlreadyDefined) {
+                    image.setPrincipal(true);
+                    mainImageAlreadyDefined = true;
+                } else {
+                    image.setPrincipal(false);
+                }
+
                 toolImageRepository.save(image);
             }
 
-            tool.setQuantidadeFotos(files.length);
+            int totalImages = toolImageRepository.findByToolId(tool.getId()).size();
+            tool.setQuantidadeFotos(totalImages);
             tool.setUpdatedAt(LocalDateTime.now());
             toolRepository.save(tool);
 
@@ -242,4 +281,51 @@ public class ToolUsecases {
     public List<ToolImageModel> listImages(Long toolId) {
         return toolImageRepository.findByToolId(toolId);
     }
+
+    public void deleteImage(Long imageId, Long ownerId) {
+        ToolImageModel image = toolImageRepository.findById(imageId)
+                .orElseThrow(() -> new IllegalArgumentException("Imagem não encontrada."));
+
+        ToolModel tool = findOwnedTool(image.getToolId(), ownerId);
+
+        try {
+            Path imagePath = Paths.get(image.getFilePath().replaceFirst("^/", ""))
+                    .toAbsolutePath()
+                    .normalize();
+
+            Files.deleteIfExists(imagePath);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao remover arquivo da imagem.", e);
+        }
+
+        toolImageRepository.delete(image);
+
+        int totalImages = toolImageRepository.findByToolId(tool.getId()).size();
+        tool.setQuantidadeFotos(totalImages);
+        tool.setUpdatedAt(LocalDateTime.now());
+
+        toolRepository.save(tool);
+    }
+
+    @Transactional
+    public void setMainImage(Long imageId, Long ownerId) {
+        ToolImageModel selectedImage = toolImageRepository.findById(imageId)
+                .orElseThrow(() -> new IllegalArgumentException("Imagem não encontrada."));
+
+        ToolModel tool = findOwnedTool(selectedImage.getToolId(), ownerId);
+
+        toolImageRepository.clearPrincipalByToolId(tool.getId());
+
+        selectedImage.setPrincipal(true);
+        toolImageRepository.save(selectedImage);
+
+        tool.setUpdatedAt(LocalDateTime.now());
+        toolRepository.save(tool);
+    }
+
+    public List<ToolModel> listAvailableTools() {
+        return toolRepository.findByAtivoTrueAndDisponivelTrue();
+    }
+    
 }

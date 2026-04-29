@@ -12,7 +12,7 @@ public interface ToolRepository extends JpaRepository<ToolModel, Long> {
 
 
     long countByOwnerIdAndAtivoTrue(Long ownerId);
-
+    List<ToolModel> findByAtivoTrueAndDisponivelTrue();
     default long countActiveToolsByOwnerId(Long ownerId) {
         return countByOwnerIdAndAtivoTrue(ownerId);
     }
