@@ -1,7 +1,9 @@
 package com.devolva.use.web;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -47,5 +49,9 @@ public class AuthController {
         model.addAttribute("toolId", id);
         return "users/edit-tool";
     }
-
+    @GetMapping("/tools/page/{id}")
+    public String toolPage(@PathVariable Long id, Model model) {
+        model.addAttribute("toolId", id);
+        return "tools/tools-page";
+    }
 }
