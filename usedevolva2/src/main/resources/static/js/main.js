@@ -173,33 +173,31 @@ if (audioBtn) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const user = localStorage.getItem("user");
-
+  const user = JSON.parse(localStorage.getItem("user"));
   const userArea = document.querySelector(".user-area");
 
   if (!userArea) return;
 
-  if (user) {
+  if (user && user.id) {
     userArea.innerHTML = `
             <a href="/users/profile">Meu perfil</a>
-            <a href="/users/my-rentals">Meus aluguéis</a>
+            <a href="/rentals/my-rentals">Meus aluguéis</a>
             <a href="/users/my-tools">Minhas ferramentas</a>
-            <a href="/users/favorites">❤️</a>
+            <a href="/tools/favorites">❤️</a>
             <a href="#" id="logoutBtn">Sair</a>
         `;
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    logoutBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      localStorage.removeItem("user");
+      window.location.href = "/auth/login";
+    });
   } else {
     userArea.innerHTML = `
-            <a href="/auth/login">Entrar</a>
-            <a href="/auth/register">Criar conta</a>
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
         `;
-  }
-
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.removeItem("user");
-      window.location.href = "/";
-    });
   }
 });
