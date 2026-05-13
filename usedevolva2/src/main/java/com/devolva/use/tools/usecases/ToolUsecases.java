@@ -20,12 +20,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.devolva.use.tools.domain.ToolImageModel;
 import org.springframework.web.multipart.MultipartFile;
+import com.cloudinary.Cloudinary;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+// import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import static com.devolva.use.users.domain.UserModel.Plano.*;
@@ -37,16 +38,18 @@ public class ToolUsecases {
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final ToolImageRepository toolImageRepository;
+    private final Cloudinary cloudinary;
 
     public ToolUsecases(
             ToolRepository toolRepository,
             UserRepository userRepository, RentalRepository rentalRepository,
-            ToolImageRepository toolImageRepository
+            ToolImageRepository toolImageRepository, Cloudinary cloudinary
     ) {
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
         this.rentalRepository = rentalRepository;
         this.toolImageRepository = toolImageRepository;
+        this.cloudinary = cloudinary;
     }
 
     public ToolModel createTool(Long ownerId, CreateToolDto dto) {
@@ -225,64 +228,47 @@ public class ToolUsecases {
             throw new IllegalArgumentException("A ferramenta deve ter pelo menos uma foto.");
         }
 
-        if (files.length > 10) {
-            throw new IllegalArgumentException("A ferramenta pode ter no máximo 10 fotos.");
-        }
-
         try {
-            Path uploadPath = Paths.get("uploads", "tools", String.valueOf(toolId))
-                    .toAbsolutePath()
-                    .normalize();
-
-            Files.createDirectories(uploadPath);
-
-            boolean mainImageAlreadyDefined = toolImageRepository.existsByToolId(toolId);
+            boolean hasImages = toolImageRepository.existsByToolId(toolId);
 
             for (MultipartFile file : files) {
                 if (file.isEmpty()) continue;
 
-                String contentType = file.getContentType();
+                var uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                        com.cloudinary.utils.ObjectUtils.asMap(
+                                "folder", "tools/tool_" + toolId,
+                                "resource_type", "auto",
+                                "moderation", "aws_rek"
+                        ));
 
-                if (contentType == null || !contentType.startsWith("image/")) {
-                    throw new IllegalArgumentException("Apenas arquivos de imagem são permitidos.");
+                String statusModificacao = (String) uploadResult.get("moderation_status");
+
+                if ("rejected".equals(statusModificacao)) {
+                    throw new IllegalArgumentException("Imagem bloqueada: Detectamos conteúdo impróprio no arquivo " + file.getOriginalFilename());
                 }
 
-                String originalName = file.getOriginalFilename();
-                String extension = "";
-
-                if (originalName != null && originalName.contains(".")) {
-                    extension = originalName.substring(originalName.lastIndexOf("."));
-                }
-
-                String fileName = UUID.randomUUID() + extension;
-
-                Path destination = uploadPath.resolve(fileName).normalize();
-
-                Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+                String urlDaFoto = (String) uploadResult.get("secure_url");
+                String publicId = (String) uploadResult.get("public_id");
 
                 ToolImageModel image = new ToolImageModel();
                 image.setToolId(toolId);
-                image.setFileName(fileName);
-                image.setFilePath("/uploads/tools/" + toolId + "/" + fileName);
-                image.setContentType(contentType);
+                image.setFilePath(urlDaFoto);
+                image.setFileName(publicId);
+                image.setContentType(file.getContentType());
 
-                if (!mainImageAlreadyDefined) {
-                    image.setPrincipal(true);
-                    mainImageAlreadyDefined = true;
-                } else {
-                    image.setPrincipal(false);
-                }
+                image.setPrincipal(!hasImages);
+                hasImages = true;
 
                 toolImageRepository.save(image);
             }
 
-            int totalImages = toolImageRepository.findByToolId(tool.getId()).size();
+            int totalImages = toolImageRepository.findByToolId(toolId).size();
             tool.setQuantidadeFotos(totalImages);
             tool.setUpdatedAt(LocalDateTime.now());
             toolRepository.save(tool);
 
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar imagem da ferramenta.", e);
+            throw new RuntimeException("Erro ao processar o upload das imagens", e);
         }
     }
 
