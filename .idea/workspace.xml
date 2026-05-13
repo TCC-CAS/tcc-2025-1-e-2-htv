@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/usedevolva2/src/test/java/com/devolva/use1/UserUsecasesTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/test/java/com/devolva/use/ApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/test/java/com/devolva/use1/ApplicationTests.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +39,7 @@
     "Application.Application.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.Application.executor": "Run",
@@ -47,13 +47,28 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/TCC/tcc-2025-1-e-2-htv",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="demo" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.devolva.use.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="" />
@@ -61,6 +76,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777499829007</updated>
+      <workItem from="1778692404526" duration="247000" />
+      <workItem from="1778692659044" duration="670000" />
+      <workItem from="1778694064204" duration="358000" />
     </task>
     <servers />
   </component>
