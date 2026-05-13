@@ -1,4 +1,4 @@
-package com.devolva.use.users.usecases;
+package com.devolva.use1;
 
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.domain.UserStatus;
@@ -7,6 +7,7 @@ import com.devolva.use.users.dtos.LoginUserDto;
 import com.devolva.use.users.dtos.UpdateUserDto;
 import com.devolva.use.users.dtos.VerifyUserDto;
 import com.devolva.use.users.repository.UserRepository;
+import com.devolva.use.users.usecases.UserUsecases;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
