@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 // import java.nio.file.StandardCopyOption;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.devolva.use.users.domain.UserModel.Plano.*;
@@ -144,19 +145,31 @@ public class ToolUsecases {
         return toolRepository.save(tool);
     }
 
+    public List<ToolModel> listOwnerTools(Long ownerId) {
+        return toolRepository.findByOwnerIdAndAtivoTrue(ownerId);
+    }
+
     public void deleteTool(Long toolId, Long ownerId) {
         ToolModel tool = findOwnedTool(toolId, ownerId);
 
-        // depois integrar com rentals para bloquear exclusão com reserva ativa
+        if (hasPendingRentals(toolId)) {
+            throw new IllegalStateException("Não é possível excluir a ferramenta pois existem aluguéis pendentes ou em andamento.");
+        }
+
         tool.setAtivo(false);
         tool.setDisponivel(false);
         tool.setUpdatedAt(LocalDateTime.now());
 
-        toolRepository.save(tool);
-    }
+        List<ToolImageModel> images = toolImageRepository.findByToolId(toolId);
+        for (ToolImageModel img : images) {
+            try {
+                cloudinary.uploader().destroy(img.getFileName(), com.cloudinary.utils.ObjectUtils.emptyMap());
+            } catch (IOException e) {
+                System.err.println("Erro ao deletar imagem no Cloudinary: " + e.getMessage());
+            }
+        }
 
-    public List<ToolModel> listOwnerTools(Long ownerId) {
-        return toolRepository.findByOwnerId(ownerId);
+        toolRepository.save(tool);
     }
 
     public ToolModel findById(Long toolId) {
@@ -221,11 +234,16 @@ public class ToolUsecases {
         }
     }
 
+    @Transactional
     public void uploadImages(Long toolId, Long ownerId, MultipartFile[] files) {
         ToolModel tool = findOwnedTool(toolId, ownerId);
 
         if (files == null || files.length < 1) {
             throw new IllegalArgumentException("A ferramenta deve ter pelo menos uma foto.");
+        }
+
+        if (files.length > 5) {
+            throw new IllegalArgumentException("Limite excedido: Podes enviar no máximo 5 fotos.");
         }
 
         try {
@@ -234,17 +252,39 @@ public class ToolUsecases {
             for (MultipartFile file : files) {
                 if (file.isEmpty()) continue;
 
-                var uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                        com.cloudinary.utils.ObjectUtils.asMap(
-                                "folder", "tools/tool_" + toolId,
-                                "resource_type", "auto",
-                                "moderation", "aws_rek"
-                        ));
+                String contentType = file.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    throw new IllegalArgumentException("O ficheiro " + file.getOriginalFilename() + " não é uma imagem válida.");
+                }
 
-                String statusModificacao = (String) uploadResult.get("moderation_status");
+                Map uploadResult = null;
 
-                if ("rejected".equals(statusModificacao)) {
-                    throw new IllegalArgumentException("Imagem bloqueada: Detectamos conteúdo impróprio no arquivo " + file.getOriginalFilename());
+                try {
+                    uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                            com.cloudinary.utils.ObjectUtils.asMap(
+                                    "folder", "tools/tool_" + toolId,
+                                    "resource_type", "auto",
+                                    "moderation", "aws_rek"
+                            ));
+                } catch (Exception e1) {
+                    try {
+                        uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                                com.cloudinary.utils.ObjectUtils.asMap(
+                                        "folder", "tools/tool_" + toolId,
+                                        "resource_type", "auto",
+                                        "moderation", "webpurify"
+                                ));
+                    } catch (Exception e2) {
+                        uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                                com.cloudinary.utils.ObjectUtils.asMap(
+                                        "folder", "tools/tool_" + toolId,
+                                        "resource_type", "auto"
+                                ));
+                    }
+                }
+
+                if (uploadResult != null && "rejected".equals(uploadResult.get("moderation_status"))) {
+                    throw new IllegalArgumentException("Conteúdo impróprio detetado no ficheiro: " + file.getOriginalFilename());
                 }
 
                 String urlDaFoto = (String) uploadResult.get("secure_url");
@@ -252,9 +292,9 @@ public class ToolUsecases {
 
                 ToolImageModel image = new ToolImageModel();
                 image.setToolId(toolId);
-                image.setFilePath(urlDaFoto);
+                image.setFilePath(urlDaFoto); // Guarda o link HTTPS do Cloudinary
                 image.setFileName(publicId);
-                image.setContentType(file.getContentType());
+                image.setContentType(contentType);
 
                 image.setPrincipal(!hasImages);
                 hasImages = true;
@@ -283,14 +323,9 @@ public class ToolUsecases {
         ToolModel tool = findOwnedTool(image.getToolId(), ownerId);
 
         try {
-            Path imagePath = Paths.get(image.getFilePath().replaceFirst("^/", ""))
-                    .toAbsolutePath()
-                    .normalize();
-
-            Files.deleteIfExists(imagePath);
-
+            cloudinary.uploader().destroy(image.getFileName(), com.cloudinary.utils.ObjectUtils.emptyMap());
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao remover arquivo da imagem.", e);
+            throw new RuntimeException("Erro ao remover imagem do Cloudinary.", e);
         }
 
         toolImageRepository.delete(image);
@@ -298,7 +333,6 @@ public class ToolUsecases {
         int totalImages = toolImageRepository.findByToolId(tool.getId()).size();
         tool.setQuantidadeFotos(totalImages);
         tool.setUpdatedAt(LocalDateTime.now());
-
         toolRepository.save(tool);
     }
 
@@ -354,5 +388,11 @@ public class ToolUsecases {
         return toolRepository.save(tool);
     }
 
+    @Transactional
+    public ToolModel createToolWithImages(Long ownerId, CreateToolDto dto, MultipartFile[] files) {
+        ToolModel tool = createTool(ownerId, dto);
+        uploadImages(tool.getId(), ownerId, files);
+        return tool;
+    }
 
 }

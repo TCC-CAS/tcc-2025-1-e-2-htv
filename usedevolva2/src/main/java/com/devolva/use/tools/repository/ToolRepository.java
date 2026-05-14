@@ -10,9 +10,12 @@ public interface ToolRepository extends JpaRepository<ToolModel, Long> {
 
     List<ToolModel> findByOwnerId(Long ownerId);
 
+    List<ToolModel> findByOwnerIdAndAtivoTrue(Long ownerId);
 
     long countByOwnerIdAndAtivoTrue(Long ownerId);
+
     List<ToolModel> findByAtivoTrueAndDisponivelTrue();
+
     default long countActiveToolsByOwnerId(Long ownerId) {
         return countByOwnerIdAndAtivoTrue(ownerId);
     }

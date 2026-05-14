@@ -111,45 +111,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`/tools/owner/${user.id}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(toolData)
-            });
-
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(error);
-            }
-
-            const createdTool = await response.json();
-
             const formData = new FormData();
+
+            formData.append("tool", new Blob([JSON.stringify(toolData)], { type: "application/json" }));
 
             selectedFiles.forEach((file) => {
                 formData.append("files", file);
             });
 
-            const imageResponse = await fetch(`/tools/${createdTool.id}/owner/${user.id}/images`, {
+            const response = await fetch(`/tools/owner/${user.id}`, {
                 method: "POST",
                 body: formData
             });
 
-            if (!imageResponse.ok) {
-                throw new Error("Ferramenta criada, mas erro ao enviar imagens.");
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText);
             }
 
             showToast("Ferramenta cadastrada com sucesso!");
-
-            setTimeout(() => {
-                window.location.href = "/users/profile";
-            }, 3000);
+            setTimeout(() => { window.location.href = "/users/profile"; }, 3000);
 
         } catch (error) {
             console.error(error);
-            message.textContent = "Não foi possível cadastrar a ferramenta. Verifique os dados.";
+            message.textContent = "Erro: " + error.message;
         }
     });
 });

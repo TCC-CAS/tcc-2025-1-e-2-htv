@@ -23,9 +23,18 @@ public class ToolController {
         this.toolUsecases = toolUsecases;
     }
 
-    @PostMapping("/owner/{ownerId}")
-    public ResponseEntity<ToolModel> createTool(@PathVariable Long ownerId, @RequestBody CreateToolDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(toolUsecases.createTool(ownerId, dto));
+    @PostMapping(value = "/owner/{ownerId}", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createTool(
+            @PathVariable Long ownerId,
+            @RequestPart("tool") CreateToolDto dto,
+            @RequestPart("files") MultipartFile[] files
+    ) {
+        try {
+            ToolModel tool = toolUsecases.createToolWithImages(ownerId, dto, files);
+            return ResponseEntity.status(HttpStatus.CREATED).body(tool);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PatchMapping("/{toolId}/owner/{ownerId}")
