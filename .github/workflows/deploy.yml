@@ -1,0 +1,42 @@
+name: Deploy to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 21
+
+      - name: Build com Maven
+        run: mvn clean package -DskipTests
+
+      - name: Preparar deploy
+        run: |
+          mkdir deploy
+          cp target/app.jar deploy/app.jar
+          cp Procfile deploy/Procfile
+          cd deploy
+          zip -r deploy.zip .
+
+      - name: Deploy para Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: usedevolva-app
+          environment_name: Usedevolva-app-env
+          region: sa-east-1
+          version_label: github-${{ github.run_number }}-${{ github.sha }}
+          deployment_package: deploy/deploy.zip
