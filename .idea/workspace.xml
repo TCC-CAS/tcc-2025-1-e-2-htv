@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" afterDir="false" />
-    </list>
+    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,12 +88,25 @@
       <workItem from="1778700804632" duration="109000" />
       <workItem from="1778702447280" duration="12000" />
       <workItem from="1778723296607" duration="2260000" />
-      <workItem from="1778814682567" duration="2774000" />
+      <workItem from="1778814682567" duration="3306000" />
     </task>
+    <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
+      <option name="closed" value="true" />
+      <created>1778817595151</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1778817595151</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix GitHub Actions YAML" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix GitHub Actions YAML" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
