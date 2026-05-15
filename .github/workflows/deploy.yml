@@ -20,13 +20,14 @@ jobs:
           java-version: 21
 
       - name: Build com Maven
+        working-directory: ./usedevolva2
         run: mvn clean package -DskipTests
 
       - name: Preparar deploy
         run: |
           mkdir deploy
-          cp target/app.jar deploy/app.jar
-          cp Procfile deploy/Procfile
+          cp usedevolva2/target/app.jar deploy/app.jar
+          cp usedevolva2/Procfile deploy/Procfile
           cd deploy
           zip -r deploy.zip .
 
