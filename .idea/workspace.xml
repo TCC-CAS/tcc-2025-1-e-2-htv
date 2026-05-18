@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/tools/ToolController.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/tools/ToolController.java" afterDir="false" />
-    </list>
+    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,7 +92,7 @@
       <workItem from="1778814682567" duration="4228000" />
       <workItem from="1778876621982" duration="48000" />
       <workItem from="1779052359239" duration="740000" />
-      <workItem from="1779128715157" duration="2841000" />
+      <workItem from="1779128715157" duration="3142000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />
