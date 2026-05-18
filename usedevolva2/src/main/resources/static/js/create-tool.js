@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
             newFiles.forEach((file) => {
                 if (!file.type.startsWith("image/")) return;
 
-                if (selectedFiles.length >= 10) {
-                    message.textContent = "Você pode adicionar no máximo 10 fotos.";
+                if (selectedFiles.length >= 5) {
+                    message.textContent = "Você pode adicionar no máximo 5 fotos.";
                     return;
                 }
 
@@ -62,13 +62,12 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const user = JSON.parse(localStorage.getItem("user"));
+        const submitButton = form.querySelector("button[type='submit']");
 
         if (!user || !user.id) {
             window.location.href = "/auth/login";
             return;
         }
-
-        message.textContent = "";
 
         const quantidadeFotos = selectedFiles.length;
 
@@ -95,25 +94,35 @@ document.addEventListener("DOMContentLoaded", () => {
             !toolData.localizacao ||
             !toolData.dataInicioDisponibilidade
         ) {
-            message.textContent = "Preencha todos os campos obrigatórios.";
+            showToast("Preencha todos os campos obrigatórios.", "error");
             return;
         }
 
         if (quantidadeFotos < 1) {
-            message.textContent = "Adicione pelo menos uma foto da ferramenta.";
+            showToast("Adicione pelo menos uma foto da ferramenta.", "error");
             fotosInput.focus();
             return;
         }
 
-        if (quantidadeFotos > 10) {
-            message.textContent = "Você pode adicionar no máximo 10 fotos.";
+        if (quantidadeFotos > 5) {
+            showToast("Você pode adicionar no máximo 5 fotos.", "error");
             return;
         }
 
         try {
+            showToast("Criando ferramenta, aguarde...", "loading");
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Criando...";
+            }
+
             const formData = new FormData();
 
-            formData.append("tool", new Blob([JSON.stringify(toolData)], { type: "application/json" }));
+            formData.append(
+                "tool",
+                new Blob([JSON.stringify(toolData)], { type: "application/json" })
+            );
 
             selectedFiles.forEach((file) => {
                 formData.append("files", file);
@@ -126,22 +135,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText);
+                throw new Error(errorText || "Erro ao cadastrar ferramenta.");
             }
 
-            showToast("Ferramenta cadastrada com sucesso!");
-            setTimeout(() => { window.location.href = "/users/profile"; }, 3000);
+            showToast("Ferramenta cadastrada com sucesso!", "success");
+
+            setTimeout(() => {
+                window.location.href = "/users/profile";
+            }, 3000);
 
         } catch (error) {
             console.error(error);
-            message.textContent = "Erro: " + error.message;
+
+            showToast(
+                "Erro: " + (error.message || "Não foi possível cadastrar a ferramenta."),
+                "error"
+            );
+
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = "Criar ferramenta";
+            }
         }
     });
 });
 
-function showToast(message) {
+function showToast(message, type = "success") {
+    const existingToast = document.querySelector(".toast-message");
+
+    if (existingToast) {
+        existingToast.remove();
+    }
+
     const toast = document.createElement("div");
-    toast.className = "toast-message";
+    toast.className = `toast-message toast-${type}`;
     toast.textContent = message;
 
     document.body.appendChild(toast);
@@ -150,13 +177,15 @@ function showToast(message) {
         toast.classList.add("show");
     }, 50);
 
-    setTimeout(() => {
-        toast.classList.remove("show");
-        toast.classList.add("hide");
-    }, 3000);
+    if (type !== "loading") {
+        setTimeout(() => {
+            toast.classList.remove("show");
+            toast.classList.add("hide");
+        }, 3000);
 
-    setTimeout(() => {
-        toast.remove();
-    }, 3400);
+        setTimeout(() => {
+            toast.remove();
+        }, 3400);
+    }
 }
 

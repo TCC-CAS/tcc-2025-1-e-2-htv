@@ -34,6 +34,10 @@ public class ToolController {
             return ResponseEntity.status(HttpStatus.CREATED).body(tool);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao cadastrar ferramenta com imagem: " + e.getMessage());
         }
     }
 
