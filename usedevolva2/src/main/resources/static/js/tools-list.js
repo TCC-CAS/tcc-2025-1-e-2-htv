@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const tools = await response.json();
 
-            renderTools(tools);
+            await renderTools(tools);
             updateSummary(tools.length);
 
         } catch (error) {
@@ -117,11 +117,63 @@ document.addEventListener("DOMContentLoaded", () => {
             const card = document.createElement("article");
             card.className = "tool-card";
 
-            const imageUrl =
-                tool.imagemPrincipal ||
-                tool.mainImage ||
-                tool.filePath ||
-                "https://placehold.co/400x300/EAEAEA/676767?text=Imagem+da+Ferramenta";
+            async function renderTools(tools) {
+                resultsGrid.innerHTML = "";
+
+                if (!tools || tools.length === 0) {
+                    resultsGrid.innerHTML = `
+            <div class="empty-results">
+                <h2>Nenhuma ferramenta encontrada</h2>
+                <p>Tente alterar os filtros ou buscar por outro termo.</p>
+            </div>
+        `;
+                    return;
+                }
+
+                for (const tool of tools) {
+                    const imageUrl = await getMainImage(tool.id);
+
+                    const card = document.createElement("article");
+                    card.className = "tool-card";
+
+                    const valorFormatado = formatCurrency(tool.valorDiaria);
+
+                    card.innerHTML = `
+            <div class="tool-image-wrapper">
+                <img 
+                    src="${imageUrl}" 
+                    alt="${escapeHtml(tool.nome || "Ferramenta")}" 
+                    class="tool-image"
+                >
+            </div>
+
+            <div class="tool-info">
+                <span class="tool-category">
+                    ${escapeHtml(formatText(tool.categoria))}
+                </span>
+
+                <a href="/tools/page/${tool.id}" class="tool-name">
+                    ${escapeHtml(tool.nome || "Ferramenta sem nome")}
+                </a>
+
+                <p class="tool-description">
+                    ${escapeHtml(limitText(tool.descricao || "Sem descrição disponível.", 90))}
+                </p>
+
+                <div class="tool-price">
+                    ${valorFormatado} <span>/dia</span>
+                </div>
+
+                <div class="tool-meta">
+                    <span>📍 ${escapeHtml(tool.localizacao || "Localização não informada")}</span>
+                    <span class="status-available">Disponível</span>
+                </div>
+            </div>
+        `;
+
+                    resultsGrid.appendChild(card);
+                }
+            }
 
             const valorFormatado = formatCurrency(tool.valorDiaria);
 
@@ -276,3 +328,27 @@ document.addEventListener("DOMContentLoaded", () => {
             .replaceAll("'", "&#039;");
     }
 });
+
+async function getMainImage(toolId) {
+    try {
+        const response = await fetch(`/tools/${toolId}/images`);
+
+        if (!response.ok) {
+            return "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
+        }
+
+        const images = await response.json();
+
+        if (!images || images.length === 0) {
+            return "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
+        }
+
+        const mainImage = images.find(image => image.principal) || images[0];
+
+        return mainImage.filePath;
+
+    } catch (error) {
+        console.error(error);
+        return "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
+    }
+}

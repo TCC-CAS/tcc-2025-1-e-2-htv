@@ -62,6 +62,26 @@ public class ToolController {
     public ResponseEntity<List<ToolModel>> listOwnerTools(@PathVariable Long ownerId) {
         return ResponseEntity.ok(toolUsecases.listOwnerTools(ownerId));
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<ToolModel>> searchTools(
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String estadoConservacao,
+            @RequestParam(required = false) BigDecimal valorMinimo,
+            @RequestParam(required = false) BigDecimal valorMaximo,
+            @RequestParam(required = false) Boolean disponivel
+    ) {
+        ToolFilterDto filter = new ToolFilterDto(
+                busca,
+                categoria,
+                estadoConservacao,
+                valorMinimo,
+                valorMaximo,
+                disponivel
+        );
+
+        return ResponseEntity.ok(toolUsecases.searchTools(filter));
+    }
 
     @GetMapping("/{toolId}")
     public ResponseEntity<ToolModel> findById(@PathVariable Long toolId) {
@@ -117,24 +137,5 @@ public class ToolController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Retorna erro
         }
     }
-    @GetMapping("/search")
-    public ResponseEntity<List<ToolModel>> searchTools(
-            @RequestParam(required = false) String busca,
-            @RequestParam(required = false) String categoria,
-            @RequestParam(required = false) String estadoConservacao,
-            @RequestParam(required = false) BigDecimal valorMinimo,
-            @RequestParam(required = false) BigDecimal valorMaximo,
-            @RequestParam(required = false) Boolean disponivel
-    ) {
-        ToolFilterDto filter = new ToolFilterDto(
-                busca,
-                categoria,
-                estadoConservacao,
-                valorMinimo,
-                valorMaximo,
-                disponivel
-        );
 
-        return ResponseEntity.ok(toolUsecases.searchTools(filter));
-    }
 }
