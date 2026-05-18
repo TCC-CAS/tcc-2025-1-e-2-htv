@@ -23,6 +23,9 @@ import com.devolva.use.tools.domain.ToolImageModel;
 import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 
+import com.devolva.use.addresses.domain.AddressModel;
+import com.devolva.use.addresses.usecases.AddressUsecases;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,17 +44,22 @@ public class ToolUsecases {
     private final RentalRepository rentalRepository;
     private final ToolImageRepository toolImageRepository;
     private final Cloudinary cloudinary;
+    private final AddressUsecases addressUsecases;
 
     public ToolUsecases(
             ToolRepository toolRepository,
-            UserRepository userRepository, RentalRepository rentalRepository,
-            ToolImageRepository toolImageRepository, Cloudinary cloudinary
+            UserRepository userRepository,
+            RentalRepository rentalRepository,
+            ToolImageRepository toolImageRepository,
+            Cloudinary cloudinary,
+            AddressUsecases addressUsecases
     ) {
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
         this.rentalRepository = rentalRepository;
         this.toolImageRepository = toolImageRepository;
         this.cloudinary = cloudinary;
+        this.addressUsecases = addressUsecases;
     }
 
     public ToolModel createTool(Long ownerId, CreateToolDto dto) {
@@ -79,6 +87,12 @@ public class ToolUsecases {
                 dto.localizacao(),
                 dto.dataInicioDisponibilidade()
         );
+        AddressModel address = null;
+
+        if (dto.addressId() != null) {
+            address = addressUsecases.findOwnedAddress(dto.addressId(), ownerId);
+        }
+
         ToolModel tool = new ToolModel();
         tool.setNome(dto.nome());
         tool.setDescricao(dto.descricao());
@@ -96,6 +110,27 @@ public class ToolUsecases {
         tool.setDataInicioDisponibilidade(dto.dataInicioDisponibilidade());
         tool.setDataFimDisponibilidade(dto.dataFimDisponibilidade());
         tool.setObservacoes(dto.observacoes());
+
+        if (address != null) {
+            tool.setAddressId(address.getId());
+            tool.setCep(address.getCep());
+            tool.setLogradouro(address.getLogradouro());
+            tool.setNumero(address.getNumero());
+            tool.setComplemento(address.getComplemento());
+            tool.setBairro(address.getBairro());
+            tool.setCidade(address.getCidade());
+            tool.setEstado(address.getEstado());
+            tool.setLocalizacao(address.getEnderecoCompleto());
+        } else {
+            tool.setLocalizacao(dto.localizacao());
+            tool.setCep(dto.cep());
+            tool.setLogradouro(dto.logradouro());
+            tool.setNumero(dto.numero());
+            tool.setComplemento(dto.complemento());
+            tool.setBairro(dto.bairro());
+            tool.setCidade(dto.cidade());
+            tool.setEstado(dto.estado());
+        }
 
         return toolRepository.save(tool);
     }

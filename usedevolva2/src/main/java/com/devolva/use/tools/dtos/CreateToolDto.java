@@ -10,7 +10,17 @@ public record CreateToolDto(
         String estadoConservacao,
         BigDecimal valorDiaria,
         int quantidadeFotos,
+
+        Long addressId,
         String localizacao,
+        String cep,
+        String logradouro,
+        String numero,
+        String complemento,
+        String bairro,
+        String cidade,
+        String estado,
+
         LocalDate dataInicioDisponibilidade,
         LocalDate dataFimDisponibilidade,
         String observacoes

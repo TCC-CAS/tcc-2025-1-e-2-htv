@@ -28,12 +28,24 @@ public class ToolModel {
     private boolean disponivel;
     private boolean bloqueadaTemporariamente;
     private int quantidadeFotos;
+
+    private Long addressId;
+
     private String localizacao;
+    private String cep;
+    private String logradouro;
+    private String numero;
+    private String complemento;
+    private String bairro;
+    private String cidade;
+    private String estado;
+
     private LocalDate dataInicioDisponibilidade;
     private LocalDate dataFimDisponibilidade;
 
     @Column(length = 1000)
     private String observacoes;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
