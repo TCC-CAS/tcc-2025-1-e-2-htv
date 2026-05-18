@@ -22,8 +22,13 @@
             </li>
 
             <li>
-                <form role="search">
-                    <input type="text" placeholder="Buscar ferramentas..." />
+                <form id="headerSearchForm" role="search" action="/tools/tools-list" method="get">
+                    <input
+                            type="text"
+                            id="headerSearchInput"
+                            name="busca"
+                            placeholder="Buscar ferramentas..."
+                    />
                     <button type="submit">Buscar</button>
                 </form>
             </li>

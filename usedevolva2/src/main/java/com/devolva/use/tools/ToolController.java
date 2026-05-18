@@ -4,6 +4,7 @@ import com.devolva.use.tools.domain.ToolImageModel;
 import com.devolva.use.tools.domain.ToolModel;
 import com.devolva.use.tools.dtos.BlockToolDto;
 import com.devolva.use.tools.dtos.CreateToolDto;
+import com.devolva.use.tools.dtos.ToolFilterDto;
 import com.devolva.use.tools.dtos.UpdateToolDto;
 import com.devolva.use.tools.usecases.ToolUsecases;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -115,5 +117,24 @@ public class ToolController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Retorna erro
         }
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<ToolModel>> searchTools(
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String estadoConservacao,
+            @RequestParam(required = false) BigDecimal valorMinimo,
+            @RequestParam(required = false) BigDecimal valorMaximo,
+            @RequestParam(required = false) Boolean disponivel
+    ) {
+        ToolFilterDto filter = new ToolFilterDto(
+                busca,
+                categoria,
+                estadoConservacao,
+                valorMinimo,
+                valorMaximo,
+                disponivel
+        );
 
+        return ResponseEntity.ok(toolUsecases.searchTools(filter));
+    }
 }

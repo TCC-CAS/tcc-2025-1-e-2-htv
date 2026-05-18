@@ -43,14 +43,22 @@ public class AuthController {
     public String createTool() {
         return "users/create-tool";
     }
+
     @GetMapping("/users/edit-tool/{id}")
     public String editToolPage(@PathVariable Long id, Model model) {
         model.addAttribute("toolId", id);
         return "users/edit-tool";
     }
+
     @GetMapping("/tools/page/{id}")
     public String toolPage(@PathVariable Long id, Model model) {
         model.addAttribute("toolId", id);
         return "tools/tools-page";
     }
+
+    @GetMapping("/tools/tools-list")
+    public String toolsList() {
+        return "tools/tools-list";
+    }
+
 }

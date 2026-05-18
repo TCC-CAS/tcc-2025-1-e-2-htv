@@ -1,5 +1,6 @@
 package com.devolva.use.tools.usecases;
 
+import com.devolva.use.tools.dtos.ToolFilterDto;
 import com.devolva.use.rentals.domain.RentalModel;
 import com.devolva.use.rentals.domain.RentalStatus;
 import com.devolva.use.rentals.repository.RentalRepository;
@@ -102,13 +103,9 @@ public class ToolUsecases {
         switch (plano) {
             case FREE:
                 return 3;
-            case BRONZE:
-                return 10;
             case PRATA:
                 return 30;
             case OURO:
-                return 50;
-            case DIAMANTE:
                 return 100;
             default:
                 return 0;
@@ -394,5 +391,26 @@ public class ToolUsecases {
         uploadImages(tool.getId(), ownerId, files);
         return tool;
     }
+    public List<ToolModel> searchTools(ToolFilterDto filter) {
+        String busca = normalize(filter.busca());
+        String categoria = normalize(filter.categoria());
+        String estadoConservacao = normalize(filter.estadoConservacao());
 
+        return toolRepository.searchTools(
+                busca,
+                categoria,
+                estadoConservacao,
+                filter.valorMinimo(),
+                filter.valorMaximo(),
+                filter.disponivel()
+        );
+    }
+
+    private String normalize(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        return value.trim();
+    }
 }

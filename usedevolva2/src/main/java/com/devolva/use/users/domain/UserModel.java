@@ -43,7 +43,7 @@ public class UserModel {
     private LocalDateTime updatedAt;
 
     public enum Plano {
-        FREE, BRONZE, PRATA, OURO, DIAMANTE
+        FREE, PRATA, OURO,
     }
     public UserModel() {
         this.createdAt = LocalDateTime.now();
