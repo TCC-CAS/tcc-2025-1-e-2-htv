@@ -3,28 +3,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Minhas Ferramentas - Use e Devolva</title>
-</head>
+    <title>Perfil - Use e Devolva</title>
 
+    <link rel="stylesheet" href="/css/fragments/header.css">
+    <link rel="stylesheet" href="/css/fragments/footer.css">
+    <link rel="stylesheet" href="/css/root.css">
+    <link rel="stylesheet" href="/css/pages/users/profile.css">
 
-
-<!-- <link rel="stylesheet" href="../../static/css/fragments/header.css">
-<link rel="stylesheet" href="../../static/css/fragments/footer.css">
-<link rel="stylesheet" href="../../static/css/root.css">
-<link rel="stylesheet" href="../../static/css/pages/users/profile.css"> -->
-
-
-<link rel="stylesheet" href="/css/fragments/header.css">
-<link rel="stylesheet" href="/css/fragments/footer.css">
-<link rel="stylesheet" href="/css/root.css">
-<link rel="stylesheet" href="/css/pages/users/profile.css">
-
-<script src="/js/main.js" defer></script>
-<script src="/js/profile.js" defer></script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
 <body>
 
 <div th:replace="fragments/header :: header"></div>
@@ -114,6 +103,22 @@
                 </div>
             </a>
 
+            <button type="button" class="menu-card" id="openProfileAddressModalBtn">
+                <div class="menu-icon icon-profile">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+
+                <div class="menu-content">
+                    <h3>Meus endereços</h3>
+                    <p>Cadastre e gerencie os locais usados para retirada das ferramentas.</p>
+                </div>
+            </button>
+
             <!-- SAIR DA CONTA -->
             <a href="/auth/logout" class="menu-card" style="border-color: #FEE2E2;">
                 <div class="menu-icon icon-logout">
@@ -155,5 +160,10 @@
             <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
         </div>
     </footer>
+
+<script src="/js/main.js" defer></script>
+<script src="/js/address-modal.js" defer></script>
+<script src="/js/profile.js" defer></script>
+
 </body>
 </html>

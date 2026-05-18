@@ -99,8 +99,21 @@
                 <h3>Localização e Disponibilidade</h3>
 
                 <div class="form-group">
-                    <label for="localizacao">Localização aproximada para retirada</label>
-                    <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Avenida Sabará" required />
+                    <label for="addressId">Endereço de retirada</label>
+
+                    <div class="address-select-row">
+                        <select id="addressId" name="addressId" required>
+                            <option value="">Carregando endereços...</option>
+                        </select>
+
+                        <button type="button" class="btn btn-outline" id="openAddressModalBtn">
+                            Adicionar novo endereço
+                        </button>
+                    </div>
+
+                    <p class="address-help">
+                        Selecione um endereço salvo ou cadastre um novo endereço para retirada da ferramenta.
+                    </p>
                 </div>
 
                 <div class="form-row">
@@ -162,6 +175,7 @@
     </footer>
 
 <script src="/js/main.js" defer></script>
+<script src="/js/address-modal.js" defer></script>
 <script src="/js/create-tool.js" defer></script>
 
 </body>

@@ -350,3 +350,110 @@ a:focus {
          height: 280px;
      }
  }
+
+ .address-select-row {
+     display: flex;
+     gap: 12px;
+     align-items: center;
+ }
+
+ .address-select-row select {
+     flex: 1;
+ }
+
+ .address-help {
+     margin-top: 6px;
+     font-size: 0.85rem;
+     color: var(--text-muted);
+ }
+
+ .address-modal-overlay {
+     position: fixed;
+     inset: 0;
+     background: rgba(15, 23, 42, 0.55);
+     display: none;
+     align-items: center;
+     justify-content: center;
+     padding: 24px;
+     z-index: 9999;
+ }
+
+ .address-modal-overlay.active {
+     display: flex;
+ }
+
+ .address-modal {
+     width: 100%;
+     max-width: 760px;
+     background: #ffffff;
+     border-radius: 18px;
+     padding: 24px;
+     box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+     max-height: 90vh;
+     overflow-y: auto;
+ }
+
+ .address-modal-header {
+     display: flex;
+     justify-content: space-between;
+     gap: 16px;
+     margin-bottom: 20px;
+ }
+
+ .address-modal-header h3 {
+     margin: 0;
+     font-size: 1.35rem;
+ }
+
+ .address-modal-header p {
+     margin: 4px 0 0;
+     color: var(--text-muted);
+ }
+
+ .address-modal-close {
+     width: 36px;
+     height: 36px;
+     border: none;
+     border-radius: 50%;
+     background: #f1f5f9;
+     cursor: pointer;
+     font-size: 24px;
+     line-height: 1;
+ }
+
+ .checkbox-line {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     margin: 12px 0;
+     font-size: 0.95rem;
+ }
+
+ .address-modal-message {
+     margin-top: 12px;
+     font-size: 0.9rem;
+     font-weight: 600;
+ }
+
+ .address-modal-message.loading {
+     color: #475569;
+ }
+
+ .address-modal-message.success {
+     color: #15803d;
+ }
+
+ .address-modal-message.error {
+     color: #b91c1c;
+ }
+
+ @media (max-width: 700px) {
+     .address-select-row {
+         flex-direction: column;
+         align-items: stretch;
+     }
+
+     .address-modal {
+         padding: 18px;
+     }
+ }

@@ -3,10 +3,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const message = document.querySelector(".form-message");
     const fotosInput = document.getElementById("fotos");
     const previewContainer = document.getElementById("imagePreviewContainer");
+    const addressSelect = document.getElementById("addressId");
+    const openAddressModalBtn = document.getElementById("openAddressModalBtn");
 
     let selectedFiles = [];
 
     if (!form) return;
+
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (savedUser && savedUser.id) {
+        initAddressModal(savedUser.id, async (savedAddress) => {
+            await loadUserAddresses(savedUser.id, savedAddress.id);
+        });
+
+        await loadUserAddresses(savedUser.id);
+    }
+
+    if (openAddressModalBtn) {
+        openAddressModalBtn.addEventListener("click", () => {
+            openAddressModal();
+        });
+    }
 
     if (fotosInput && previewContainer) {
         fotosInput.addEventListener("change", () => {
@@ -26,6 +44,47 @@ document.addEventListener("DOMContentLoaded", () => {
             fotosInput.value = "";
             renderPreviews();
         });
+    }
+
+    async function loadUserAddresses(userId, selectedAddressId = null) {
+        const addressSelect = document.getElementById("addressId");
+
+        if (!addressSelect) return;
+
+        try {
+            addressSelect.innerHTML = `<option value="">Carregando endereços...</option>`;
+
+            const response = await fetch(`/users/${userId}/addresses`);
+
+            if (!response.ok) {
+                throw new Error("Erro ao carregar endereços.");
+            }
+
+            const addresses = await response.json();
+
+            if (!addresses || addresses.length === 0) {
+                addressSelect.innerHTML = `<option value="">Nenhum endereço cadastrado</option>`;
+                return;
+            }
+
+            addressSelect.innerHTML = `<option value="">Selecione um endereço</option>`;
+
+            addresses.forEach((address) => {
+                const option = document.createElement("option");
+                option.value = address.id;
+                option.textContent = formatAddressLabel(address);
+
+                if (selectedAddressId && Number(selectedAddressId) === Number(address.id)) {
+                    option.selected = true;
+                }
+
+                addressSelect.appendChild(option);
+            });
+
+        } catch (error) {
+            console.error(error);
+            addressSelect.innerHTML = `<option value="">Erro ao carregar endereços</option>`;
+        }
     }
 
     function renderPreviews() {
@@ -79,7 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
             descricao: document.getElementById("descricao").value.trim(),
             quantidadeFotos: quantidadeFotos,
 
-            localizacao: document.getElementById("localizacao").value.trim(),
+            addressId: Number(document.getElementById("addressId").value),
+            localizacao: "",
             dataInicioDisponibilidade: document.getElementById("dataInicioDisponibilidade").value,
             dataFimDisponibilidade: document.getElementById("dataFimDisponibilidade").value || null,
             observacoes: document.getElementById("observacoes").value.trim()
@@ -91,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
             !toolData.estadoConservacao ||
             !toolData.valorDiaria ||
             !toolData.descricao ||
-            !toolData.localizacao ||
+            !toolData.addressId ||
             !toolData.dataInicioDisponibilidade
         ) {
             showToast("Preencha todos os campos obrigatórios.", "error");

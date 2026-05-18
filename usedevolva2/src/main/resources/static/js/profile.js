@@ -6,6 +6,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    if (typeof initAddressModal === "function") {
+        initAddressModal(savedUser.id, () => {
+            alert("Endereço salvo com sucesso.");
+        });
+    } else {
+        alert("Erro: arquivo address-modal.js não foi carregado.");
+        return;
+    }
+
+    const openProfileAddressModalBtn = document.getElementById("openProfileAddressModalBtn");
+
+    if (openProfileAddressModalBtn) {
+        openProfileAddressModalBtn.addEventListener("click", () => {
+            openAddressModal();
+        });
+    }
+
     try {
         const response = await fetch(`/users/${savedUser.id}`);
 
