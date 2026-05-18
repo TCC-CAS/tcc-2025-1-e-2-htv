@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerSearchForm = document.getElementById("headerSearchForm");
     const headerSearchInput = document.getElementById("headerSearchInput");
 
+    let allTools = [];
+
     if (!resultsGrid || !searchSummary) {
         return;
     }
@@ -24,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (applyFiltersBtn) {
         applyFiltersBtn.addEventListener("click", () => {
             updateUrlFromFilters();
-            loadTools();
+            applyFilters();
         });
     }
 
@@ -41,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             window.history.pushState({}, "", "/tools/tools-list");
-            loadTools();
+            applyFilters();
         });
     }
 
@@ -52,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
             buscaInput.value = headerSearchInput.value.trim();
 
             updateUrlFromFilters();
-            loadTools();
+            applyFilters();
         });
     }
 
@@ -60,44 +62,69 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             setLoadingState();
 
-            const queryString = buildQueryString();
-            const response = await fetch(`/tools/search${queryString}`);
+            const response = await fetch("/tools");
 
             if (!response.ok) {
                 throw new Error("Erro ao buscar ferramentas.");
             }
 
-            const tools = await response.json();
+            allTools = await response.json();
 
-            await renderTools(tools);
-            updateSummary(tools.length);
+            applyFilters();
 
         } catch (error) {
-            console.error("Erro na busca de ferramentas:", error);
+            console.error("Erro ao carregar ferramentas:", error);
             renderError();
         }
     }
 
-    function buildQueryString() {
-        const params = new URLSearchParams();
+    function applyFilters() {
+        const busca = normalizeText(buscaInput.value);
+        const categoria = normalizeText(categoriaSelect.value);
+        const estadoConservacao = normalizeText(estadoConservacaoSelect.value);
 
-        const busca = buscaInput.value.trim();
-        const categoria = categoriaSelect.value;
-        const estadoConservacao = estadoConservacaoSelect.value;
-        const valorMinimo = valorMinimoInput.value;
-        const valorMaximo = valorMaximoInput.value;
+        const valorMinimo = valorMinimoInput.value ? Number(valorMinimoInput.value) : null;
+        const valorMaximo = valorMaximoInput.value ? Number(valorMaximoInput.value) : null;
 
-        if (busca) params.append("busca", busca);
-        if (categoria) params.append("categoria", categoria);
-        if (estadoConservacao) params.append("estadoConservacao", estadoConservacao);
-        if (valorMinimo) params.append("valorMinimo", valorMinimo);
-        if (valorMaximo) params.append("valorMaximo", valorMaximo);
+        let filteredTools = allTools.filter((tool) => {
+            const nome = normalizeText(tool.nome);
+            const descricao = normalizeText(tool.descricao);
+            const toolCategoria = normalizeText(tool.categoria);
+            const toolEstado = normalizeText(tool.estadoConservacao);
+            const valorDiaria = Number(tool.valorDiaria || 0);
 
-        params.append("disponivel", "true");
+            const matchBusca =
+                !busca ||
+                nome.includes(busca) ||
+                descricao.includes(busca);
 
-        const queryString = params.toString();
+            const matchCategoria =
+                !categoria ||
+                toolCategoria === categoria;
 
-        return queryString ? `?${queryString}` : "";
+            const matchEstado =
+                !estadoConservacao ||
+                toolEstado === estadoConservacao;
+
+            const matchValorMinimo =
+                valorMinimo === null ||
+                valorDiaria >= valorMinimo;
+
+            const matchValorMaximo =
+                valorMaximo === null ||
+                valorDiaria <= valorMaximo;
+
+            return (
+                matchBusca &&
+                matchCategoria &&
+                matchEstado &&
+                matchValorMinimo &&
+                matchValorMaximo
+            );
+        });
+
+        renderTools(filteredTools);
+        updateSummary(filteredTools.length);
     }
 
     async function renderTools(tools) {
@@ -115,7 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         for (const tool of tools) {
             const imageUrl = await getMainImage(tool.id);
-            const valorFormatado = formatCurrency(tool.valorDiaria);
 
             const card = document.createElement("article");
             card.className = "tool-card";
@@ -124,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="tool-image-wrapper">
                     <img 
                         src="${imageUrl}" 
-                        alt="${escapeHtml(tool.nome || "Ferramenta")}" 
+                        alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" 
                         class="tool-image"
                     >
                 </div>
@@ -143,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </p>
 
                     <div class="tool-price">
-                        ${valorFormatado} <span>/dia</span>
+                        ${formatCurrency(tool.valorDiaria)} <span>/dia</span>
                     </div>
 
                     <div class="tool-meta">
@@ -176,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return mainImage.filePath || "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
 
         } catch (error) {
-            console.error("Erro ao buscar imagem da ferramenta:", error);
+            console.error("Erro ao buscar imagem:", error);
             return "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
         }
     }
@@ -225,8 +251,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateUrlFromFilters() {
-        const queryString = buildQueryString();
-        window.history.pushState({}, "", `/tools/tools-list${queryString}`);
+        const params = new URLSearchParams();
+
+        const busca = buscaInput.value.trim();
+        const categoria = categoriaSelect.value;
+        const estadoConservacao = estadoConservacaoSelect.value;
+        const valorMinimo = valorMinimoInput.value;
+        const valorMaximo = valorMaximoInput.value;
+
+        if (busca) params.append("busca", busca);
+        if (categoria) params.append("categoria", categoria);
+        if (estadoConservacao) params.append("estadoConservacao", estadoConservacao);
+        if (valorMinimo) params.append("valorMinimo", valorMinimo);
+        if (valorMaximo) params.append("valorMaximo", valorMaximo);
+
+        const queryString = params.toString();
+
+        window.history.pushState(
+            {},
+            "",
+            queryString ? `/tools/tools-list?${queryString}` : "/tools/tools-list"
+        );
     }
 
     function loadParamsFromUrl() {
@@ -252,12 +297,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (valorMaximo) valorMaximoInput.value = valorMaximo;
     }
 
-    function formatCurrency(value) {
-        if (value === null || value === undefined || value === "") {
-            return "R$ 0,00";
-        }
+    function normalizeText(value) {
+        if (!value) return "";
 
-        return Number(value).toLocaleString("pt-BR", {
+        return String(value)
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    }
+
+    function formatCurrency(value) {
+        return Number(value || 0).toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL"
         });
@@ -268,16 +319,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const categories = {
             construcao: "Construção",
-            construção: "Construção",
             jardinagem: "Jardinagem",
             eletrica: "Elétrica",
-            elétrica: "Elétrica",
             limpeza: "Limpeza",
             marcenaria: "Marcenaria",
             outros: "Outros"
         };
 
-        return categories[String(category).toLowerCase()] || category;
+        const normalized = normalizeText(category);
+
+        return categories[normalized] || category;
     }
 
     function limitText(text, maxLength) {
