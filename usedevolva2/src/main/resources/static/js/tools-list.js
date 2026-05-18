@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultsGrid = document.getElementById("resultsGrid");
     const searchSummary = document.getElementById("searchSummary");
 
-    const buscaInput = document.getElementById("busca");
     const categoriaSelect = document.getElementById("categoria");
     const estadoConservacaoSelect = document.getElementById("estadoConservacao");
     const valorMinimoInput = document.getElementById("valorMinimo");
@@ -15,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const headerSearchInput = document.getElementById("headerSearchInput");
 
     let allTools = [];
+    let currentSearchTerm = "";
 
     if (!resultsGrid || !searchSummary) {
         return;
@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (clearFiltersBtn) {
         clearFiltersBtn.addEventListener("click", () => {
-            buscaInput.value = "";
+            currentSearchTerm = "";
+
             categoriaSelect.value = "";
             estadoConservacaoSelect.value = "";
             valorMinimoInput.value = "";
@@ -51,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headerSearchForm.addEventListener("submit", (event) => {
             event.preventDefault();
 
-            buscaInput.value = headerSearchInput.value.trim();
+            currentSearchTerm = headerSearchInput.value.trim();
 
             updateUrlFromFilters();
             applyFilters();
@@ -79,14 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function applyFilters() {
-        const busca = normalizeText(buscaInput.value);
+        const busca = normalizeText(currentSearchTerm);
         const categoria = normalizeText(categoriaSelect.value);
         const estadoConservacao = normalizeText(estadoConservacaoSelect.value);
 
         const valorMinimo = valorMinimoInput.value ? Number(valorMinimoInput.value) : null;
         const valorMaximo = valorMaximoInput.value ? Number(valorMaximoInput.value) : null;
 
-        let filteredTools = allTools.filter((tool) => {
+        const filteredTools = allTools.filter((tool) => {
             const nome = normalizeText(tool.nome);
             const descricao = normalizeText(tool.descricao);
             const toolCategoria = normalizeText(tool.categoria);
@@ -208,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateSummary(total) {
-        const termo = buscaInput.value.trim();
+        const termo = currentSearchTerm.trim();
         const categoriaTexto = categoriaSelect.options[categoriaSelect.selectedIndex]?.text || "Todas as categorias";
 
         if (termo && categoriaSelect.value) {
@@ -253,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateUrlFromFilters() {
         const params = new URLSearchParams();
 
-        const busca = buscaInput.value.trim();
+        const busca = currentSearchTerm.trim();
         const categoria = categoriaSelect.value;
         const estadoConservacao = estadoConservacaoSelect.value;
         const valorMinimo = valorMinimoInput.value;
@@ -284,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const valorMaximo = params.get("valorMaximo");
 
         if (busca) {
-            buscaInput.value = busca;
+            currentSearchTerm = busca;
 
             if (headerSearchInput) {
                 headerSearchInput.value = busca;
