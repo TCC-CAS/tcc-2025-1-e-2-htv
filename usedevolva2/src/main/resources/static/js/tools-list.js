@@ -146,7 +146,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const card = document.createElement("article");
             card.className = "tool-card";
+            card.setAttribute("role", "link");
+            card.setAttribute("tabindex", "0");
+            card.setAttribute("aria-label", `Ver detalhes de ${tool.nome || "ferramenta"}`);
 
+            card.addEventListener("click", () => {
+                window.location.href = `/tools/page/${tool.id}`;
+            });
+
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    window.location.href = `/tools/page/${tool.id}`;
+                }
+            });
             card.innerHTML = `
                 <div class="tool-image-wrapper">
                     <img 
