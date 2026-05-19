@@ -1,20 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const statusMessage = document.getElementById("paymentStatusMessage");
-
-    if (statusMessage) {
-        statusMessage.textContent = "Verificando pagamento em alguns segundos...";
-    }
-
     setTimeout(() => {
         syncPaymentNow();
     }, 5000);
 });
 
 async function getPendingPaymentId() {
-    const fromLocalStorage = localStorage.getItem("pendingPaymentId");
+    const localPaymentId = localStorage.getItem("pendingPaymentId");
 
-    if (fromLocalStorage) {
-        return fromLocalStorage;
+    if (localPaymentId) {
+        return localPaymentId;
     }
 
     const userJson = localStorage.getItem("user");
@@ -37,21 +31,18 @@ async function getPendingPaymentId() {
 
 async function syncPaymentNow() {
     const statusMessage = document.getElementById("paymentStatusMessage");
-    const transactionId = await getPendingPaymentId();
-
-    console.log("Transaction ID encontrado:", transactionId);
-
-    if (!transactionId) {
-        if (statusMessage) {
-            statusMessage.textContent = "Nenhum pagamento pendente foi encontrado.";
-        }
-        return;
-    }
 
     try {
-        if (statusMessage) {
-            statusMessage.textContent = "Consultando status do pagamento...";
+        const transactionId = await getPendingPaymentId();
+
+        console.log("Pagamento pendente encontrado:", transactionId);
+
+        if (!transactionId) {
+            statusMessage.textContent = "Nenhum pagamento pendente foi encontrado.";
+            return;
         }
+
+        statusMessage.textContent = "Consultando status do pagamento...";
 
         const response = await fetch(`/payments/${transactionId}/sync`);
         const result = await response.json();
@@ -59,9 +50,7 @@ async function syncPaymentNow() {
         console.log("Resultado da sincronização:", result);
 
         if (!result.success) {
-            if (statusMessage) {
-                statusMessage.textContent = "Não foi possível verificar o pagamento agora.";
-            }
+            statusMessage.textContent = "Não foi possível verificar o pagamento.";
             return;
         }
 
@@ -76,9 +65,7 @@ async function syncPaymentNow() {
                 localStorage.setItem("user", JSON.stringify(user));
             }
 
-            if (statusMessage) {
-                statusMessage.textContent = "Plano atualizado com sucesso! Redirecionando...";
-            }
+            statusMessage.textContent = "Plano atualizado com sucesso! Redirecionando...";
 
             setTimeout(() => {
                 window.location.href = "/users/profile";
@@ -87,15 +74,10 @@ async function syncPaymentNow() {
             return;
         }
 
-        if (statusMessage) {
-            statusMessage.textContent = `Pagamento encontrado, mas ainda está como: ${result.status}`;
-        }
+        statusMessage.textContent = `Pagamento encontrado, mas ainda está como: ${result.status}`;
 
     } catch (error) {
         console.error(error);
-
-        if (statusMessage) {
-            statusMessage.textContent = "Erro ao verificar pagamento.";
-        }
+        statusMessage.textContent = "Erro ao verificar pagamento.";
     }
 }

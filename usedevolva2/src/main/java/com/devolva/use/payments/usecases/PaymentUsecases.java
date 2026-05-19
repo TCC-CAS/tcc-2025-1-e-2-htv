@@ -71,7 +71,7 @@ public class PaymentUsecases {
 
         body.put("externalId", externalId);
         body.put("completionUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/payment/success");
-        body.put("returnUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/profile");
+        body.put("returnUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/users/profile");
 
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);

@@ -35,6 +35,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("profileName").textContent = user.nomeCompleto || "Usuário";
         document.getElementById("profileEmail").textContent = user.email || "---";
         document.getElementById("profilePhone").textContent = user.telefone || "---";
+        const currentPlan = document.getElementById("currentPlan");
+
+        if (currentPlan) {
+            currentPlan.textContent = user.plano || "FREE";
+        }
+
 
         const initials = getInitials(user.nomeCompleto);
         document.getElementById("profileAvatar").textContent = initials;
