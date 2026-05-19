@@ -35,4 +35,9 @@ public class PaymentController {
     ) {
         return ResponseEntity.ok(paymentUsecases.syncPaymentStatus(transactionId));
     }
+
+    @GetMapping("/success")
+    public String paymentSuccessPage() {
+        return "payments/payment-success";
+    }
 }
