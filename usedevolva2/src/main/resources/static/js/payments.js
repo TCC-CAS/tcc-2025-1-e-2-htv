@@ -1,24 +1,42 @@
-const plansModal = document.getElementById("plansModal");
-const openPlansModalBtn = document.getElementById("openPlansModalBtn");
-const closePlansModalBtn = document.getElementById("closePlansModalBtn");
+document.addEventListener("DOMContentLoaded", () => {
+    const plansModal = document.getElementById("plansModal");
+    const openPlansModalBtn = document.getElementById("openPlansModalBtn");
+    const closePlansModalBtn = document.getElementById("closePlansModalBtn");
 
-openPlansModalBtn?.addEventListener("click", () => {
-    plansModal.classList.add("active");
+    openPlansModalBtn?.addEventListener("click", () => {
+        plansModal?.classList.add("active");
+    });
+
+    closePlansModalBtn?.addEventListener("click", () => {
+        plansModal?.classList.remove("active");
+    });
+
+    plansModal?.addEventListener("click", (event) => {
+        if (event.target === plansModal) {
+            plansModal.classList.remove("active");
+        }
+    });
 });
 
-closePlansModalBtn?.addEventListener("click", () => {
-    plansModal.classList.remove("active");
-});
+function getLoggedUserId() {
+    const userJson = localStorage.getItem("user");
 
-plansModal?.addEventListener("click", (event) => {
-    if (event.target === plansModal) {
-        plansModal.classList.remove("active");
+    if (!userJson) {
+        return null;
     }
-});
+
+    try {
+        const user = JSON.parse(userJson);
+        return user.id;
+    } catch (error) {
+        console.error("Erro ao ler usuário do localStorage:", error);
+        return null;
+    }
+}
 
 async function createCheckout(plano) {
     try {
-        const userId = localStorage.getItem("userId");
+        const userId = getLoggedUserId();
 
         if (!userId) {
             alert("Usuário não encontrado. Faça login novamente.");
