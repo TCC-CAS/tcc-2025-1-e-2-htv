@@ -1,10 +1,5 @@
 package com.devolva.use.payments.usecases;
 
-
-import org.springframework.stereotype.Service;
-
-
-
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
 import com.devolva.use.users.domain.UserModel;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +16,10 @@ public class PaymentUsecases {
     @Value("${ABACATE_API_KEY}")
     private String abacateApiKey;
 
-    @Value("${abacate.api.url}")
+    @Value("${ABACATE_API_URL}")
     private String abacateApiUrl;
+
+    private static final String PIX_ENDPOINT = "/pixQrCode/create";
 
     public Map<String, Object> createCheckout(CreateCheckoutDto dto) {
 
@@ -36,6 +33,10 @@ public class PaymentUsecases {
 
         Integer amount = getPlanValue(dto.plano());
 
+        if (amount <= 0) {
+            throw new RuntimeException("Plano inválido para pagamento");
+        }
+
         Map<String, Object> body = new HashMap<>();
 
         body.put("amount", amount);
@@ -47,14 +48,29 @@ public class PaymentUsecases {
         HttpEntity<Map<String, Object>> entity =
                 new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map> response =
-                restTemplate.postForEntity(
-                        abacateApiUrl + "/pixQrCode/create",
-                        entity,
-                        Map.class
-                );
+        try {
 
-        return response.getBody();
+            ResponseEntity<Map> response =
+                    restTemplate.postForEntity(
+                            abacateApiUrl + PIX_ENDPOINT,
+                            entity,
+                            Map.class
+                    );
+
+            System.out.println("RESPOSTA ABACATEPAY:");
+            System.out.println(response.getBody());
+
+            return response.getBody();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            throw new RuntimeException(
+                    "Erro ao criar checkout AbacatePay: "
+                            + e.getMessage()
+            );
+        }
     }
 
     private Integer getPlanValue(UserModel.Plano plano) {
