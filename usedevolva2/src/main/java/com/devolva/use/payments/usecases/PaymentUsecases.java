@@ -1,6 +1,9 @@
 package com.devolva.use.payments.usecases;
 
+import com.devolva.use.payments.domain.PaymentModel;
+import com.devolva.use.payments.domain.PaymentStatus;
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
+import com.devolva.use.payments.repository.PaymentRepository;
 import com.devolva.use.users.domain.UserModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -8,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -22,8 +27,14 @@ public class PaymentUsecases {
     @Value("${ABACATE_API_URL}")
     private String abacateApiUrl;
 
+    private final PaymentRepository paymentRepository;
+
+    public PaymentUsecases(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
     private static final String CHECKOUT_ENDPOINT = "/checkouts/create";
 
+    @SuppressWarnings("unchecked")
     public Map<String, Object> createCheckout(CreateCheckoutDto dto) {
 
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
@@ -59,7 +70,26 @@ public class PaymentUsecases {
                     Map.class
             );
 
-            return response.getBody();
+            Map<String, Object> responseBody = response.getBody();
+
+            if (responseBody == null || !Boolean.TRUE.equals(responseBody.get("success"))) {
+                return responseBody;
+            }
+
+            Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
+
+            PaymentModel payment = new PaymentModel();
+            payment.setUserId(dto.userId());
+            payment.setTransactionId((String) data.get("id"));
+            payment.setCheckoutUrl((String) data.get("url"));
+            payment.setAmount(BigDecimal.valueOf(((Number) data.get("amount")).doubleValue()));
+            payment.setStatus(PaymentStatus.PENDING);
+            payment.setPlano(dto.plano());
+            payment.setCreatedAt(LocalDateTime.now());
+
+            paymentRepository.save(payment);
+
+            return responseBody;
 
         } catch (HttpStatusCodeException e) {
             System.out.println("ERRO ABACATEPAY:");

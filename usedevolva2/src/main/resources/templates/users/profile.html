@@ -35,6 +35,18 @@
                 </svg>
             </button>
         </div>
+        <section class="plan-card">
+            <div>
+                <span class="plan-label">Plano atual</span>
+                <h3 id="currentPlan">FREE</h3>
+                <p>Escolha um plano para liberar mais recursos na plataforma.</p>
+            </div>
+
+            <button type="button" id="openPlansModalBtn" class="plan-button">
+                Ver planos
+            </button>
+        </section>
+
 
         <div class="profile-info">
             <h2 id="profileName">Carregando...</h2>
@@ -119,7 +131,6 @@
                 </div>
             </button>
 
-            <!-- SAIR DA CONTA -->
             <a href="/auth/logout" class="menu-card" style="border-color: #FEE2E2;">
                 <div class="menu-icon icon-logout">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
@@ -160,7 +171,9 @@
             <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
         </div>
     </footer>
+<div th:replace="fragments/plans :: plansModal"></div>
 
+<script src="/js/profile-payments.js" defer></script>
 <script src="/js/main.js" defer></script>
 <script src="/js/address-modal.js" defer></script>
 <script src="/js/profile.js" defer></script>

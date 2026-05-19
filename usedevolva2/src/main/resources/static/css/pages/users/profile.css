@@ -186,3 +186,97 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .plan-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .plan-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .plan-button,
+        .plan-option button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .plans-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .plans-modal-overlay.active {
+            display: flex;
+        }
+
+        .plans-modal {
+            background: #fff;
+            border-radius: 22px;
+            padding: 2rem;
+            max-width: 850px;
+            width: 100%;
+            position: relative;
+        }
+
+        .plans-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            border: none;
+            background: transparent;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .plan-option {
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 1.5rem;
+        }
+
+        .plan-option.featured {
+            border: 2px solid var(--primary);
+        }
+
+        .plan-option strong {
+            display: block;
+            font-size: 1.8rem;
+            margin: 0.8rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .plan-card,
+            .plans-grid {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }

@@ -1,0 +1,34 @@
+<div th:fragment="plansModal">
+  <div class="plans-modal-overlay" id="plansModal">
+    <div class="plans-modal">
+      <button type="button" class="plans-close" id="closePlansModalBtn">×</button>
+
+      <h2>Escolha seu plano</h2>
+      <p class="plans-subtitle">Selecione o plano ideal para usar melhor o Use e Devolva.</p>
+
+      <div class="plans-grid">
+        <div class="plan-option">
+          <h3>Prata</h3>
+          <strong>R$ 29,90</strong>
+          <ul>
+            <li>Mais visibilidade nas ferramentas</li>
+            <li>Mais recursos para anunciar</li>
+            <li>Ideal para usuários frequentes</li>
+          </ul>
+          <button type="button" onclick="createCheckout('PRATA')">Assinar Prata</button>
+        </div>
+
+        <div class="plan-option featured">
+          <h3>Ouro</h3>
+          <strong>R$ 79,90</strong>
+          <ul>
+            <li>Todos os benefícios do Prata</li>
+            <li>Destaque maior na plataforma</li>
+            <li>Mais vantagens para locadores</li>
+          </ul>
+          <button type="button" onclick="createCheckout('OURO')">Assinar Ouro</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
