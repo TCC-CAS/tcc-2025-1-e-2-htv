@@ -46,7 +46,7 @@ public class PaymentUsecases {
 
         Map<String, Object> body = new HashMap<>();
         body.put("items", List.of(item));
-        body.put("methods", List.of("PIX", "CARD"));
+        body.put("methods", List.of("CARD"));
         body.put("externalId", "user-" + dto.userId() + "-" + System.currentTimeMillis());
         body.put("metadata", metadata);
 
