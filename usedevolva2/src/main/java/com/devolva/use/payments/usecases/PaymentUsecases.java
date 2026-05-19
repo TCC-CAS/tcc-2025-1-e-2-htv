@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -181,6 +182,7 @@ public class PaymentUsecases {
                         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
                 user.setPlano(payment.getPlano());
+                user.setPlanExpiresAt(LocalDate.now().plusMonths(1));
                 user.setUpdatedAt(LocalDateTime.now());
                 userRepository.save(user);
             }
