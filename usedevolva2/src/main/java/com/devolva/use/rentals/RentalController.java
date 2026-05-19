@@ -33,11 +33,6 @@ public class RentalController {
         return rentalUsecases.approveOrRejectRental(rentalId, dto);
     }
 
-    @PutMapping("/{rentalId}/paid")
-    public RentalModel markAsPaid(@PathVariable Long rentalId) {
-        return rentalUsecases.markAsPaid(rentalId);
-    }
-
     @PutMapping("/{rentalId}/start")
     public RentalModel startRental(
             @PathVariable Long rentalId,

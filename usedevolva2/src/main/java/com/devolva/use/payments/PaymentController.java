@@ -1,13 +1,15 @@
 package com.devolva.use.payments;
 
-import com.devolva.use.payments.domain.PaymentModel;
-import com.devolva.use.payments.dtos.ConfirmPaymentDto;
-import com.devolva.use.payments.dtos.CreatePaymentDto;
+import com.devolva.use.payments.dtos.CreateCheckoutDto;
 import com.devolva.use.payments.usecases.PaymentUsecases;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/payments")
+@CrossOrigin(origins = "*")
 public class PaymentController {
 
     private final PaymentUsecases paymentUsecases;
@@ -16,26 +18,13 @@ public class PaymentController {
         this.paymentUsecases = paymentUsecases;
     }
 
-    @PostMapping
-    public PaymentModel create(@RequestBody CreatePaymentDto dto) {
-        return paymentUsecases.createPayment(dto);
-    }
-
-    @PutMapping("/{paymentId}/confirm")
-    public PaymentModel confirm(
-            @PathVariable Long paymentId,
-            @RequestBody ConfirmPaymentDto dto
+    @PostMapping("/checkout")
+    public ResponseEntity<Map<String, Object>> createCheckout(
+            @RequestBody CreateCheckoutDto dto
     ) {
-        return paymentUsecases.confirmPayment(paymentId, dto);
-    }
 
-    @PutMapping("/{paymentId}/fail")
-    public PaymentModel fail(@PathVariable Long paymentId) {
-        return paymentUsecases.failPayment(paymentId);
-    }
-
-    @GetMapping("/{paymentId}")
-    public PaymentModel findById(@PathVariable Long paymentId) {
-        return paymentUsecases.findById(paymentId);
+        return ResponseEntity.ok(
+                paymentUsecases.createCheckout(dto)
+        );
     }
 }

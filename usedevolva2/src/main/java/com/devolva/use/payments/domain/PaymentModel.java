@@ -1,51 +1,36 @@
 package com.devolva.use.payments.domain;
 
+import com.devolva.use.users.domain.UserModel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @Entity
-@Table(name = "payment")
+@Table(name = "payments")
 public class PaymentModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long rentalId;
 
-    private Double grossAmount;
-    private Double serviceFee;
-    private Double netAmount;
+    private Long userId;
 
-    private String paymentMethod;
     private String transactionId;
+
+    private String checkoutUrl;
+
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private UserModel.Plano plano;
+
     private LocalDateTime createdAt;
-    private LocalDateTime confirmedAt;
 
-    public PaymentModel() {
-        this.status = PaymentStatus.PENDING;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public PaymentModel(Long id, Long rentalId, Double grossAmount, Double serviceFee, Double netAmount,
-                        String paymentMethod, String transactionId, PaymentStatus status,
-                        LocalDateTime createdAt, LocalDateTime confirmedAt) {
-        this.id = id;
-        this.rentalId = rentalId;
-        this.grossAmount = grossAmount;
-        this.serviceFee = serviceFee;
-        this.netAmount = netAmount;
-        this.paymentMethod = paymentMethod;
-        this.transactionId = transactionId;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.confirmedAt = confirmedAt;
-    }
+    private LocalDateTime paidAt;
 }

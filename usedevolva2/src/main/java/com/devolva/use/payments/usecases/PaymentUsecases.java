@@ -1,75 +1,90 @@
 package com.devolva.use.payments.usecases;
 
-import com.devolva.use.payments.domain.PaymentModel;
-import com.devolva.use.payments.domain.PaymentStatus;
-import com.devolva.use.payments.dtos.ConfirmPaymentDto;
-import com.devolva.use.payments.dtos.CreatePaymentDto;
-import com.devolva.use.payments.repository.PaymentRepository;
-import com.devolva.use.rentals.domain.RentalModel;
-import com.devolva.use.rentals.domain.RentalStatus;
-import com.devolva.use.rentals.repository.RentalRepository;
+import com.devolva.use.payments.dtos.CreateCheckoutDto;
+import com.devolva.use.users.domain.UserModel;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class PaymentUsecases {
 
-    private final PaymentRepository paymentRepository;
-    private final RentalRepository rentalRepository;
+    @Value("${ABACATE_API_KEY}")
+    private String abacateApiKey;
 
-    public PaymentUsecases(PaymentRepository paymentRepository, RentalRepository rentalRepository) {
-        this.paymentRepository = paymentRepository;
-        this.rentalRepository = rentalRepository;
-    }
+    @Value("${ABACATE_API_URL}")
+    private String abacateApiUrl;
 
-    public PaymentModel createPayment(CreatePaymentDto dto) {
-        RentalModel rental = rentalRepository.findById(dto.rentalId())
-                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+    private static final String PIX_ENDPOINT = "/pixQrCode/create";
 
-        if (rental.getStatus() != RentalStatus.AWAITING_PAYMENT) {
-            throw new RuntimeException("A locação não está aguardando pagamento.");
+    public Map<String, Object> createCheckout(CreateCheckoutDto dto) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.set("Authorization", "Bearer " + abacateApiKey);
+
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Integer amount = getPlanValue(dto.plano());
+
+        if (amount <= 0) {
+            throw new RuntimeException("Plano inválido para pagamento");
         }
 
-        PaymentModel payment = new PaymentModel();
-        payment.setRentalId(rental.getId());
-        payment.setGrossAmount(rental.getBaseValue());
-        payment.setServiceFee(rental.getServiceFee());
-        payment.setNetAmount(rental.getOwnerNetValue());
-        payment.setPaymentMethod(dto.paymentMethod());
-        payment.setStatus(PaymentStatus.PENDING);
+        Map<String, Object> body = new HashMap<>();
 
-        return paymentRepository.save(payment);
+        body.put("amount", amount);
+
+        body.put("description", "Plano " + dto.plano());
+
+        body.put("externalId", dto.userId().toString());
+
+        HttpEntity<Map<String, Object>> entity =
+                new HttpEntity<>(body, headers);
+
+        try {
+
+            ResponseEntity<Map> response =
+                    restTemplate.postForEntity(
+                            abacateApiUrl + PIX_ENDPOINT,
+                            entity,
+                            Map.class
+                    );
+
+            System.out.println("RESPOSTA ABACATEPAY:");
+            System.out.println(response.getBody());
+
+            return response.getBody();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            throw new RuntimeException(
+                    "Erro ao criar checkout AbacatePay: "
+                            + e.getMessage()
+            );
+        }
     }
 
-    public PaymentModel confirmPayment(Long paymentId, ConfirmPaymentDto dto) {
-        PaymentModel payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado."));
+    private Integer getPlanValue(UserModel.Plano plano) {
 
-        payment.setTransactionId(dto.transactionId());
-        payment.setStatus(PaymentStatus.CONFIRMED);
-        payment.setConfirmedAt(LocalDateTime.now());
+        switch (plano) {
 
-        RentalModel rental = rentalRepository.findById(payment.getRentalId())
-                .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
+            case PRATA:
+                return 1490;
 
-        rental.setStatus(RentalStatus.PAID);
-        rental.setPaidAt(LocalDateTime.now());
-        rentalRepository.save(rental);
+            case OURO:
+                return 2990;
 
-        return paymentRepository.save(payment);
-    }
-
-    public PaymentModel failPayment(Long paymentId) {
-        PaymentModel payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado."));
-
-        payment.setStatus(PaymentStatus.FAILED);
-        return paymentRepository.save(payment);
-    }
-
-    public PaymentModel findById(Long paymentId) {
-        return paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado."));
+            default:
+                return 0;
+        }
     }
 }

@@ -38,6 +38,8 @@ public class UserModel {
     @Enumerated(EnumType.STRING)
     private Plano plano;
 
+    private LocalDate planExpiresAt;
+
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

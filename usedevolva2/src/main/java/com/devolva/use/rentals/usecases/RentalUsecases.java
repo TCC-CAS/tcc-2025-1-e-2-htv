@@ -1,8 +1,5 @@
 package com.devolva.use.rentals.usecases;
 
-import com.devolva.use.payments.domain.PaymentModel;
-import com.devolva.use.payments.domain.PaymentStatus;
-import com.devolva.use.payments.repository.PaymentRepository;
 import com.devolva.use.rentals.domain.RentalModel;
 import com.devolva.use.rentals.domain.RentalStatus;
 import com.devolva.use.rentals.dtos.ApproveRentalDto;
@@ -35,18 +32,15 @@ public class RentalUsecases {
     private final RentalRepository rentalRepository;
     private final ToolRepository toolRepository;
     private final UserRepository userRepository;
-    private final PaymentRepository paymentRepository;
 
     public RentalUsecases(
             RentalRepository rentalRepository,
             ToolRepository toolRepository,
-            UserRepository userRepository,
-            PaymentRepository paymentRepository
+            UserRepository userRepository
     ) {
         this.rentalRepository = rentalRepository;
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
-        this.paymentRepository = paymentRepository;
     }
 
     public RentalModel createRentalRequest(CreateRentalDto dto) {
@@ -152,16 +146,6 @@ public class RentalUsecases {
         if (Boolean.TRUE.equals(dto.approved())) {
             rental.setStatus(RentalStatus.AWAITING_PAYMENT);
 
-            PaymentModel payment = new PaymentModel();
-            payment.setRentalId(rental.getId());
-            payment.setGrossAmount(rental.getBaseValue());
-            payment.setServiceFee(rental.getServiceFee());
-            payment.setNetAmount(rental.getOwnerNetValue());
-            payment.setStatus(PaymentStatus.PENDING);
-            payment.setCreatedAt(LocalDateTime.now());
-
-            PaymentModel savedPayment = paymentRepository.save(payment);
-            rental.setPaymentId(savedPayment.getId());
         } else {
             rental.setStatus(RentalStatus.REJECTED);
         }
@@ -169,29 +153,7 @@ public class RentalUsecases {
         return rentalRepository.save(rental);
     }
 
-    public RentalModel markAsPaid(Long rentalId) {
-        RentalModel rental = findRentalOrThrow(rentalId);
 
-        if (rental.getStatus() != RentalStatus.AWAITING_PAYMENT) {
-            throw new RuntimeException("A locação não está aguardando pagamento.");
-        }
-
-        if (rental.getPaymentId() == null) {
-            throw new RuntimeException("Não existe pagamento vinculado para esta locação.");
-        }
-
-        PaymentModel payment = paymentRepository.findById(rental.getPaymentId())
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado."));
-
-        if (payment.getStatus() != PaymentStatus.CONFIRMED) {
-            throw new RuntimeException("O pagamento ainda não foi confirmado.");
-        }
-
-        rental.setPaidAt(LocalDateTime.now());
-        rental.setStatus(RentalStatus.PAID);
-
-        return rentalRepository.save(rental);
-    }
 
     public RentalModel startRental(Long rentalId, StartRentalDto dto) {
         RentalModel rental = findRentalOrThrow(rentalId);
