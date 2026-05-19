@@ -5,10 +5,13 @@ import com.devolva.use.users.domain.UserModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Map;import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.HttpStatusCodeException;
+import java.util.List;
 
 @Service
 public class PaymentUsecases {
@@ -19,72 +22,67 @@ public class PaymentUsecases {
     @Value("${ABACATE_API_URL}")
     private String abacateApiUrl;
 
-    private static final String PIX_ENDPOINT = "/pixQrCode/create";
+    private static final String CHECKOUT_ENDPOINT = "/checkouts/create";
 
     public Map<String, Object> createCheckout(CreateCheckoutDto dto) {
 
-        RestTemplate restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(10000);
+        factory.setReadTimeout(10000);
+
+        RestTemplate restTemplate = new RestTemplate(factory);
 
         HttpHeaders headers = new HttpHeaders();
-
-        headers.set("Authorization", "Bearer " + abacateApiKey);
-
+        headers.setBearerAuth(abacateApiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Integer amount = getPlanValue(dto.plano());
+        Map<String, Object> item = new HashMap<>();
+        item.put("id", getProductId(dto.plano()));
+        item.put("quantity", 1);
 
-        if (amount <= 0) {
-            throw new RuntimeException("Plano inválido para pagamento");
-        }
+        Map<String, Object> card = new HashMap<>();
+        card.put("maxInstallments", 12);
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("userId", dto.userId().toString());
+        metadata.put("plano", dto.plano().name());
 
         Map<String, Object> body = new HashMap<>();
+        body.put("items", List.of(item));
+        body.put("methods", List.of("PIX", "CARD"));
+        body.put("externalId", "user-" + dto.userId() + "-" + System.currentTimeMillis());
+        body.put("card", card);
+        body.put("metadata", metadata);
 
-        body.put("amount", amount);
-
-        body.put("description", "Plano " + dto.plano());
-
-        body.put("externalId", dto.userId().toString());
-
-        HttpEntity<Map<String, Object>> entity =
-                new HttpEntity<>(body, headers);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
         try {
-
-            ResponseEntity<Map> response =
-                    restTemplate.postForEntity(
-                            abacateApiUrl + PIX_ENDPOINT,
-                            entity,
-                            Map.class
-                    );
-
-            System.out.println("RESPOSTA ABACATEPAY:");
-            System.out.println(response.getBody());
+            ResponseEntity<Map> response = restTemplate.postForEntity(
+                    abacateApiUrl + CHECKOUT_ENDPOINT,
+                    entity,
+                    Map.class
+            );
 
             return response.getBody();
 
+        } catch (HttpStatusCodeException e) {
+            System.out.println("ERRO ABACATEPAY:");
+            System.out.println(e.getStatusCode());
+            System.out.println(e.getResponseBodyAsString());
+
+            throw new RuntimeException("Erro AbacatePay: " + e.getResponseBodyAsString());
+
         } catch (Exception e) {
-
             e.printStackTrace();
-
-            throw new RuntimeException(
-                    "Erro ao criar checkout AbacatePay: "
-                            + e.getMessage()
-            );
+            throw new RuntimeException("Erro ao criar checkout: " + e.getMessage());
         }
     }
 
-    private Integer getPlanValue(UserModel.Plano plano) {
-
-        switch (plano) {
-
-            case PRATA:
-                return 1490;
-
-            case OURO:
-                return 2990;
-
-            default:
-                return 0;
-        }
+    private String getProductId(UserModel.Plano plano) {
+        return switch (plano) {
+            case PRATA -> "prod_f2tYmuCEYS5kpH0zSE3eCJLB";
+            case OURO -> "prod_zKWEx3s0sQBHNKgMkNUUg3wb";
+            default -> throw new RuntimeException("Plano inválido para pagamento");
+        };
     }
 }
