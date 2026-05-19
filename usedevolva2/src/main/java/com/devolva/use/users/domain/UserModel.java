@@ -1,5 +1,6 @@
 package com.devolva.use.users.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +39,7 @@ public class UserModel {
     @Enumerated(EnumType.STRING)
     private Plano plano;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate planExpiresAt;
 
 
