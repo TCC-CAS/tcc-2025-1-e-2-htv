@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const form = document.getElementById("createToolForm");
     const message = document.querySelector(".form-message");
     const fotosInput = document.getElementById("fotos");
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             formData.append(
                 "tool",
-                new Blob([JSON.stringify(toolData)], { type: "application/json" })
+                new Blob([JSON.stringify(toolData)], {type: "application/json"})
             );
 
             selectedFiles.forEach((file) => {
