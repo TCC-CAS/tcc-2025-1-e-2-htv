@@ -40,9 +40,6 @@ public class PaymentUsecases {
         item.put("id", getProductId(dto.plano()));
         item.put("quantity", 1);
 
-        Map<String, Object> card = new HashMap<>();
-        card.put("maxInstallments", 12);
-
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("userId", dto.userId().toString());
         metadata.put("plano", dto.plano().name());
@@ -51,7 +48,6 @@ public class PaymentUsecases {
         body.put("items", List.of(item));
         body.put("methods", List.of("PIX", "CARD"));
         body.put("externalId", "user-" + dto.userId() + "-" + System.currentTimeMillis());
-        body.put("card", card);
         body.put("metadata", metadata);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
@@ -70,11 +66,20 @@ public class PaymentUsecases {
             System.out.println(e.getStatusCode());
             System.out.println(e.getResponseBodyAsString());
 
-            throw new RuntimeException("Erro AbacatePay: " + e.getResponseBodyAsString());
+            return Map.of(
+                    "success", false,
+                    "status", e.getStatusCode().value(),
+                    "abacateError", e.getResponseBodyAsString()
+            );
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Erro ao criar checkout: " + e.getMessage());
+
+            return Map.of(
+                    "success", false,
+                    "error", "Erro ao criar checkout",
+                    "message", e.getMessage()
+            );
         }
     }
 
