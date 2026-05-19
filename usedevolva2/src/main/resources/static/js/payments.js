@@ -61,8 +61,12 @@ async function createCheckout(plano) {
             alert("Erro ao criar pagamento.");
             return;
         }
+        console.log("Resposta completa da AbacatePay:", result);
+        console.log("ID do pagamento recebido:", result.data?.id);
 
         localStorage.setItem("pendingPaymentId", result.data.id);
+
+        console.log("ID salvo no localStorage:", localStorage.getItem("pendingPaymentId"));
         window.location.href = result.data.url;
 
     } catch (error) {
