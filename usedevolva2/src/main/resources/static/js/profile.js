@@ -46,13 +46,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const planMessage = document.querySelector(".plan-card p");
         const planButton = document.getElementById("openPlansModalBtn");
 
-        console.log("Data de expiração do plano:", user.planExpiresAt);
-
         if (user.plano && user.plano !== "FREE") {
             const hoje = new Date();
             const expiracao = user.planExpiresAt ? new Date(user.planExpiresAt) : null;
-            console.log("Data de hoje:", hoje);
-            console.log("Data de expiração convertida:", expiracao);
+
+            console.log("Plano:", user.plano, "Expiração:", user.planExpiresAt);
 
             if (expiracao && expiracao < hoje) {
                 planMessage.textContent = `Seu plano ${user.plano} expirou. Renove para continuar aproveitando os recursos.`;
