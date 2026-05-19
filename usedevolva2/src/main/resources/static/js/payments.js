@@ -62,6 +62,7 @@ async function createCheckout(plano) {
             return;
         }
 
+        localStorage.setItem("pendingPaymentId", result.data.id);
         window.location.href = result.data.url;
 
     } catch (error) {
