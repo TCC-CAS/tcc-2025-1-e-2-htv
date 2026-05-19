@@ -61,6 +61,8 @@ public class AuthController {
         return "tools/tools-list";
     }
 
-
-
+    @GetMapping("/payment/success")
+    public String paymentSuccessPage() {
+        return "payments/payment-success";
+    }
 }
