@@ -35,5 +35,5 @@ public class PaymentController {
     ) {
         return ResponseEntity.ok(paymentUsecases.syncPaymentStatus(transactionId));
     }
-    
+
 }

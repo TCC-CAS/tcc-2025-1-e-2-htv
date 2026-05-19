@@ -63,6 +63,7 @@ public class AuthController {
 
     @GetMapping("/payment/success")
     public String paymentSuccessPage() {
+        System.out.println("ROTA /payment/success CHAMADA");
         return "payments/payment-success";
     }
 }
