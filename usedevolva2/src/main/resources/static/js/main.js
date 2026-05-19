@@ -20,10 +20,6 @@ if (searchForm && searchInput) {
   });
 }
 
-// ==========================
-// DETALHE DA FERRAMENTA
-// ==========================
-
 const cepButtons = document.querySelectorAll(
   ".detail-cep-small button, .detail-cep-large button, .location-box__input button, .cep-check button"
 );
@@ -60,11 +56,6 @@ if (rentButton) {
     window.location.href = "login.html";
   });
 }
-
-// ==========================
-// CARROSSEL DE FERRAMENTAS
-// ==========================
-
 const carouselTrack = document.querySelector(".carousel-track");
 const carouselImages = document.querySelectorAll(".carousel-track img");
 const prevCarouselBtn = document.querySelector(".carousel-btn.prev");

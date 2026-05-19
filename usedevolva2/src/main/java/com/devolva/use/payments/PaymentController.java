@@ -36,4 +36,12 @@ public class PaymentController {
         return ResponseEntity.ok(paymentUsecases.syncPaymentStatus(transactionId));
     }
 
+    @GetMapping("/user/{userId}/pending")
+    public ResponseEntity<Map<String, Object>> findLastPendingPayment(
+            @PathVariable Long userId
+    ) {
+        return ResponseEntity.ok(paymentUsecases.findLastPendingPayment(userId));
+    }
+
+
 }

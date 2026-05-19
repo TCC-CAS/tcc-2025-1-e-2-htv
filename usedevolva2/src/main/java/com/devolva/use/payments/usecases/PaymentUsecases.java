@@ -67,6 +67,9 @@ public class PaymentUsecases {
         body.put("methods", List.of("CARD"));
         body.put("externalId", "user-" + dto.userId() + "-" + System.currentTimeMillis());
         body.put("metadata", metadata);
+        String externalId = "user-" + dto.userId() + "-" + System.currentTimeMillis();
+
+        body.put("externalId", externalId);
         body.put("completionUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/payment/success");
         body.put("returnUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/profile");
 
@@ -203,6 +206,20 @@ public class PaymentUsecases {
             );
         }
     }
+
+    public Map<String, Object> findLastPendingPayment(Long userId) {
+        return paymentRepository
+                .findTopByUserIdAndStatusOrderByCreatedAtDesc(userId, PaymentStatus.PENDING)
+                .map(payment -> Map.<String, Object>of(
+                        "success", true,
+                        "transactionId", payment.getTransactionId()
+                ))
+                .orElse(Map.of(
+                        "success", false,
+                        "message", "Nenhum pagamento pendente encontrado."
+                ));
+    }
+
 
 
 }

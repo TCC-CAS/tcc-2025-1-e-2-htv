@@ -1,6 +1,7 @@
 package com.devolva.use.payments.repository;
 
 import com.devolva.use.payments.domain.PaymentModel;
+import com.devolva.use.payments.domain.PaymentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,8 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<PaymentModel, Long> {
 
     Optional<PaymentModel> findByTransactionId(String transactionId);
+    Optional<PaymentModel> findTopByUserIdAndStatusOrderByCreatedAtDesc(
+            Long userId,
+            PaymentStatus status
+    );
 }

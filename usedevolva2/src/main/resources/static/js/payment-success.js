@@ -2,17 +2,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusMessage = document.getElementById("paymentStatusMessage");
 
     if (statusMessage) {
-        statusMessage.textContent = "Verificando pagamento em 30 segundos...";
+        statusMessage.textContent = "Verificando pagamento em alguns segundos...";
     }
 
     setTimeout(() => {
         syncPaymentNow();
-    }, 30000);
+    }, 5000);
 });
+
+async function getPendingPaymentId() {
+    const fromLocalStorage = localStorage.getItem("pendingPaymentId");
+
+    if (fromLocalStorage) {
+        return fromLocalStorage;
+    }
+
+    const userJson = localStorage.getItem("user");
+
+    if (!userJson) {
+        return null;
+    }
+
+    const user = JSON.parse(userJson);
+
+    const response = await fetch(`/payments/user/${user.id}/pending`);
+    const result = await response.json();
+
+    if (result.success) {
+        return result.transactionId;
+    }
+
+    return null;
+}
 
 async function syncPaymentNow() {
     const statusMessage = document.getElementById("paymentStatusMessage");
-    const transactionId = localStorage.getItem("pendingPaymentId");
+    const transactionId = await getPendingPaymentId();
+
+    console.log("Transaction ID encontrado:", transactionId);
 
     if (!transactionId) {
         if (statusMessage) {
@@ -29,17 +56,16 @@ async function syncPaymentNow() {
         const response = await fetch(`/payments/${transactionId}/sync`);
         const result = await response.json();
 
-        if (!result.success) {
-            console.error(result);
+        console.log("Resultado da sincronização:", result);
 
+        if (!result.success) {
             if (statusMessage) {
                 statusMessage.textContent = "Não foi possível verificar o pagamento agora.";
             }
-
             return;
         }
 
-        if (result.status === "PAID") {
+        if (String(result.status).toUpperCase() === "PAID") {
             localStorage.removeItem("pendingPaymentId");
 
             const userJson = localStorage.getItem("user");
