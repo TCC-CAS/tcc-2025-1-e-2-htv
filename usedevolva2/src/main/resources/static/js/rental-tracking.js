@@ -1,0 +1,161 @@
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const rentalId = getRentalIdFromUrl();
+
+    if (!rentalId) {
+
+        alert("Aluguel não encontrado");
+
+        return;
+    }
+
+    await loadRental(rentalId);
+});
+
+function getRentalIdFromUrl() {
+
+    const pathParts =
+        window.location.pathname.split("/");
+
+    return pathParts[pathParts.length - 1];
+}
+
+async function loadRental(rentalId) {
+
+    try {
+
+        const response = await fetch(
+            `/rentals/${rentalId}/details`
+        );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Erro ao carregar aluguel"
+            );
+        }
+
+        const rental = await response.json();
+
+        renderRental(rental);
+
+        updateProgress(rental.status);
+
+    } catch (error) {
+
+        console.error(error);
+    }
+}
+
+function renderRental(rental) {
+
+    document.getElementById("toolName")
+        .textContent = rental.toolName;
+
+    document.getElementById("ownerName")
+        .textContent = rental.ownerName;
+
+    document.getElementById("rentalPeriod")
+        .textContent =
+        `${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}`;
+
+    document.getElementById("paymentValue")
+        .textContent =
+        formatCurrency(rental.totalValue);
+
+    document.getElementById("statusTexto")
+        .textContent =
+        translateStatus(rental.status);
+}
+
+function updateProgress(status) {
+
+    const steps =
+        document.querySelectorAll(".etapa");
+
+    let currentStep = 0;
+
+    switch (status) {
+
+        case "PENDING":
+            currentStep = 0;
+            break;
+
+        case "PAID":
+            currentStep = 2;
+            break;
+
+        case "IN_USE":
+            currentStep = 4;
+            break;
+
+        case "RETURNED":
+        case "LATE_RETURNED":
+            currentStep = 5;
+            break;
+
+        default:
+            currentStep = 0;
+    }
+
+    steps.forEach((step, index) => {
+
+        if (index <= currentStep) {
+
+            step.classList.add("ativa");
+        }
+    });
+
+    const progress =
+        document.getElementById(
+            "linhaProgresso"
+        );
+
+    const percentage =
+        (currentStep / (steps.length - 1)) * 100;
+
+    progress.style.width = `${percentage}%`;
+}
+
+function translateStatus(status) {
+
+    const map = {
+
+        PENDING: "Pendente",
+
+        AWAITING_PAYMENT:
+            "Aguardando Pagamento",
+
+        PAID: "Pago",
+
+        IN_USE: "Em Uso",
+
+        RETURNED: "Devolvido",
+
+        LATE_RETURNED:
+            "Devolvido com atraso",
+
+        REJECTED: "Recusado",
+
+        CANCELLED: "Cancelado"
+    };
+
+    return map[status] || status;
+}
+
+function formatDate(date) {
+
+    return new Date(date + "T00:00:00")
+        .toLocaleDateString("pt-BR");
+}
+
+function formatCurrency(value) {
+
+    return Number(value || 0)
+        .toLocaleString("pt-BR", {
+
+            style: "currency",
+
+            currency: "BRL"
+        });
+}
