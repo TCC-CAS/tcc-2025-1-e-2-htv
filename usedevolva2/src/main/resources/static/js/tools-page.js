@@ -2,57 +2,48 @@ let currentTool = null;
 const CURRENT_USER_ID = JSON.parse(localStorage.getItem("user")).id;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadTool();
-    await loadImages();
-
+    const reservationForm = document.getElementById("reservationForm");
     const dataInicio = document.getElementById("dataInicio");
     const dataFim = document.getElementById("dataFim");
-    const reservationForm = document.getElementById("reservationForm");
+    const obs = document.getElementById("obs");
 
-    if (dataInicio) dataInicio.addEventListener("change", updateBookingSummary);
-    if (dataFim) dataFim.addEventListener("change", updateBookingSummary);
+    reservationForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-    if (reservationForm) {
-        reservationForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
+        if (!CURRENT_USER_ID) {
+            alert("Faça login para reservar a ferramenta.");
+            return;
+        }
 
-            const dataInicioVal = dataInicio.value;
-            const dataFimVal = dataFim.value;
-            const obs = document.getElementById("obs").value;
+        const dataInicioVal = dataInicio.value;
+        const dataFimVal = dataFim.value;
 
-            try {
-                const rentalResponse = await fetch("/rentals", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        toolId: TOOL_ID,
-                        tenantId: CURRENT_USER_ID,
-                        startDate: dataInicioVal,
-                        endDate: dataFimVal,
-                        message: obs
-                    })
-                });
+        if (!dataInicioVal || !dataFimVal) {
+            alert("Selecione datas válidas para a reserva.");
+            return;
+        }
 
-                const rental = await rentalResponse.json();
+        try {
+            // Chama diretamente o checkout da ferramenta
+            const checkoutResponse = await fetch(
+                `/payments/tool-checkout?rentalId=0&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`,
+                { method: "POST" }
+            );
 
-                const checkoutResponse = await fetch(
-                    `/payments/tool-checkout?rentalId=${rental.id}&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`,
-                    { method: "POST" }
-                );
+            const checkoutData = await checkoutResponse.json();
 
-                const checkoutData = await checkoutResponse.json();
-
-                if (checkoutData.success) {
-                    window.location.href = checkoutData.data.url;
-                } else {
-                    alert("Erro ao criar checkout: " + checkoutData.message);
-                }
-            } catch (error) {
-                console.error(error);
-                alert("Erro ao processar a reserva.");
+            if (checkoutData.success) {
+                // Redireciona para a AbacatePay
+                window.location.href = checkoutData.data.url;
+            } else {
+                console.error(checkoutData);
+                alert("Erro ao criar checkout: " + (checkoutData.message || "verifique o console"));
             }
-        });
-    }
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao processar a reserva.");
+        }
+    });
 });
 
 async function loadTool() {
