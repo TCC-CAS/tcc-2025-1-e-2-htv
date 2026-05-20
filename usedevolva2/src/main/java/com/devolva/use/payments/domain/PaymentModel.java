@@ -34,4 +34,5 @@ public class PaymentModel {
     private LocalDateTime createdAt;
 
     private LocalDateTime paidAt;
+
 }

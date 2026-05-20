@@ -3,8 +3,13 @@ package com.devolva.use.payments.usecases;
 import com.devolva.use.payments.domain.PaymentModel;
 import com.devolva.use.payments.domain.PaymentStatus;
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
-import com.devolva.use.payments.dtos.CreateToolCheckoutDto;
+import com.devolva.use.payments.dtos.CreateToolPaymentDto;
 import com.devolva.use.payments.repository.PaymentRepository;
+import com.devolva.use.rentals.domain.RentalModel;
+import com.devolva.use.rentals.domain.RentalStatus;
+import com.devolva.use.rentals.repository.RentalRepository;
+import com.devolva.use.tools.domain.ToolModel;
+import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,13 +37,17 @@ public class PaymentUsecases {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final ToolRepository toolRepository;
+    private final RentalRepository rentalRepository;
 
     public PaymentUsecases(
             PaymentRepository paymentRepository,
-            UserRepository userRepository
+            UserRepository userRepository, ToolRepository toolRepository, RentalRepository rentalRepository
     ) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
+        this.toolRepository = toolRepository;
+        this.rentalRepository = rentalRepository;
     }
     private static final String CHECKOUT_ENDPOINT = "/checkouts/create";
 
@@ -222,68 +231,207 @@ public class PaymentUsecases {
                 ));
     }
     @SuppressWarnings("unchecked")
-    public Map<String, Object> createToolCheckout(CreateToolCheckoutDto dto) {
-        RestTemplate restTemplate = new RestTemplate();
+    public Object createToolPixPayment(CreateToolPaymentDto dto) {
+
+        ToolModel tool = toolRepository.findById(dto.toolId())
+                .orElseThrow(() -> new RuntimeException("Ferramenta não encontrada."));
+
+        if (!tool.isAtivo()) {
+            throw new RuntimeException("Ferramenta inativa.");
+        }
+
+        if (!tool.isDisponivel()) {
+            throw new RuntimeException("Ferramenta indisponível.");
+        }
+
+        LocalDate startDate = LocalDate.parse(dto.startDate());
+        LocalDate endDate = LocalDate.parse(dto.endDate());
+
+        if (endDate.isBefore(startDate)) {
+            throw new RuntimeException("Data final inválida.");
+        }
+
+        long totalDaysLong =
+                java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
+
+        int totalDays = (int) totalDaysLong;
+
+        double dailyRate = tool.getValorDiaria().doubleValue();
+
+        double baseValue = dailyRate * totalDays;
+
+        double serviceFee = baseValue * 0.07;
+
+        double totalValue = baseValue + serviceFee;
+
+        double ownerNetValue = baseValue;
+
+
+        RentalModel rental = new RentalModel();
+
+        rental.setToolId(tool.getId());
+
+        rental.setOwnerId(tool.getOwnerId());
+
+        rental.setRenterId(dto.userId());
+
+        rental.setStartDate(startDate);
+
+        rental.setEndDate(endDate);
+
+        rental.setTotalDays(totalDays);
+
+        rental.setDailyRate(dailyRate);
+
+        rental.setBaseValue(baseValue);
+
+        rental.setServiceFee(serviceFee);
+
+        rental.setTotalValue(totalValue);
+
+        rental.setOwnerNetValue(ownerNetValue);
+
+        rental.setStatus(RentalStatus.PENDING);
+
+        rental.setRequestedAt(LocalDateTime.now());
+
+        rental = rentalRepository.save(rental);
+
+
+        SimpleClientHttpRequestFactory factory =
+                new SimpleClientHttpRequestFactory();
+
+        factory.setConnectTimeout(10000);
+
+        factory.setReadTimeout(10000);
+
+        RestTemplate restTemplate = new RestTemplate(factory);
 
         HttpHeaders headers = new HttpHeaders();
+
         headers.setBearerAuth(abacateApiKey);
+
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, Object> item = new HashMap<>();
-        item.put("id", "tool-" + dto.toolId());
-        item.put("name", "Aluguel de ferramenta: " + dto.toolName());
-        item.put("quantity", dto.days());
-        item.put("amount", dto.totalAmount().doubleValue());
 
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("userId", dto.userId().toString());
-        metadata.put("toolId", dto.toolId());
+
+        metadata.put("rentalId", rental.getId());
+
+        metadata.put("toolId", tool.getId());
+
+        metadata.put("ownerId", tool.getOwnerId());
+
+        metadata.put("renterId", dto.userId());
+
 
         Map<String, Object> body = new HashMap<>();
-        body.put("items", List.of(item));
-        body.put("methods", List.of("CARD"));
-        body.put("externalId", "tool-" + dto.toolId() + "-" + System.currentTimeMillis());
-        body.put("metadata", metadata);
-        body.put("completionUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/payment/success");
-        body.put("returnUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/users/profile");
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+        body.put(
+                "amount",
+                (int) Math.round(totalValue * 100)
+        );
+
+        body.put(
+                "description",
+                "Aluguel da ferramenta: " + tool.getNome()
+        );
+
+        body.put(
+                "externalId",
+                "rental-" + rental.getId() + "-" + System.currentTimeMillis()
+        );
+
+        body.put("metadata", metadata);
+
+        body.put("expiresIn", 3600);
+
+        HttpEntity<Map<String, Object>> entity =
+                new HttpEntity<>(body, headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(
-                    abacateApiUrl + "/checkouts/create",
-                    entity,
-                    Map.class
-            );
+
+            ResponseEntity<Map> response =
+                    restTemplate.postForEntity(
+                            abacateApiUrl + "/pixQrCode/create",
+                            entity,
+                            Map.class
+                    );
 
             Map<String, Object> responseBody = response.getBody();
 
-            if (responseBody == null || !Boolean.TRUE.equals(responseBody.get("success"))) {
+            if (responseBody == null
+                    || !Boolean.TRUE.equals(responseBody.get("success"))) {
+
+                rental.setStatus(RentalStatus.CANCELLED);
+
+                rentalRepository.save(rental);
+
                 return responseBody;
             }
 
-            Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
+            Map<String, Object> data =
+                    (Map<String, Object>) responseBody.get("data");
 
             PaymentModel payment = new PaymentModel();
+
             payment.setUserId(dto.userId());
+
             payment.setTransactionId((String) data.get("id"));
-            payment.setCheckoutUrl((String) data.get("url"));
-            payment.setAmount(dto.totalAmount());
+
+            payment.setAmount(BigDecimal.valueOf(totalValue));
+
             payment.setStatus(PaymentStatus.PENDING);
+
             payment.setCreatedAt(LocalDateTime.now());
 
-            paymentRepository.save(payment);
+            payment = paymentRepository.save(payment);
 
-            return responseBody;
 
-        } catch (Exception e) {
+            rental.setPaymentId(payment.getId());
+
+            rentalRepository.save(rental);
+
+
+            return Map.of(
+                    "success", true,
+
+                    "rentalId", rental.getId(),
+
+                    "paymentId", payment.getId(),
+
+                    "pixQrCode", data.get("brCode"),
+
+                    "pixQrCodeBase64", data.get("brCodeBase64"),
+
+                    "amount", totalValue,
+
+                    "expiresAt", data.get("expiresAt")
+            );
+
+        } catch (HttpStatusCodeException e) {
+
+            rental.setStatus(RentalStatus.CANCELLED);
+
+            rentalRepository.save(rental);
+
             return Map.of(
                     "success", false,
-                    "error", "Erro ao criar checkout",
+                    "status", e.getStatusCode().value(),
+                    "abacateError", e.getResponseBodyAsString()
+            );
+
+        } catch (Exception e) {
+
+            rental.setStatus(RentalStatus.CANCELLED);
+
+            rentalRepository.save(rental);
+
+            return Map.of(
+                    "success", false,
+                    "error", "Erro ao gerar pagamento Pix",
                     "message", e.getMessage()
             );
         }
     }
-
-
 }

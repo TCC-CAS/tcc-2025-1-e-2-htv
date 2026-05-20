@@ -12,9 +12,80 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (dataFim) dataFim.addEventListener("change", updateBookingSummary);
 
     if (reservationForm) {
-        reservationForm.addEventListener("submit", (event) => {
+
+        reservationForm.addEventListener("submit", async (event) => {
+
             event.preventDefault();
-            showToast("Solicitação de empréstimo ainda será implementada.");
+
+            try {
+
+                const dataInicio =
+                    document.getElementById("dataInicio").value;
+
+                const dataFim =
+                    document.getElementById("dataFim").value;
+
+                const obs =
+                    document.getElementById("obs").value;
+
+                if (!dataInicio || !dataFim) {
+                    showToast("Preencha as datas.");
+                    return;
+                }
+
+                const user = JSON.parse(localStorage.getItem("user"));
+
+                if (!user || !user.id) {
+                    showToast("Você precisa estar logado.");
+                    return;
+                }
+
+                const response = await fetch("/tool-payments/create", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        toolId: TOOL_ID,
+                        userId: user.id,
+                        startDate: dataInicio,
+                        endDate: dataFim,
+                        message: obs
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+
+                    console.error(data);
+
+                    showToast(
+                        data.message ||
+                        "Erro ao criar pagamento."
+                    );
+
+                    return;
+                }
+
+                localStorage.setItem(
+                    "toolPaymentData",
+                    JSON.stringify(data)
+                );
+
+                window.location.href =
+                    `/payment/success?paymentId=${data.paymentId}`;
+
+            } catch (error) {
+
+                console.error(error);
+
+                showToast(
+                    "Erro ao processar solicitação."
+                );
+            }
         });
     }
 })
