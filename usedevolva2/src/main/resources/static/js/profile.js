@@ -43,8 +43,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentPlan.textContent = user.plano || "FREE";
         }
 
-        const planMessage = document.getElementById("planMessage");
-        const planButton = document.getElementById("planButton");
+        const planMessage = document.querySelector(".plan-card p");
+        const planButton = document.getElementById("openPlansModalBtn");
 
         if (user.plano && user.plano !== "FREE") {
             const hoje = new Date();
