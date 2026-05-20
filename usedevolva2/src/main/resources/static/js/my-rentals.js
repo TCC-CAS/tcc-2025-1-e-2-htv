@@ -20,6 +20,11 @@ async function loadRentals(userId) {
             `/rentals/renter-list/${userId}`
         );
 
+        if (!response.ok) {
+
+            throw new Error("Erro ao carregar alugueis");
+        }
+
         const rentals = await response.json();
 
         renderStats(rentals);
@@ -29,6 +34,12 @@ async function loadRentals(userId) {
     } catch (error) {
 
         console.error(error);
+
+        document.getElementById("rentalsList").innerHTML = `
+            <p class="empty-message">
+                Erro ao carregar alugueis.
+            </p>
+        `;
     }
 }
 
@@ -55,7 +66,17 @@ function renderRentals(rentals) {
     if (!rentals.length) {
 
         container.innerHTML = `
-            <p>Nenhum aluguel encontrado.</p>
+            <div class="empty-rentals">
+
+                <h3>
+                    Nenhum aluguel encontrado
+                </h3>
+
+                <p>
+                    Você ainda não solicitou nenhuma ferramenta.
+                </p>
+
+            </div>
         `;
 
         return;
@@ -65,81 +86,113 @@ function renderRentals(rentals) {
 
         <article class="rental-card">
 
-            <div class="rental-header">
+            <a
+                href="/rentals/${rental.rentalId}"
+                class="rental-link"
+            >
 
-                <div class="rental-title-group">
+                <div class="rental-header">
 
-                    <h3>${rental.toolName}</h3>
+                    <div class="rental-title-group">
 
-                    <p>
-                        Proprietário:
-                        ${rental.ownerName}
-                    </p>
+                        <h3>
+                            ${rental.toolName || "Ferramenta"}
+                        </h3>
 
-                </div>
+                        <p>
+                            Proprietário:
+                            ${rental.ownerName || "Não informado"}
+                        </p>
 
-                <span class="badge ${getBadgeClass(rental.status)}">
-                    ${translateStatus(rental.status)}
-                </span>
+                    </div>
 
-            </div>
+                    <span class="badge ${getBadgeClass(rental.status)}">
 
-            <div class="rental-body">
+                        ${translateStatus(rental.status)}
 
-                ${
-        rental.toolImage
-            ? `
-                        <img
-                            src="${rental.toolImage}"
-                            class="rental-image"
-                            alt="${rental.toolName}"
-                        >
-                        `
-            : ""
-    }
-
-                <div class="info-block">
-
-                    <span class="info-label">
-                        Período
-                    </span>
-
-                    <span class="info-value">
-                        ${formatDate(rental.startDate)}
-                        até
-                        ${formatDate(rental.endDate)}
                     </span>
 
                 </div>
 
-                <div class="info-block">
+                <div class="rental-content">
 
-                    <span class="info-label">
-                        Valor
-                    </span>
+                    ${renderImage(rental)}
 
-                    <span class="price-value">
-                        ${formatCurrency(rental.totalValue)}
+                    <div class="rental-body">
+
+                        <div class="info-block">
+
+                            <span class="info-label">
+                                Período
+                            </span>
+
+                            <span class="info-value">
+
+                                ${formatDate(rental.startDate)}
+
+                                até
+
+                                ${formatDate(rental.endDate)}
+
+                            </span>
+
+                        </div>
+
+                        <div class="info-block">
+
+                            <span class="info-label">
+                                Valor
+                            </span>
+
+                            <span class="price-value">
+
+                                ${formatCurrency(rental.totalValue)}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="rental-actions">
+
+                    <span class="btn-outline">
+
+                        Ver aluguel
+
                     </span>
 
                 </div>
 
-            </div>
-
-            <div class="rental-actions">
-
-                <a
-                    href="/rentals/${rental.rentalId}"
-                    class="btn-outline"
-                >
-                    Ver aluguel
-                </a>
-
-            </div>
+            </a>
 
         </article>
 
     `).join("");
+}
+
+function renderImage(rental) {
+
+    if (!rental.toolImage) {
+
+        return `
+            <div class="rental-image-placeholder">
+
+                Sem imagem
+
+            </div>
+        `;
+    }
+
+    return `
+        <img
+            src="${rental.toolImage}"
+            class="rental-image"
+            alt="${rental.toolName}"
+        >
+    `;
 }
 
 function translateStatus(status) {
@@ -174,18 +227,28 @@ function getBadgeClass(status) {
             return "active";
 
         case "RETURNED":
+        case "LATE_RETURNED":
             return "done";
 
         case "PENDING":
         case "AWAITING_PAYMENT":
             return "pending";
 
+        case "REJECTED":
+        case "CANCELLED":
+            return "cancelled";
+
         default:
-            return "";
+            return "pending";
     }
 }
 
 function formatDate(date) {
+
+    if (!date) {
+
+        return "-";
+    }
 
     return new Date(date + "T00:00:00")
         .toLocaleDateString("pt-BR");
@@ -193,10 +256,11 @@ function formatDate(date) {
 
 function formatCurrency(value) {
 
-    return Number(value).toLocaleString("pt-BR", {
+    return Number(value || 0)
+        .toLocaleString("pt-BR", {
 
-        style: "currency",
+            style: "currency",
 
-        currency: "BRL"
-    });
+            currency: "BRL"
+        });
 }
