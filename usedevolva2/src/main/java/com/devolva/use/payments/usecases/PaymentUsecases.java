@@ -2,7 +2,6 @@ package com.devolva.use.payments.usecases;
 
 import com.devolva.use.payments.domain.PaymentModel;
 import com.devolva.use.payments.domain.PaymentStatus;
-import com.devolva.use.payments.dtos.AbacateWebhookDto;
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
 import com.devolva.use.payments.dtos.CreateToolCheckoutDto;
 import com.devolva.use.payments.repository.PaymentRepository;
@@ -19,7 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.HttpStatusCodeException;
+
 import java.util.List;
 
 @Service

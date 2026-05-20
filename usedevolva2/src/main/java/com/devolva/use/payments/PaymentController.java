@@ -1,6 +1,5 @@
 package com.devolva.use.payments;
 
-import com.devolva.use.payments.dtos.AbacateWebhookDto;
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
 import com.devolva.use.payments.dtos.CreateToolCheckoutDto;
 import com.devolva.use.payments.usecases.PaymentUsecases;

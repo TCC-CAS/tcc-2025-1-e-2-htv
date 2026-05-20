@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             showToast("Solicitação de empréstimo ainda será implementada.");
         });
     }
-});
+})
 
 async function loadTool() {
     try {
