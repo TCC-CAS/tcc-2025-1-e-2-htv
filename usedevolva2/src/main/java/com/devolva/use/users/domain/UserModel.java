@@ -39,6 +39,7 @@ public class UserModel {
     @Enumerated(EnumType.STRING)
     private Plano plano;
 
+    @Column(name = "plan_expires_at")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate planExpiresAt;
 
