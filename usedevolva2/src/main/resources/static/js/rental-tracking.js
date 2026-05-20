@@ -24,8 +24,11 @@ async function loadRental(rentalId) {
 
     try {
 
+        const user =
+            JSON.parse(localStorage.getItem("user"));
+
         const response = await fetch(
-            `/rentals/${rentalId}/details`
+            `/rentals/${rentalId}/details?userId=${user.id}`
         );
 
         if (!response.ok) {
