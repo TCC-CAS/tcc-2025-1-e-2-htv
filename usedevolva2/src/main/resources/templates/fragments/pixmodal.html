@@ -1,0 +1,53 @@
+<div
+        th:fragment="pixModal"
+        id="pixModal"
+        class="pix-modal hidden"
+>
+    <div class="pix-modal-content">
+
+        <button
+                id="closePixModal"
+                class="pix-close-btn"
+                type="button"
+        >
+            ×
+        </button>
+
+        <h2>Pagamento Pix</h2>
+
+        <p>
+            Escaneie o QR Code abaixo para concluir
+            o aluguel da ferramenta.
+        </p>
+
+        <img
+                id="pixQrImage"
+                class="pix-qrcode"
+                src=""
+                alt="QR Code Pix"
+        >
+
+        <textarea
+                id="pixCode"
+                readonly
+        ></textarea>
+
+        <button
+                type="button"
+                id="copyPixCodeBtn"
+                class="btn-copy-pix"
+        >
+            Copiar código Pix
+        </button>
+
+        <button
+                type="button"
+                id="checkPaymentBtn"
+                class="btn-check-payment"
+        >
+            Verificar pagamento
+        </button>
+
+    </div>
+
+</div>

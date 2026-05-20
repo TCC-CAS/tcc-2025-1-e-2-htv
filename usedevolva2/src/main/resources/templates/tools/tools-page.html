@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/fragments/footer.css">
     <link rel="stylesheet" href="/css/pages/tools.css">
     <link rel="stylesheet" href="/css/root.css">
+    <link rel="stylesheet" href="/css/fragments/pixmodal.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,6 +121,7 @@
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/pixmodal :: pixModal}"></div>
 
 <script th:inline="javascript">
     const TOOL_ID = [[${toolId}]];

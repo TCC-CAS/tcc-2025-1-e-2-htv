@@ -389,7 +389,7 @@ public class PaymentUsecases {
 
             payment.setCreatedAt(LocalDateTime.now());
             payment.setCheckoutUrl(null);
-            
+
             payment = paymentRepository.save(payment);
 
 

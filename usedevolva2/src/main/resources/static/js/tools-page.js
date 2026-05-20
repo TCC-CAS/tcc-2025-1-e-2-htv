@@ -75,8 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     JSON.stringify(data)
                 );
 
-                window.location.href =
-                    `/payment/success?paymentId=${data.paymentId}`;
+                showPixModal(data);
 
             } catch (error) {
 
@@ -286,3 +285,123 @@ function getInitials(name) {
         .join("")
         .toUpperCase();
 }
+
+function showPixModal(data) {
+
+    const modal =
+        document.getElementById("pixModal");
+
+    modal.classList.remove("hidden");
+
+    document.getElementById("pixQrImage").src =
+        data.pixQrCodeBase64;
+
+    document.getElementById("pixCode").value =
+        data.pixQrCode;
+
+    localStorage.setItem(
+        "lastToolPayment",
+        JSON.stringify(data)
+    );
+}
+
+function closePixModal() {
+
+    document
+        .getElementById("pixModal")
+        .classList.add("hidden");
+}
+
+document.addEventListener("click", async (event) => {
+
+    if (event.target.id === "copyPixCodeBtn") {
+
+        const code =
+            document.getElementById("pixCode").value;
+
+        await navigator.clipboard.writeText(code);
+
+        showToast("Código Pix copiado!");
+    }
+});
+
+document.addEventListener("click", (event) => {
+
+    if (
+        event.target.id === "closePixModal"
+    ) {
+
+        closePixModal();
+    }
+});
+
+document.addEventListener("click", async (event) => {
+
+    if (
+        event.target.id !== "checkPaymentBtn"
+    ) return;
+
+    try {
+
+        const paymentData =
+            JSON.parse(
+                localStorage.getItem(
+                    "lastToolPayment"
+                )
+            );
+
+        if (!paymentData) {
+
+            showToast(
+                "Pagamento não encontrado."
+            );
+
+            return;
+        }
+
+        const response = await fetch(
+            `/tool-payments/check/${paymentData.paymentId}`
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            showToast(
+                "Pagamento ainda pendente."
+            );
+
+            return;
+        }
+
+        if (
+            data.status !== "PAID"
+        ) {
+
+            showToast(
+                "Pagamento ainda não aprovado."
+            );
+
+            return;
+        }
+
+        showToast(
+            "Pagamento aprovado!"
+        );
+
+        setTimeout(() => {
+
+            window.location.href =
+                "/rentals";
+
+        }, 1500);
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Erro ao verificar pagamento."
+        );
+    }
+});
