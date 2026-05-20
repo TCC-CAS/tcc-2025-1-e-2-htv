@@ -2,10 +2,12 @@ package com.devolva.use.payments;
 
 import com.devolva.use.payments.dtos.AbacateWebhookDto;
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
+import com.devolva.use.payments.dtos.CreateToolCheckoutDto;
 import com.devolva.use.payments.usecases.PaymentUsecases;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
@@ -42,6 +44,23 @@ public class PaymentController {
     ) {
         return ResponseEntity.ok(paymentUsecases.findLastPendingPayment(userId));
     }
+    @PostMapping("/tool-checkout")
+    public ResponseEntity<Map<String, Object>> createToolCheckout(
+            @RequestParam Long toolId,
+            @RequestParam int days,
+            @RequestParam BigDecimal totalAmount,
+            @RequestParam Long tenantId
+    ) {
+        CreateToolCheckoutDto dto = new CreateToolCheckoutDto(
+                tenantId,
+                toolId,
+                days,
+                null,
+                null,
+                totalAmount
+        );
 
+        return ResponseEntity.ok(paymentUsecases.createToolCheckout(dto));
+    }
 
 }

@@ -4,6 +4,7 @@ import com.devolva.use.payments.domain.PaymentModel;
 import com.devolva.use.payments.domain.PaymentStatus;
 import com.devolva.use.payments.dtos.AbacateWebhookDto;
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
+import com.devolva.use.payments.dtos.CreateToolCheckoutDto;
 import com.devolva.use.payments.repository.PaymentRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.repository.UserRepository;
@@ -221,7 +222,68 @@ public class PaymentUsecases {
                         "message", "Nenhum pagamento pendente encontrado."
                 ));
     }
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> createToolCheckout(CreateToolCheckoutDto dto) {
+        RestTemplate restTemplate = new RestTemplate();
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(abacateApiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> item = new HashMap<>();
+        item.put("id", "tool-" + dto.toolId());
+        item.put("quantity", dto.days());
+        item.put("amount", dto.totalAmount().doubleValue());
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("userId", dto.userId().toString());
+        metadata.put("toolId", dto.toolId());
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("items", List.of(item));
+        body.put("methods", List.of("CARD"));
+        body.put("externalId", "tool-" + dto.toolId() + "-" + System.currentTimeMillis());
+        body.put("metadata", metadata);
+        body.put("completionUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/payment/success");
+        body.put("returnUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/users/profile");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(
+                    abacateApiUrl + "/checkouts/create",
+                    entity,
+                    Map.class
+            );
+
+            Map<String, Object> responseBody = response.getBody();
+
+            if (responseBody == null || !Boolean.TRUE.equals(responseBody.get("success"))) {
+                return responseBody;
+            }
+
+            Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
+
+            PaymentModel payment = new PaymentModel();
+            payment.setUserId(dto.userId());
+            payment.setTransactionId((String) data.get("id"));
+            payment.setCheckoutUrl((String) data.get("url"));
+            payment.setAmount(dto.totalAmount());
+            payment.setStatus(PaymentStatus.PENDING);
+            payment.setCreatedAt(LocalDateTime.now());
+
+            paymentRepository.save(payment);
+
+            return responseBody;
+
+        } catch (Exception e) {
+            return Map.of(
+                    "success", false,
+                    "error", "Erro ao criar checkout",
+                    "message", e.getMessage()
+            );
+        }
+    }
 
 
 }
