@@ -73,49 +73,18 @@ function renderRental(rental) {
 
 function updateProgress(status) {
 
-    const steps =
-        document.querySelectorAll(".etapa");
+    const steps = document.querySelectorAll(".etapa");
 
-    let currentStep = 0;
-
-    switch (status) {
-
-        case "PENDING":
-            currentStep = 0;
-            break;
-
-        case "PAID":
-            currentStep = 2;
-            break;
-
-        case "IN_USE":
-            currentStep = 4;
-            break;
-
-        case "RETURNED":
-        case "LATE_RETURNED":
-            currentStep = 5;
-            break;
-
-        default:
-            currentStep = 0;
-    }
+    const completed = getCompletedSteps(status);
 
     steps.forEach((step, index) => {
-
-        if (index <= currentStep) {
-
-            step.classList.add("ativa");
-        }
+        step.classList.toggle("ativa", index < completed);
     });
 
-    const progress =
-        document.getElementById(
-            "linhaProgresso"
-        );
+    const progress = document.getElementById("linhaProgresso");
 
     const percentage =
-        (currentStep / (steps.length - 1)) * 100;
+        (completed / steps.length) * 100;
 
     progress.style.width = `${percentage}%`;
 }
@@ -161,4 +130,19 @@ function formatCurrency(value) {
 
             currency: "BRL"
         });
+}
+
+function getCompletedSteps(status) {
+
+    const map = {
+
+        PENDING: 1,
+        AWAITING_PAYMENT: 2,
+        PAID: 3,
+        IN_USE: 4,
+        RETURNED: 5,
+        LATE_RETURNED: 5
+    };
+
+    return map[status] || 0;
 }
