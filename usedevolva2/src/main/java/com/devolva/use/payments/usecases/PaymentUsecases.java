@@ -461,9 +461,6 @@ public class PaymentUsecases {
                         )
                 );
 
-        /*
-         * MOCK DEV MODE TCC
-         */
 
         if (payment.getStatus() != PaymentStatus.PAID) {
 

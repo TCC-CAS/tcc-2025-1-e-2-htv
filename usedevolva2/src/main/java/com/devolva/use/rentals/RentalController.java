@@ -75,4 +75,15 @@ public class RentalController {
     public List<RentalModel> findByOwnerId(@PathVariable Long ownerId) {
         return rentalUsecases.findByOwnerId(ownerId);
     }
+
+    @GetMapping("/renter-list/{renterId}")
+    public List<RentalListDto> getRentalsByRenter(
+            @PathVariable Long renterId
+    ) {
+
+        return rentalUsecases.getRentalsByRenter(renterId);
+    }
+
+
 }
+

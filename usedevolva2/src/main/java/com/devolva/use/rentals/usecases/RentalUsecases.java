@@ -359,4 +359,60 @@ public class RentalUsecases {
     private BigDecimal scale(BigDecimal value) {
         return value.setScale(2, RoundingMode.HALF_UP);
     }
+
+    public List<RentalListDto> getRentalsByRenter(Long renterId) {
+
+        List<RentalModel> rentals =
+                rentalRepository.findAll().stream()
+                        .filter(r -> r.getRenterId().equals(renterId))
+                        .toList();
+
+        return rentals.stream().map(rental -> {
+
+            ToolModel tool =
+                    findToolOrThrow(rental.getToolId());
+
+            UserModel owner =
+                    findUserOrThrow(rental.getOwnerId());
+
+            String image = null;
+
+            List<ToolImageModel> images =
+                    toolImageRepository.findByToolId(tool.getId());
+
+            if (!images.isEmpty()) {
+
+                image = images.stream()
+                        .filter(ToolImageModel::isPrincipal)
+                        .findFirst()
+                        .orElse(images.get(0))
+                        .getFilePath();
+            }
+
+            return new RentalListDto(
+
+                    rental.getId(),
+
+                    tool.getId(),
+
+                    tool.getNome(),
+
+                    image,
+
+                    owner.getNomeCompleto(),
+
+                    rental.getStatus().name(),
+
+                    rental.getStartDate().toString(),
+
+                    rental.getEndDate().toString(),
+
+                    rental.getTotalValue()
+            );
+
+        }).toList();
+    }
+
+
 }
+
