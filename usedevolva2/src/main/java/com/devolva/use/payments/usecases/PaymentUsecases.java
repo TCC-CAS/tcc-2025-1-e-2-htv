@@ -5,11 +5,6 @@ import com.devolva.use.payments.domain.PaymentStatus;
 import com.devolva.use.payments.dtos.AbacateWebhookDto;
 import com.devolva.use.payments.dtos.CreateCheckoutDto;
 import com.devolva.use.payments.repository.PaymentRepository;
-import com.devolva.use.rentals.domain.RentalModel;
-import com.devolva.use.rentals.domain.RentalStatus;
-import com.devolva.use.rentals.repository.RentalRepository;
-import com.devolva.use.tools.domain.ToolModel;
-import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,17 +32,13 @@ public class PaymentUsecases {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
-    private final ToolRepository toolRepository;
-    private final RentalRepository rentalRepository;
 
     public PaymentUsecases(
             PaymentRepository paymentRepository,
-            UserRepository userRepository,
-            ToolRepository toolRepository, RentalRepository rentalRepository) {
+            UserRepository userRepository
+    ) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
-        this.toolRepository = toolRepository;
-        this.rentalRepository = rentalRepository;
     }
     private static final String CHECKOUT_ENDPOINT = "/checkouts/create";
 
@@ -231,175 +222,6 @@ public class PaymentUsecases {
                 ));
     }
 
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> createToolCheckout(Long rentalId, ToolModel tool, UserModel tenant) {
 
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(10000);
-        factory.setReadTimeout(10000);
-
-        RestTemplate restTemplate = new RestTemplate(factory);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(abacateApiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Item dinâmico com o nome da ferramenta e valor da diária
-        Map<String, Object> item = new HashMap<>();
-        item.put("name", tool.getNome());
-        item.put("quantity", 1);
-        item.put("unit_amount", tool.getValorDiaria().doubleValue());
-
-        // Metadata para identificar locação, locatário e proprietário
-        Map<String, Object> metadata = new HashMap<>();
-        metadata.put("toolId", tool.getId());
-        metadata.put("ownerId", tool.getOwnerId());
-        metadata.put("renterId", tenant.getId());
-        metadata.put("rentalId", rentalId);
-
-        Map<String, Object> body = new HashMap<>();
-        body.put("items", List.of(item));
-        body.put("methods", List.of("CARD"));
-        String externalId = "tool-" + tool.getId() + "-" + System.currentTimeMillis();
-        body.put("externalId", externalId);
-        body.put("metadata", metadata);
-
-        // URLs de retorno e sucesso
-        body.put("completionUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/payment/success");
-        body.put("returnUrl", "http://usedevolva.sa-east-1.elasticbeanstalk.com/rentals/" + rentalId);
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-
-        try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(
-                    abacateApiUrl + CHECKOUT_ENDPOINT,
-                    entity,
-                    Map.class
-            );
-
-            Map<String, Object> responseBody = response.getBody();
-
-            if (responseBody == null || !Boolean.TRUE.equals(responseBody.get("success"))) {
-                return responseBody;
-            }
-
-            Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
-
-            PaymentModel payment = new PaymentModel();
-            payment.setUserId(tenant.getId());
-            payment.setTransactionId((String) data.get("id"));
-            payment.setCheckoutUrl((String) data.get("url"));
-            payment.setAmount(tool.getValorDiaria());
-            payment.setStatus(PaymentStatus.PENDING);
-            payment.setPlano(null);
-            payment.setCreatedAt(LocalDateTime.now());
-
-            paymentRepository.save(payment);
-
-            return responseBody;
-
-        } catch (HttpStatusCodeException e) {
-            return Map.of(
-                    "success", false,
-                    "status", e.getStatusCode().value(),
-                    "abacateError", e.getResponseBodyAsString()
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Map.of(
-                    "success", false,
-                    "error", "Erro ao criar checkout da ferramenta",
-                    "message", e.getMessage()
-            );
-        }
-    }
-    @SuppressWarnings("unchecked")
-    public Map<String, Object> syncToolPaymentStatus(String transactionId) {
-
-        PaymentModel payment = paymentRepository.findByTransactionId(transactionId)
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado: " + transactionId));
-
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(10000);
-        factory.setReadTimeout(10000);
-
-        RestTemplate restTemplate = new RestTemplate(factory);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(abacateApiKey);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        try {
-            String url = abacateApiUrl + "/checkouts/get?id=" + transactionId;
-
-            ResponseEntity<Map> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    entity,
-                    Map.class
-            );
-
-            Map<String, Object> responseBody = response.getBody();
-
-            if (responseBody == null || !Boolean.TRUE.equals(responseBody.get("success"))) {
-                return Map.of(
-                        "success", false,
-                        "message", "Não foi possível consultar o pagamento."
-                );
-            }
-
-            Map<String, Object> data = (Map<String, Object>) responseBody.get("data");
-            String status = (String) data.get("status");
-
-            if ("PAID".equalsIgnoreCase(status)) {
-                payment.setStatus(PaymentStatus.PAID);
-                payment.setPaidAt(LocalDateTime.now());
-                paymentRepository.save(payment);
-
-                // Pegar o rentalId do metadata
-                Map<String, Object> metadata = (Map<String, Object>) data.get("metadata");
-                Long rentalId = Long.valueOf(metadata.get("rentalId").toString());
-
-                RentalModel rental = rentalRepository.findById(rentalId)
-                        .orElseThrow(() -> new RuntimeException("Locação não encontrada."));
-
-                rental.setStatus(RentalStatus.PAID);
-                rental.setPaidAt(LocalDateTime.now());
-                rental.setPaymentId(payment.getId());
-
-                rentalRepository.save(rental);
-
-                ToolModel tool = toolRepository.findById(rental.getToolId())
-                        .orElseThrow(() -> new RuntimeException("Ferramenta não encontrada."));
-                tool.setDisponivel(false);
-                tool.setUpdatedAt(LocalDateTime.now());
-                toolRepository.save(tool);
-            }
-
-            return Map.of(
-                    "success", true,
-                    "status", status,
-                    "paymentId", payment.getId(),
-                    "transactionId", payment.getTransactionId()
-            );
-
-        } catch (HttpStatusCodeException e) {
-            return Map.of(
-                    "success", false,
-                    "status", e.getStatusCode().value(),
-                    "abacateError", e.getResponseBodyAsString()
-            );
-        } catch (Exception e) {
-            return Map.of(
-                    "success", false,
-                    "message", e.getMessage()
-            );
-        }
-    }
-
-    public UserModel findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-    }
 
 }
