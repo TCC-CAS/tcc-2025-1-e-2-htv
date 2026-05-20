@@ -215,3 +215,38 @@ function getInitials(name) {
         .join("")
         .toUpperCase();
 }
+
+const reservationForm = document.getElementById("reservationForm");
+reservationForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const dataInicio = document.getElementById("dataInicio").value;
+    const dataFim = document.getElementById("dataFim").value;
+    const obs = document.getElementById("obs").value;
+
+    const rentalResponse = await fetch("/rentals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            toolId: TOOL_ID,
+            tenantId: CURRENT_USER_ID,
+            startDate: dataInicio,
+            endDate: dataFim,
+            message: obs
+        })
+    });
+
+    const rental = await rentalResponse.json();
+
+    const checkoutResponse = await fetch(`/payments/tool-checkout?rentalId=${rental.id}&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`, {
+        method: "POST"
+    });
+
+    const checkoutData = await checkoutResponse.json();
+
+    if (checkoutData.success) {
+        window.location.href = checkoutData.data.url;
+    } else {
+        alert("Erro ao criar checkout: " + checkoutData.message);
+    }
+});
