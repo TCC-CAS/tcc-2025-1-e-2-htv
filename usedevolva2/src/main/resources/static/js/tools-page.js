@@ -1,49 +1,62 @@
 let currentTool = null;
-const CURRENT_USER_ID = JSON.parse(localStorage.getItem("user")).id;
+const CURRENT_USER_ID = JSON.parse(localStorage.getItem("user"))?.id;
 
 document.addEventListener("DOMContentLoaded", async () => {
+    await loadTool();
+    await loadImages();
+
     const reservationForm = document.getElementById("reservationForm");
     const dataInicio = document.getElementById("dataInicio");
     const dataFim = document.getElementById("dataFim");
-    const obs = document.getElementById("obs");
 
-    reservationForm?.addEventListener("submit", async (event) => {
-        event.preventDefault();
+    if (reservationForm) {
+        reservationForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-        if (!CURRENT_USER_ID) {
-            alert("Faça login para reservar a ferramenta.");
-            return;
-        }
-
-        const dataInicioVal = dataInicio.value;
-        const dataFimVal = dataFim.value;
-
-        if (!dataInicioVal || !dataFimVal) {
-            alert("Selecione datas válidas para a reserva.");
-            return;
-        }
-
-        try {
-            // Chama diretamente o checkout da ferramenta
-            const checkoutResponse = await fetch(
-                `/payments/tool-checkout?rentalId=0&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`,
-                { method: "POST" }
-            );
-
-            const checkoutData = await checkoutResponse.json();
-
-            if (checkoutData.success) {
-                // Redireciona para a AbacatePay
-                window.location.href = checkoutData.data.url;
-            } else {
-                console.error(checkoutData);
-                alert("Erro ao criar checkout: " + (checkoutData.message || "verifique o console"));
+            if (!CURRENT_USER_ID) {
+                alert("Faça login para reservar a ferramenta.");
+                return;
             }
-        } catch (error) {
-            console.error(error);
-            alert("Erro ao processar a reserva.");
-        }
-    });
+
+            const dataInicioVal = dataInicio.value;
+            const dataFimVal = dataFim.value;
+
+            if (!dataInicioVal || !dataFimVal) {
+                alert("Selecione datas válidas para a reserva.");
+                return;
+            }
+
+            const start = new Date(dataInicioVal + "T00:00:00");
+            const end = new Date(dataFimVal + "T00:00:00");
+            if (end < start) {
+                alert("A data de devolução não pode ser anterior à data de início.");
+                return;
+            }
+
+            const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            const dailyRate = parseFloat(currentTool.valorDiaria || 0);
+            const totalAmount = dailyRate * totalDays * 1.07;
+
+            try {
+                const checkoutResponse = await fetch(
+                    `/payments/tool-checkout?toolId=${TOOL_ID}&days=${totalDays}&totalAmount=${totalAmount}&tenantId=${CURRENT_USER_ID}`,
+                    { method: "POST" }
+                );
+                const checkoutData = await checkoutResponse.json();
+
+                if (checkoutData.success) {
+                    // Redireciona para a AbacatePay
+                    window.location.href = checkoutData.data.url;
+                } else {
+                    console.error(checkoutData);
+                    alert("Erro ao criar checkout: " + (checkoutData.message || "verifique o console"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao processar a reserva.");
+            }
+        });
+    }
 });
 
 async function loadTool() {
@@ -115,85 +128,4 @@ async function loadImages() {
         console.error(error);
         container.innerHTML = "<p>Erro ao carregar imagens</p>";
     }
-}
-
-async function loadOwner(ownerId) {
-    if (!ownerId) return;
-    try {
-        const response = await fetch(`/users/${ownerId}`);
-        if (!response.ok) throw new Error("Erro ao buscar proprietário.");
-
-        const owner = await response.json();
-        const ownerName = owner.nomeCompleto || owner.nome || owner.email || "Proprietário da ferramenta";
-        document.getElementById("ownerName").textContent = ownerName;
-        document.getElementById("ownerAvatar").textContent = getInitials(ownerName);
-    } catch (error) {
-        console.error(error);
-        document.getElementById("ownerName").textContent = "Proprietário não identificado";
-        document.getElementById("ownerAvatar").textContent = "U";
-    }
-}
-
-function updateBookingSummary() {
-    if (!currentTool) return;
-
-    const dataInicioVal = document.getElementById("dataInicio").value;
-    const dataFimVal = document.getElementById("dataFim").value;
-
-    if (!dataInicioVal || !dataFimVal) {
-        document.getElementById("dailySummary").textContent = "0 diárias";
-        document.getElementById("baseValue").textContent = formatCurrency(0);
-        document.getElementById("serviceFee").textContent = formatCurrency(0);
-        document.getElementById("totalValue").textContent = formatCurrency(0);
-        return;
-    }
-
-    const start = new Date(dataInicioVal + "T00:00:00");
-    const end = new Date(dataFimVal + "T00:00:00");
-    if (end < start) {
-        showToast("A data de devolução não pode ser anterior à data de início.");
-        return;
-    }
-
-    const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-    const dailyRate = Number(currentTool.valorDiaria || 0);
-    const base = dailyRate * totalDays;
-    const serviceFee = base * 0.07;
-    const total = base + serviceFee;
-
-    document.getElementById("dailySummary").textContent = totalDays === 1 ? "1 diária" : `${totalDays} diárias`;
-    document.getElementById("baseValue").textContent = formatCurrency(base);
-    document.getElementById("serviceFee").textContent = formatCurrency(serviceFee);
-    document.getElementById("totalValue").textContent = formatCurrency(total);
-}
-
-function formatAvailability(tool) {
-    const hasStart = !!tool.dataInicioDisponibilidade;
-    const hasEnd = !!tool.dataFimDisponibilidade;
-    if (!hasStart && !hasEnd) return "Disponibilidade não informada.";
-    if (hasStart && !hasEnd) return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
-    if (!hasStart && hasEnd) return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
-    return `Disponível de ${formatDate(tool.dataInicioDisponibilidade)} até ${formatDate(tool.dataFimDisponibilidade)}.`;
-}
-
-function formatDate(dateString) {
-    return new Date(dateString + "T00:00:00").toLocaleDateString("pt-BR");
-}
-
-function formatCurrency(value) {
-    return Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-function getInitials(name) {
-    return name.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
-}
-
-function showToast(message) {
-    const toast = document.createElement("div");
-    toast.className = "toast-message";
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add("show"), 50);
-    setTimeout(() => toast.classList.remove("show"), 3000);
-    setTimeout(() => toast.remove(), 3400);
 }

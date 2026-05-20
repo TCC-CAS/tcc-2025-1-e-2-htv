@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-      <change afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/payments/dtos/CreateToolCheckoutDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/payments/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/payments/PaymentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/payments/usecases/PaymentUsecases.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/payments/usecases/PaymentUsecases.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/tools-page.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/tools-page.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
