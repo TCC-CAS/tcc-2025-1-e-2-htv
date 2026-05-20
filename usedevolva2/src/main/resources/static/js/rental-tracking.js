@@ -84,7 +84,7 @@ function updateProgress(status) {
     const progress = document.getElementById("linhaProgresso");
 
     const percentage =
-        (completed / steps.length) * 100;
+        ((completed - 1) / (steps.length - 1)) * 100;
 
     progress.style.width = `${percentage}%`;
 }
@@ -132,17 +132,20 @@ function formatCurrency(value) {
         });
 }
 
+const FLOW = [
+    "PENDING",
+    "ACCEPTED",
+    "AWAITING_PAYMENT",
+    "PAID",
+    "IN_USE",
+    "RETURNED",
+    "LATE_RETURNED"
+];
+
 function getCompletedSteps(status) {
 
-    const map = {
+    const index = FLOW.indexOf(status);
 
-        PENDING: 1,
-        AWAITING_PAYMENT: 2,
-        PAID: 3,
-        IN_USE: 4,
-        RETURNED: 5,
-        LATE_RETURNED: 5
-    };
-
-    return map[status] || 0;
+    return index === -1 ? 0 : index + 1;
 }
+
