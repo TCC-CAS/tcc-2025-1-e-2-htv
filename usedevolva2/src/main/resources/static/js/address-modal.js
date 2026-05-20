@@ -36,7 +36,7 @@ function initAddressModal(userId, onSavedCallback) {
 
                 <div class="form-group">
                     <label for="addressLogradouro">Endereço</label>
-                    <input type="text" id="addressLogradouro" required />
+                    <input type="text" id="addressLogradouro" class="address-auto-filled" readonly required />
                 </div>
 
                 <div class="form-row">
@@ -54,17 +54,17 @@ function initAddressModal(userId, onSavedCallback) {
                 <div class="form-row">
                     <div class="form-group">
                         <label for="addressBairro">Bairro</label>
-                        <input type="text" id="addressBairro" required />
+                        <input type="text" id="addressBairro" class="address-auto-filled" readonly required />
                     </div>
 
                     <div class="form-group">
                         <label for="addressCidade">Cidade</label>
-                        <input type="text" id="addressCidade" required />
+                        <input type="text" id="addressCidade" class="address-auto-filled" readonly required />
                     </div>
 
                     <div class="form-group">
                         <label for="addressEstado">UF</label>
-                        <input type="text" id="addressEstado" maxlength="2" required />
+                        <input type="text" id="addressEstado" class="address-auto-filled" maxlength="2" readonly required />
                     </div>
                 </div>
 
@@ -90,6 +90,10 @@ function initAddressModal(userId, onSavedCallback) {
 
     document.getElementById("addressCep").addEventListener("input", (event) => {
         event.target.value = maskCep(event.target.value);
+
+        if (event.target.value.replace(/\D/g, "").length < 8) {
+            clearAutoAddressFields();
+        }
     });
 
     document.getElementById("addressCep").addEventListener("blur", buscarCepModal);
@@ -136,6 +140,8 @@ async function buscarCepModal() {
 
         const data = await response.json();
 
+        clearAutoAddressFields();
+
         document.getElementById("addressLogradouro").value = data.logradouro || "";
         document.getElementById("addressComplemento").value = data.complemento || "";
         document.getElementById("addressBairro").value = data.bairro || "";
@@ -147,6 +153,7 @@ async function buscarCepModal() {
 
     } catch (error) {
         console.error(error);
+        clearAutoAddressFields();
         message.textContent = "Não foi possível buscar o CEP.";
         message.className = "address-modal-message error";
     }
@@ -224,4 +231,19 @@ function maskCep(value) {
 function formatAddressLabel(address) {
     const nome = address.nomeIdentificacao ? `${address.nomeIdentificacao} - ` : "";
     return `${nome}${address.logradouro}, ${address.numero} - ${address.bairro}, ${address.cidade} - ${address.estado}`;
+}
+
+function clearAutoAddressFields() {
+    [
+        "addressLogradouro",
+        "addressComplemento",
+        "addressBairro",
+        "addressCidade",
+        "addressEstado"
+    ].forEach((fieldId) => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.value = "";
+        }
+    });
 }

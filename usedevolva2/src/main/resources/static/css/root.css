@@ -457,3 +457,15 @@ a:focus {
          padding: 18px;
      }
  }
+
+ .address-auto-filled[readonly] {
+     background: #f1f5f9;
+     color: #64748b;
+     cursor: not-allowed;
+ }
+
+ .address-auto-filled[readonly]:focus {
+     outline: none;
+     border-color: #cbd5e1;
+     box-shadow: none;
+ }
