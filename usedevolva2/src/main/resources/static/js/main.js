@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (user && user.id) {
     userArea.innerHTML = `
             <a href="/users/profile">Meu perfil</a>
-            <a href="/rentals/my-rentals">Meus aluguéis</a>
+            <a href="/users/my-rentals">Meus aluguéis</a>
             <a href="/users/my-tools">Minhas ferramentas</a>
             <a href="/tools/favorites">❤️</a>
             <a href="#" id="logoutBtn">Sair</a>
