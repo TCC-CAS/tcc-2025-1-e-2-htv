@@ -2,6 +2,7 @@ package com.devolva.use.payments.repository;
 
 import com.devolva.use.payments.domain.PaymentModel;
 import com.devolva.use.payments.domain.PaymentStatus;
+import com.devolva.use.rentals.domain.RentalModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +17,6 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, Long> {
             Long userId,
             PaymentStatus status
     );
+
+
 }

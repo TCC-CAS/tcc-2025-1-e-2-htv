@@ -3,10 +3,7 @@ package com.devolva.use.payments;
 import com.devolva.use.payments.dtos.CreateToolPaymentDto;
 import com.devolva.use.payments.usecases.PaymentUsecases;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/tool-payments")
@@ -26,4 +23,15 @@ public class ToolPaymentController {
                 paymentUsecases.createToolPixPayment(dto)
         );
     }
+
+    @GetMapping("/check/{paymentId}")
+    public ResponseEntity<?> checkPayment(
+            @PathVariable Long paymentId
+    ) {
+        return ResponseEntity.ok(
+                paymentUsecases.syncToolPaymentStatus(paymentId)
+        );
+    }
+
+
 }

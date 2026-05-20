@@ -439,4 +439,134 @@ public class PaymentUsecases {
             );
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> syncToolPaymentStatus(
+            Long paymentId
+    ) {
+
+        PaymentModel payment = paymentRepository
+                .findById(paymentId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Pagamento não encontrado."
+                        )
+                );
+
+        RentalModel rental = rentalRepository
+                .findByPaymentId(payment.getId())
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Aluguel não encontrado."
+                        )
+                );
+
+        SimpleClientHttpRequestFactory factory =
+                new SimpleClientHttpRequestFactory();
+
+        factory.setConnectTimeout(10000);
+
+        factory.setReadTimeout(10000);
+
+        RestTemplate restTemplate =
+                new RestTemplate(factory);
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.setBearerAuth(abacateApiKey);
+
+        HttpEntity<Void> entity =
+                new HttpEntity<>(headers);
+
+        try {
+
+            String url =
+                    abacateApiUrl
+                            + "/transparents/get?id="
+                            + payment.getTransactionId();
+
+            ResponseEntity<Map> response =
+                    restTemplate.exchange(
+                            url,
+                            HttpMethod.GET,
+                            entity,
+                            Map.class
+                    );
+
+            Map<String, Object> responseBody =
+                    response.getBody();
+
+            if (
+                    responseBody == null
+                            || !Boolean.TRUE.equals(
+                            responseBody.get("success")
+                    )
+            ) {
+
+                return Map.of(
+                        "success", false,
+                        "message",
+                        "Não foi possível consultar o pagamento."
+                );
+            }
+
+            Map<String, Object> data =
+                    (Map<String, Object>)
+                            responseBody.get("data");
+
+            String status =
+                    (String) data.get("status");
+
+            if ("PAID".equalsIgnoreCase(status)) {
+
+                payment.setStatus(
+                        PaymentStatus.PAID
+                );
+
+                payment.setPaidAt(
+                        LocalDateTime.now()
+                );
+
+                paymentRepository.save(payment);
+
+
+                rental.setStatus(
+                        RentalStatus.PAID
+                );
+
+                rental.setPaidAt(
+                        LocalDateTime.now()
+                );
+
+                rentalRepository.save(rental);
+            }
+
+            return Map.of(
+                    "success", true,
+                    "status", status,
+                    "paymentId", payment.getId(),
+                    "transactionId",
+                    payment.getTransactionId(),
+                    "rentalId", rental.getId()
+            );
+
+        } catch (HttpStatusCodeException e) {
+
+            return Map.of(
+                    "success", false,
+                    "status",
+                    e.getStatusCode().value(),
+                    "abacateError",
+                    e.getResponseBodyAsString()
+            );
+
+        } catch (Exception e) {
+
+            return Map.of(
+                    "success", false,
+                    "message", e.getMessage()
+            );
+        }
+    }
+
 }
