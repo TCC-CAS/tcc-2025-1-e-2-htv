@@ -12,9 +12,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (dataFim) dataFim.addEventListener("change", updateBookingSummary);
 
     if (reservationForm) {
-        reservationForm.addEventListener("submit", (event) => {
+        reservationForm.addEventListener("submit", async (event) => {
             event.preventDefault();
-            showToast("Solicitação de empréstimo ainda será implementada.");
+
+            const dataInicio = document.getElementById("dataInicio").value;
+            const dataFim = document.getElementById("dataFim").value;
+            const obs = document.getElementById("obs").value;
+
+            try {
+                // Cria a locação
+                const rentalResponse = await fetch("/rentals", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        toolId: TOOL_ID,
+                        tenantId: CURRENT_USER_ID,
+                        startDate: dataInicio,
+                        endDate: dataFim,
+                        message: obs
+                    })
+                });
+
+                const rental = await rentalResponse.json();
+
+                // Cria checkout da ferramenta
+                const checkoutResponse = await fetch(`/payments/tool-checkout?rentalId=${rental.id}&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`, {
+                    method: "POST"
+                });
+
+                const checkoutData = await checkoutResponse.json();
+
+                if (checkoutData.success) {
+                    window.location.href = checkoutData.data.url;
+                } else {
+                    alert("Erro ao criar checkout: " + checkoutData.message);
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao processar a reserva.");
+            }
         });
     }
 });
