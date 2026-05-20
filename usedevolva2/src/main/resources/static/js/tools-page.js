@@ -15,34 +15,32 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const dataInicioVal = document.getElementById("dataInicio").value;
-        const dataFimVal = document.getElementById("dataFim").value;
+        const dataInicioVal = dataInicio.value;
+        const dataFimVal = dataFim.value;
 
         if (!dataInicioVal || !dataFimVal) {
             alert("Selecione datas válidas para a reserva.");
             return;
         }
 
-        const start = new Date(dataInicioVal + "T00:00:00");
-        const end = new Date(dataFimVal + "T00:00:00");
-        const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
-        const totalAmount = parseFloat(currentTool.valorDiaria) * totalDays * 1.07; // inclui 7% taxa
-
         try {
+            // Chama diretamente o checkout da ferramenta
             const checkoutResponse = await fetch(
-                `/payments/tool-checkout?toolId=${TOOL_ID}&days=${totalDays}&totalAmount=${totalAmount}&tenantId=${CURRENT_USER_ID}`,
+                `/payments/tool-checkout?rentalId=0&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`,
                 { method: "POST" }
             );
+
             const checkoutData = await checkoutResponse.json();
 
             if (checkoutData.success) {
+                // Redireciona para a AbacatePay
                 window.location.href = checkoutData.data.url;
             } else {
+                console.error(checkoutData);
                 alert("Erro ao criar checkout: " + (checkoutData.message || "verifique o console"));
             }
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
+            console.error(error);
             alert("Erro ao processar a reserva.");
         }
     });
