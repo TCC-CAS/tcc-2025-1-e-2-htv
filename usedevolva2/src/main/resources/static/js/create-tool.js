@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             quantidadeFotos: quantidadeFotos,
 
             addressId: Number(document.getElementById("addressId").value),
-            localizacao: "",
+            localizacao: document.getElementById("addressId").selectedOptions[0]?.textContent || "",
             dataInicioDisponibilidade: document.getElementById("dataInicioDisponibilidade").value,
             dataFimDisponibilidade: document.getElementById("dataFimDisponibilidade").value || null,
             observacoes: document.getElementById("observacoes").value.trim()

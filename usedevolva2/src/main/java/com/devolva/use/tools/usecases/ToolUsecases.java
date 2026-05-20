@@ -77,6 +77,12 @@ public class ToolUsecases {
             throw new IllegalStateException("Limite de ferramentas do plano atingido.");
         }
 
+        AddressModel address = null;
+
+        if (dto.addressId() != null) {
+            address = addressUsecases.findOwnedAddress(dto.addressId(), ownerId);
+        }
+
         validateTool(
                 dto.nome(),
                 dto.descricao(),
@@ -84,14 +90,10 @@ public class ToolUsecases {
                 dto.estadoConservacao(),
                 dto.valorDiaria(),
                 dto.quantidadeFotos(),
+                dto.addressId(),
                 dto.localizacao(),
                 dto.dataInicioDisponibilidade()
         );
-        AddressModel address = null;
-
-        if (dto.addressId() != null) {
-            address = addressUsecases.findOwnedAddress(dto.addressId(), ownerId);
-        }
 
         ToolModel tool = new ToolModel();
         tool.setNome(dto.nome());
@@ -156,6 +158,7 @@ public class ToolUsecases {
                 dto.estadoConservacao(),
                 dto.valorDiaria(),
                 dto.quantidadeFotos(),
+                null,
                 dto.localizacao(),
                 dto.dataInicioDisponibilidade()
         );
@@ -230,6 +233,7 @@ public class ToolUsecases {
             String estadoConservacao,
             BigDecimal valorDiaria,
             int quantidadeFotos,
+            Long addressId,
             String localizacao,
             LocalDate dataInicioDisponibilidade
     ) {
@@ -257,7 +261,7 @@ public class ToolUsecases {
             throw new IllegalArgumentException("A ferramenta deve ter entre 1 e 10 fotos.");
         }
 
-        if (localizacao == null || localizacao.isBlank()) {
+        if (addressId == null && (localizacao == null || localizacao.isBlank())) {
             throw new IllegalArgumentException("Localização é obrigatória.");
         }
 
