@@ -43,28 +43,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentPlan.textContent = user.plano || "FREE";
         }
 
-        const planMessage = document.querySelector(".plan-card p");
-        const planButton = document.getElementById("openPlansModalBtn");
+        const planMessage = document.getElementById("planMessage");
+        const planButton = document.getElementById("planButton");
 
         if (user.plano && user.plano !== "FREE") {
             const hoje = new Date();
             const expiracao = user.planExpiresAt ? new Date(user.planExpiresAt) : null;
 
-            console.log("Plano:", user.plano, "Expiração:", user.planExpiresAt);
-
             if (expiracao && expiracao < hoje) {
                 planMessage.textContent = `Seu plano ${user.plano} expirou. Renove para continuar aproveitando os recursos.`;
                 planButton.textContent = "Renovar Plano";
-                console.log("Plano expirado. Botão e mensagem atualizados.");
             } else {
                 planMessage.textContent = `Você está no plano ${user.plano}. Aproveite os recursos disponíveis!`;
                 planButton.textContent = "Atualizar Plano";
-                console.log("Plano ativo. Botão e mensagem atualizados.");
             }
         } else {
             planMessage.textContent = "Escolha um plano para liberar mais recursos na plataforma.";
             planButton.textContent = "Ver Planos";
-            console.log("Plano FREE. Botão e mensagem padrão.");
         }
 
         const initials = getInitials(user.nomeCompleto);
