@@ -51,7 +51,7 @@ public class RentalController {
         return rentalUsecases.findAll();
     }
 
-    @GetMapping("/{rentalId}")
+    @GetMapping("/api/{rentalId}")
     public RentalModel findById(@PathVariable Long rentalId) {
         return rentalUsecases.findById(rentalId);
     }
