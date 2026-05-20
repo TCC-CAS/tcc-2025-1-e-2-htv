@@ -93,19 +93,19 @@ function translateStatus(status) {
 
     const map = {
 
-        PENDING: "Pendente",
+        PENDING: "Solicitação enviada",
 
-        AWAITING_PAYMENT:
-            "Aguardando Pagamento",
+        ACCEPTED: "Aceito pelo dono",
 
-        PAID: "Pago",
+        AWAITING_PAYMENT: "Aguardando Pagamento",
+
+        PAID: "Pagamento confirmado",
 
         IN_USE: "Em Uso",
 
         RETURNED: "Devolvido",
 
-        LATE_RETURNED:
-            "Devolvido com atraso",
+        LATE_RETURNED: "Devolvido com atraso",
 
         REJECTED: "Recusado",
 
