@@ -77,6 +77,12 @@ public class ToolUsecases {
             throw new IllegalStateException("Limite de ferramentas do plano atingido.");
         }
 
+        AddressModel address = null;
+
+        if (dto.addressId() != null) {
+            address = addressUsecases.findOwnedAddress(dto.addressId(), ownerId);
+        }
+
         validateTool(
                 dto.nome(),
                 dto.descricao(),
@@ -84,14 +90,10 @@ public class ToolUsecases {
                 dto.estadoConservacao(),
                 dto.valorDiaria(),
                 dto.quantidadeFotos(),
+                dto.addressId(),
                 dto.localizacao(),
                 dto.dataInicioDisponibilidade()
         );
-        AddressModel address = null;
-
-        if (dto.addressId() != null) {
-            address = addressUsecases.findOwnedAddress(dto.addressId(), ownerId);
-        }
 
         ToolModel tool = new ToolModel();
         tool.setNome(dto.nome());
@@ -156,9 +158,16 @@ public class ToolUsecases {
                 dto.estadoConservacao(),
                 dto.valorDiaria(),
                 dto.quantidadeFotos(),
+                dto.addressId(),
                 dto.localizacao(),
                 dto.dataInicioDisponibilidade()
         );
+
+        AddressModel address = null;
+
+        if (dto.addressId() != null) {
+            address = addressUsecases.findOwnedAddress(dto.addressId(), ownerId);
+        }
 
         if (dto.nome() != null) tool.setNome(dto.nome());
         if (dto.descricao() != null) tool.setDescricao(dto.descricao());
@@ -167,7 +176,19 @@ public class ToolUsecases {
         if (dto.valorDiaria() != null) tool.setValorDiaria(dto.valorDiaria());
         if (dto.quantidadeFotos() > 0) tool.setQuantidadeFotos(dto.quantidadeFotos());
         if (dto.disponivel() != null) tool.setDisponivel(dto.disponivel());
-        if (dto.localizacao() != null) tool.setLocalizacao(dto.localizacao());
+        if (address != null) {
+            tool.setAddressId(address.getId());
+            tool.setCep(address.getCep());
+            tool.setLogradouro(address.getLogradouro());
+            tool.setNumero(address.getNumero());
+            tool.setComplemento(address.getComplemento());
+            tool.setBairro(address.getBairro());
+            tool.setCidade(address.getCidade());
+            tool.setEstado(address.getEstado());
+            tool.setLocalizacao(address.getEnderecoCompleto());
+        } else if (dto.localizacao() != null) {
+            tool.setLocalizacao(dto.localizacao());
+        }
         if (dto.dataInicioDisponibilidade() != null) tool.setDataInicioDisponibilidade(dto.dataInicioDisponibilidade());
         if (dto.dataFimDisponibilidade() != null) tool.setDataFimDisponibilidade(dto.dataFimDisponibilidade());
         if (dto.observacoes() != null) tool.setObservacoes(dto.observacoes());
@@ -230,6 +251,7 @@ public class ToolUsecases {
             String estadoConservacao,
             BigDecimal valorDiaria,
             int quantidadeFotos,
+            Long addressId,
             String localizacao,
             LocalDate dataInicioDisponibilidade
     ) {
@@ -257,7 +279,7 @@ public class ToolUsecases {
             throw new IllegalArgumentException("A ferramenta deve ter entre 1 e 10 fotos.");
         }
 
-        if (localizacao == null || localizacao.isBlank()) {
+        if (addressId == null && (localizacao == null || localizacao.isBlank())) {
             throw new IllegalArgumentException("Localização é obrigatória.");
         }
 

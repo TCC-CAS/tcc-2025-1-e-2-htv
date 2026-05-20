@@ -32,6 +32,15 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.CREATED).body(address);
     }
 
+    @PutMapping("/users/{userId}/addresses/{addressId}")
+    public ResponseEntity<?> update(
+            @PathVariable Long userId,
+            @PathVariable Long addressId,
+            @RequestBody CreateAddressDto dto
+    ) {
+        return ResponseEntity.ok(addressUsecases.update(userId, addressId, dto));
+    }
+
     @PatchMapping("/users/{userId}/addresses/{addressId}/main")
     public ResponseEntity<?> setMain(
             @PathVariable Long userId,

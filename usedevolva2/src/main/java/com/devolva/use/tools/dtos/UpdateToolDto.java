@@ -11,7 +11,10 @@ public record UpdateToolDto(
         BigDecimal valorDiaria,
         int quantidadeFotos,
         Boolean disponivel,
+
+        Long addressId,
         String localizacao,
+
         LocalDate dataInicioDisponibilidade,
         LocalDate dataFimDisponibilidade,
         String observacoes
