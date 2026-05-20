@@ -1,4 +1,5 @@
 let currentTool = null;
+const CURRENT_USER_ID = JSON.parse(localStorage.getItem("user")).id;
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadTool();
@@ -15,30 +16,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         reservationForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            const dataInicio = document.getElementById("dataInicio").value;
-            const dataFim = document.getElementById("dataFim").value;
+            const dataInicioVal = dataInicio.value;
+            const dataFimVal = dataFim.value;
             const obs = document.getElementById("obs").value;
 
             try {
-                // Cria a locação
                 const rentalResponse = await fetch("/rentals", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         toolId: TOOL_ID,
                         tenantId: CURRENT_USER_ID,
-                        startDate: dataInicio,
-                        endDate: dataFim,
+                        startDate: dataInicioVal,
+                        endDate: dataFimVal,
                         message: obs
                     })
                 });
 
                 const rental = await rentalResponse.json();
 
-                // Cria checkout da ferramenta
-                const checkoutResponse = await fetch(`/payments/tool-checkout?rentalId=${rental.id}&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`, {
-                    method: "POST"
-                });
+                const checkoutResponse = await fetch(
+                    `/payments/tool-checkout?rentalId=${rental.id}&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`,
+                    { method: "POST" }
+                );
 
                 const checkoutData = await checkoutResponse.json();
 
@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 } else {
                     alert("Erro ao criar checkout: " + checkoutData.message);
                 }
-
             } catch (error) {
                 console.error(error);
                 alert("Erro ao processar a reserva.");
@@ -59,10 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadTool() {
     try {
         const response = await fetch(`/tools/${TOOL_ID}`);
-
-        if (!response.ok) {
-            throw new Error("Erro ao buscar ferramenta.");
-        }
+        if (!response.ok) throw new Error("Erro ao buscar ferramenta.");
 
         const tool = await response.json();
         currentTool = tool;
@@ -78,7 +74,6 @@ async function loadTool() {
         document.getElementById("toolPrice").textContent = formatCurrency(tool.valorDiaria || 0);
 
         await loadOwner(tool.ownerId);
-
     } catch (error) {
         console.error(error);
         showToast("Não foi possível carregar a ferramenta.");
@@ -87,17 +82,14 @@ async function loadTool() {
 
 async function loadImages() {
     const container = document.getElementById("imageGallery");
-
     try {
         const response = await fetch(`/tools/${TOOL_ID}/images`);
-
         if (!response.ok) {
             container.innerHTML = "<p>Sem imagens</p>";
             return;
         }
 
         let images = await response.json();
-
         if (!images || images.length === 0) {
             container.innerHTML = "<p>Sem imagens</p>";
             return;
@@ -112,34 +104,22 @@ async function loadImages() {
             <div class="tool-main-image">
                 <img id="selectedToolImage" src="${mainImage.filePath}" alt="Imagem principal da ferramenta">
             </div>
-
-            ${
-            thumbnails.length > 0
-                ? `<div class="tool-thumbs" id="toolThumbs"></div>`
-                : ""
-        }
+            ${thumbnails.length > 0 ? `<div class="tool-thumbs" id="toolThumbs"></div>` : ""}
         `;
 
         const thumbs = document.getElementById("toolThumbs");
-
         if (thumbs) {
             thumbnails.forEach(image => {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "tool-thumb-btn";
-
-                button.innerHTML = `
-                    <img src="${image.filePath}" alt="Miniatura da ferramenta">
-                `;
-
+                button.innerHTML = `<img src="${image.filePath}" alt="Miniatura da ferramenta">`;
                 button.addEventListener("click", () => {
                     document.getElementById("selectedToolImage").src = image.filePath;
                 });
-
                 thumbs.appendChild(button);
             });
         }
-
     } catch (error) {
         console.error(error);
         container.innerHTML = "<p>Erro ao carregar imagens</p>";
@@ -148,25 +128,14 @@ async function loadImages() {
 
 async function loadOwner(ownerId) {
     if (!ownerId) return;
-
     try {
         const response = await fetch(`/users/${ownerId}`);
-
-        if (!response.ok) {
-            throw new Error("Erro ao buscar proprietário.");
-        }
+        if (!response.ok) throw new Error("Erro ao buscar proprietário.");
 
         const owner = await response.json();
-
-        const ownerName =
-            owner.nomeCompleto ||
-            owner.nome ||
-            owner.email ||
-            "Proprietário da ferramenta";
-
+        const ownerName = owner.nomeCompleto || owner.nome || owner.email || "Proprietário da ferramenta";
         document.getElementById("ownerName").textContent = ownerName;
         document.getElementById("ownerAvatar").textContent = getInitials(ownerName);
-
     } catch (error) {
         console.error(error);
         document.getElementById("ownerName").textContent = "Proprietário não identificado";
@@ -177,10 +146,10 @@ async function loadOwner(ownerId) {
 function updateBookingSummary() {
     if (!currentTool) return;
 
-    const dataInicio = document.getElementById("dataInicio").value;
-    const dataFim = document.getElementById("dataFim").value;
+    const dataInicioVal = document.getElementById("dataInicio").value;
+    const dataFimVal = document.getElementById("dataFim").value;
 
-    if (!dataInicio || !dataFim) {
+    if (!dataInicioVal || !dataFimVal) {
         document.getElementById("dailySummary").textContent = "0 diárias";
         document.getElementById("baseValue").textContent = formatCurrency(0);
         document.getElementById("serviceFee").textContent = formatCurrency(0);
@@ -188,25 +157,20 @@ function updateBookingSummary() {
         return;
     }
 
-    const start = new Date(dataInicio + "T00:00:00");
-    const end = new Date(dataFim + "T00:00:00");
-
+    const start = new Date(dataInicioVal + "T00:00:00");
+    const end = new Date(dataFimVal + "T00:00:00");
     if (end < start) {
         showToast("A data de devolução não pode ser anterior à data de início.");
         return;
     }
 
-    const millisecondsPerDay = 1000 * 60 * 60 * 24;
-    const totalDays = Math.floor((end - start) / millisecondsPerDay) + 1;
-
+    const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
     const dailyRate = Number(currentTool.valorDiaria || 0);
     const base = dailyRate * totalDays;
     const serviceFee = base * 0.07;
     const total = base + serviceFee;
 
-    document.getElementById("dailySummary").textContent =
-        totalDays === 1 ? "1 diária" : `${totalDays} diárias`;
-
+    document.getElementById("dailySummary").textContent = totalDays === 1 ? "1 diária" : `${totalDays} diárias`;
     document.getElementById("baseValue").textContent = formatCurrency(base);
     document.getElementById("serviceFee").textContent = formatCurrency(serviceFee);
     document.getElementById("totalValue").textContent = formatCurrency(total);
@@ -215,75 +179,30 @@ function updateBookingSummary() {
 function formatAvailability(tool) {
     const hasStart = !!tool.dataInicioDisponibilidade;
     const hasEnd = !!tool.dataFimDisponibilidade;
-
-    if (!hasStart && !hasEnd) {
-        return "Disponibilidade não informada.";
-    }
-
-    if (hasStart && !hasEnd) {
-        return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
-    }
-
-    if (!hasStart && hasEnd) {
-        return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
-    }
-
+    if (!hasStart && !hasEnd) return "Disponibilidade não informada.";
+    if (hasStart && !hasEnd) return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
+    if (!hasStart && hasEnd) return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
     return `Disponível de ${formatDate(tool.dataInicioDisponibilidade)} até ${formatDate(tool.dataFimDisponibilidade)}.`;
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString + "T00:00:00");
-    return date.toLocaleDateString("pt-BR");
+    return new Date(dateString + "T00:00:00").toLocaleDateString("pt-BR");
 }
 
 function formatCurrency(value) {
-    return Number(value).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
+    return Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function getInitials(name) {
-    return name
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(part => part[0])
-        .join("")
-        .toUpperCase();
+    return name.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
 }
 
-const reservationForm = document.getElementById("reservationForm");
-reservationForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const dataInicio = document.getElementById("dataInicio").value;
-    const dataFim = document.getElementById("dataFim").value;
-    const obs = document.getElementById("obs").value;
-
-    const rentalResponse = await fetch("/rentals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            toolId: TOOL_ID,
-            tenantId: CURRENT_USER_ID,
-            startDate: dataInicio,
-            endDate: dataFim,
-            message: obs
-        })
-    });
-
-    const rental = await rentalResponse.json();
-
-    const checkoutResponse = await fetch(`/payments/tool-checkout?rentalId=${rental.id}&toolId=${TOOL_ID}&tenantId=${CURRENT_USER_ID}`, {
-        method: "POST"
-    });
-
-    const checkoutData = await checkoutResponse.json();
-
-    if (checkoutData.success) {
-        window.location.href = checkoutData.data.url;
-    } else {
-        alert("Erro ao criar checkout: " + checkoutData.message);
-    }
-});
+function showToast(message) {
+    const toast = document.createElement("div");
+    toast.className = "toast-message";
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add("show"), 50);
+    setTimeout(() => toast.classList.remove("show"), 3000);
+    setTimeout(() => toast.remove(), 3400);
+}
