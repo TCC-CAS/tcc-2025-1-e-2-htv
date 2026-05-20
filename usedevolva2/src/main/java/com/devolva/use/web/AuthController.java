@@ -77,7 +77,6 @@ public class AuthController {
             @PathVariable Long id,
             Model model
     ) {
-
         model.addAttribute("rentalId", id);
 
         return "rentals/rental-tracking";
