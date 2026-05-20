@@ -1,5 +1,6 @@
 let addressModalUserId = null;
 let addressModalCallback = null;
+let addressModalEditingAddressId = null;
 
 function initAddressModal(userId, onSavedCallback) {
     addressModalUserId = userId;
@@ -15,7 +16,7 @@ function initAddressModal(userId, onSavedCallback) {
         <div class="address-modal">
             <div class="address-modal-header">
                 <div>
-                    <h3>Adicionar endereço</h3>
+                    <h3 id="addressModalTitle">Adicionar endereço</h3>
                     <p>Informe o CEP para preencher o endereço automaticamente.</p>
                 </div>
                 <button type="button" class="address-modal-close" id="closeAddressModalBtn">×</button>
@@ -77,7 +78,7 @@ function initAddressModal(userId, onSavedCallback) {
 
                 <div class="form-actions">
                     <button type="button" class="btn btn-outline" id="cancelAddressModalBtn">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar endereço</button>
+                    <button type="submit" class="btn btn-primary" id="addressModalSubmitBtn">Salvar endereço</button>
                 </div>
             </form>
         </div>
@@ -101,11 +102,40 @@ function initAddressModal(userId, onSavedCallback) {
     document.getElementById("addressModalForm").addEventListener("submit", salvarEnderecoModal);
 }
 
-function openAddressModal() {
+function openAddressModal(address = null) {
     const modal = document.getElementById("addressModalOverlay");
-    if (modal) {
-        modal.classList.add("active");
+    const form = document.getElementById("addressModalForm");
+    const title = document.getElementById("addressModalTitle");
+    const submitBtn = document.getElementById("addressModalSubmitBtn");
+    const message = document.getElementById("addressModalMessage");
+
+    if (!modal || !form) return;
+
+    form.reset();
+    message.textContent = "";
+    message.className = "address-modal-message";
+
+    addressModalEditingAddressId = address?.id || null;
+
+    if (addressModalEditingAddressId) {
+        title.textContent = "Editar endereço";
+        submitBtn.textContent = "Atualizar endereço";
+
+        document.getElementById("addressNome").value = address.nomeIdentificacao || "";
+        document.getElementById("addressCep").value = maskCep(address.cep || "");
+        document.getElementById("addressLogradouro").value = address.logradouro || "";
+        document.getElementById("addressNumero").value = address.numero || "";
+        document.getElementById("addressComplemento").value = address.complemento || "";
+        document.getElementById("addressBairro").value = address.bairro || "";
+        document.getElementById("addressCidade").value = address.cidade || "";
+        document.getElementById("addressEstado").value = address.estado || "";
+        document.getElementById("addressPrincipal").checked = Boolean(address.principal);
+    } else {
+        title.textContent = "Adicionar endereço";
+        submitBtn.textContent = "Salvar endereço";
     }
+
+    modal.classList.add("active");
 }
 
 function closeAddressModal() {
@@ -113,6 +143,8 @@ function closeAddressModal() {
     if (modal) {
         modal.classList.remove("active");
     }
+
+    addressModalEditingAddressId = null;
 }
 
 async function buscarCepModal() {
@@ -143,10 +175,13 @@ async function buscarCepModal() {
         clearAutoAddressFields();
 
         document.getElementById("addressLogradouro").value = data.logradouro || "";
-        document.getElementById("addressComplemento").value = data.complemento || "";
         document.getElementById("addressBairro").value = data.bairro || "";
         document.getElementById("addressCidade").value = data.localidade || "";
         document.getElementById("addressEstado").value = data.uf || "";
+
+        if (!document.getElementById("addressComplemento").value) {
+            document.getElementById("addressComplemento").value = data.complemento || "";
+        }
 
         message.textContent = "CEP encontrado.";
         message.className = "address-modal-message success";
@@ -186,8 +221,14 @@ async function salvarEnderecoModal(event) {
         message.textContent = "Salvando endereço...";
         message.className = "address-modal-message loading";
 
-        const response = await fetch(`/users/${addressModalUserId}/addresses`, {
-            method: "POST",
+        const isEditing = Boolean(addressModalEditingAddressId);
+
+        const url = isEditing
+            ? `/users/${addressModalUserId}/addresses/${addressModalEditingAddressId}`
+            : `/users/${addressModalUserId}/addresses`;
+
+        const response = await fetch(url, {
+            method: isEditing ? "PUT" : "POST",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -201,7 +242,9 @@ async function salvarEnderecoModal(event) {
 
         const savedAddress = await response.json();
 
-        message.textContent = "Endereço salvo com sucesso.";
+        message.textContent = isEditing
+            ? "Endereço atualizado com sucesso."
+            : "Endereço salvo com sucesso.";
         message.className = "address-modal-message success";
 
         document.getElementById("addressModalForm").reset();
@@ -209,6 +252,8 @@ async function salvarEnderecoModal(event) {
         if (typeof addressModalCallback === "function") {
             addressModalCallback(savedAddress);
         }
+
+        addressModalEditingAddressId = null;
 
         setTimeout(() => {
             closeAddressModal();
@@ -236,7 +281,6 @@ function formatAddressLabel(address) {
 function clearAutoAddressFields() {
     [
         "addressLogradouro",
-        "addressComplemento",
         "addressBairro",
         "addressCidade",
         "addressEstado"

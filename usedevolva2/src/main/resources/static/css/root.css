@@ -469,3 +469,208 @@ a:focus {
      border-color: #cbd5e1;
      box-shadow: none;
  }
+
+ .address-manager-overlay {
+     position: fixed;
+     inset: 0;
+     background: rgba(15, 23, 42, 0.55);
+     display: none;
+     align-items: flex-start;
+     justify-content: center;
+     padding: 120px 24px 24px;
+     z-index: 10000;
+ }
+
+ .address-manager-overlay.active {
+     display: flex;
+ }
+
+ .address-manager-modal {
+     width: 100%;
+     max-width: 520px;
+     background: #ffffff;
+     border-radius: 18px;
+     padding: 28px 24px 24px;
+     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+     max-height: calc(100vh - 150px);
+     overflow-y: auto;
+ }
+
+ .address-manager-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: flex-start;
+     gap: 16px;
+     margin-bottom: 22px;
+ }
+
+ .address-manager-header h2 {
+     margin: 0;
+     font-size: 1.35rem;
+     color: var(--text-main);
+ }
+
+ .address-manager-close {
+     width: 36px;
+     height: 36px;
+     border: none;
+     border-radius: 50%;
+     background: #f1f5f9;
+     cursor: pointer;
+     font-size: 24px;
+     line-height: 1;
+ }
+
+ .address-manager-list {
+     display: flex;
+     flex-direction: column;
+     gap: 16px;
+ }
+
+ .address-manager-item {
+     display: flex;
+     justify-content: space-between;
+     align-items: flex-start;
+     gap: 12px;
+ }
+
+ .address-manager-radio-area {
+     display: flex;
+     align-items: flex-start;
+     gap: 12px;
+     cursor: pointer;
+     flex: 1;
+ }
+
+ .address-manager-radio-area input[type="radio"] {
+     margin-top: 5px;
+     width: 18px;
+     height: 18px;
+     accent-color: var(--color-primary);
+ }
+
+ .address-manager-text strong {
+     display: block;
+     font-size: 1rem;
+     font-weight: 500;
+     color: var(--text-main);
+ }
+
+ .address-manager-text span {
+     display: block;
+     margin-top: 2px;
+     font-size: 0.9rem;
+     color: var(--text-muted);
+ }
+
+ .address-manager-text small {
+     display: inline-block;
+     margin-top: 4px;
+     color: var(--color-primary);
+     font-weight: 600;
+ }
+
+ .address-manager-item-actions {
+     display: flex;
+     align-items: center;
+     gap: 6px;
+ }
+
+ .address-manager-icon-btn {
+     width: 32px;
+     height: 32px;
+     border: none;
+     border-radius: 8px;
+     background: transparent;
+     cursor: pointer;
+     font-size: 18px;
+     color: #475569;
+ }
+
+ .address-manager-icon-btn:hover {
+     background: #f1f5f9;
+ }
+
+ .address-manager-icon-btn.danger {
+     color: #dc2626;
+ }
+
+ .address-manager-actions {
+     display: flex;
+     gap: 10px;
+     margin-top: 28px;
+ }
+
+ .address-manager-actions .btn {
+     flex: 1;
+ }
+
+ .address-empty-state {
+     padding: 18px;
+     border: 1px dashed #cbd5e1;
+     border-radius: 12px;
+     color: var(--text-muted);
+ }
+
+ .address-empty-state p {
+     margin: 0 0 4px;
+     color: var(--text-main);
+     font-weight: 600;
+ }
+
+ @media (max-width: 600px) {
+     .address-manager-modal {
+         padding: 22px 18px;
+     }
+
+     .address-manager-actions {
+         flex-direction: column;
+     }
+ }
+
+ .profile-container,
+ .profile-page,
+ .profile-content {
+     padding-top: 32px;
+ }
+
+ .profile-toast-container {
+     position: fixed;
+     top: 90px;
+     right: 24px;
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+     z-index: 20000;
+ }
+
+ .profile-toast {
+     min-width: 280px;
+     max-width: 360px;
+     padding: 14px 18px;
+     border-radius: 12px;
+     color: #ffffff;
+     font-weight: 600;
+     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+     opacity: 0;
+     transform: translateX(24px);
+     transition: opacity 0.25s ease, transform 0.25s ease;
+ }
+
+ .profile-toast.show {
+     opacity: 1;
+     transform: translateX(0);
+ }
+
+ .profile-toast.success {
+     background: #16a34a;
+ }
+
+ .profile-toast.error {
+     background: #dc2626;
+ }
+
+ .address-manager-actions .btn:focus {
+     outline: none;
+     box-shadow: none;
+ }

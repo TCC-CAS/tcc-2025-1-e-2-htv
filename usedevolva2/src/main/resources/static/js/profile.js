@@ -8,18 +8,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (typeof initAddressModal === "function") {
-        initAddressModal(savedUser.id, () => {
-            console.log("Endereço salvo com sucesso.");
+        initAddressModal(savedUser.id, async () => {
+            await loadAddressManager(savedUser.id);
         });
     } else {
         alert("Erro: arquivo address-modal.js não foi carregado.");
         return;
     }
 
+    createAddressManagerModal();
+
     const openProfileAddressModalBtn = document.getElementById("openProfileAddressModalBtn");
     if (openProfileAddressModalBtn) {
-        openProfileAddressModalBtn.addEventListener("click", () => {
-            openAddressModal();
+        openProfileAddressModalBtn.addEventListener("click", async () => {
+            await openAddressManager(savedUser.id);
         });
     }
 
@@ -83,4 +85,280 @@ function getInitials(name) {
     }
 
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+let selectedMainAddressId = null;
+let currentProfileUserId = null;
+let currentAddresses = [];
+
+function createAddressManagerModal() {
+    if (document.getElementById("addressManagerOverlay")) return;
+
+    const modal = document.createElement("div");
+    modal.id = "addressManagerOverlay";
+    modal.className = "address-manager-overlay";
+
+    modal.innerHTML = `
+        <div class="address-manager-modal">
+            <div class="address-manager-header">
+                <h2>Escolha um endereço principal</h2>
+                <button type="button" class="address-manager-close" id="closeAddressManagerBtn">×</button>
+            </div>
+
+            <div id="addressManagerList" class="address-manager-list">
+                <p>Carregando endereços...</p>
+            </div>
+
+            <div class="address-manager-actions">
+                <button type="button" class="btn btn-primary" id="confirmMainAddressBtn">
+                    Confirmar
+                </button>
+
+                <button type="button" class="btn btn-outline" id="createNewAddressBtn">
+                    Criar novo
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById("closeAddressManagerBtn").addEventListener("click", closeAddressManager);
+
+    modal.addEventListener("click", (event) => {
+        if (event.target.id === "addressManagerOverlay") {
+            closeAddressManager();
+        }
+    });
+
+    document.getElementById("confirmMainAddressBtn").addEventListener("click", async () => {
+        await confirmMainAddress();
+    });
+
+    document.getElementById("createNewAddressBtn").addEventListener("click", () => {
+        closeAddressManager();
+        openAddressModal();
+    });
+}
+
+async function openAddressManager(userId) {
+    currentProfileUserId = userId;
+    await loadAddressManager(userId);
+
+    const modal = document.getElementById("addressManagerOverlay");
+    if (modal) {
+        modal.classList.add("active");
+    }
+}
+
+function closeAddressManager() {
+    const modal = document.getElementById("addressManagerOverlay");
+    if (modal) {
+        modal.classList.remove("active");
+    }
+}
+
+async function loadAddressManager(userId) {
+    const list = document.getElementById("addressManagerList");
+    if (!list) return;
+
+    try {
+        list.innerHTML = `<p>Carregando endereços...</p>`;
+
+        const response = await fetch(`/users/${userId}/addresses`);
+
+        if (!response.ok) {
+            throw new Error("Erro ao carregar endereços.");
+        }
+
+        const addresses = await response.json();
+        currentAddresses = addresses || [];
+
+        if (!currentAddresses.length) {
+            selectedMainAddressId = null;
+
+            list.innerHTML = `
+                <div class="address-empty-state">
+                    <p>Nenhum endereço cadastrado.</p>
+                    <small>Clique em "Criar novo" para cadastrar seu primeiro endereço.</small>
+                </div>
+            `;
+
+            return;
+        }
+
+        const mainAddress = currentAddresses.find(address => address.principal);
+        selectedMainAddressId = mainAddress ? mainAddress.id : currentAddresses[0].id;
+
+        list.innerHTML = currentAddresses.map(address => {
+            const checked = Number(selectedMainAddressId) === Number(address.id) ? "checked" : "";
+            const cep = address.cep ? formatCepProfile(address.cep) : "---";
+            const addressName = address.nomeIdentificacao || "Endereço";
+            const addressLine = `${address.logradouro || ""} ${address.numero || ""}`.trim();
+            const subtitle = `${addressLine} - ${address.cidade || ""}, CEP: ${cep}`;
+
+            return `
+                <div class="address-manager-item">
+                    <label class="address-manager-radio-area">
+                        <input 
+                            type="radio" 
+                            name="profileMainAddress" 
+                            value="${address.id}" 
+                            ${checked}
+                        />
+
+                        <div class="address-manager-text">
+                            <strong>${addressName}</strong>
+                            <span>${subtitle}</span>
+                            ${address.principal ? `<small>Endereço principal</small>` : ""}
+                        </div>
+                    </label>
+
+                    <div class="address-manager-item-actions">
+                        <button 
+                            type="button" 
+                            class="address-manager-icon-btn" 
+                            title="Editar endereço"
+                            data-action="edit"
+                            data-address-id="${address.id}"
+                        >
+                            ✎
+                        </button>
+
+                        <button 
+                            type="button" 
+                            class="address-manager-icon-btn danger" 
+                            title="Excluir endereço"
+                            data-action="delete"
+                            data-address-id="${address.id}"
+                        >
+                            ×
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        document.querySelectorAll("input[name='profileMainAddress']").forEach((radio) => {
+            radio.addEventListener("change", (event) => {
+                selectedMainAddressId = Number(event.target.value);
+            });
+        });
+
+        document.querySelectorAll(".address-manager-icon-btn").forEach((button) => {
+            button.addEventListener("click", async () => {
+                const addressId = Number(button.dataset.addressId);
+                const action = button.dataset.action;
+
+                if (action === "edit") {
+                    await editProfileAddress(addressId);
+                }
+
+                if (action === "delete") {
+                    await deleteProfileAddress(addressId);
+                }
+            });
+        });
+
+    } catch (error) {
+        console.error(error);
+        list.innerHTML = `<p>Não foi possível carregar os endereços.</p>`;
+    }
+}
+
+async function confirmMainAddress() {
+    if (!currentProfileUserId || !selectedMainAddressId) {
+        showProfileToast("Selecione um endereço.", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/users/${currentProfileUserId}/addresses/${selectedMainAddressId}/main`, {
+            method: "PATCH"
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Erro ao definir endereço principal.");
+        }
+
+        await loadAddressManager(currentProfileUserId);
+        showProfileToast("Endereço principal atualizado com sucesso.", "success");
+        closeAddressManager();
+
+    } catch (error) {
+        console.error(error);
+        showProfileToast(error.message || "Não foi possível atualizar o endereço principal.", "error");
+    }
+}
+
+async function editProfileAddress(addressId) {
+    const address = currentAddresses.find(item => Number(item.id) === Number(addressId));
+
+    if (!address) {
+        showProfileToast("Endereço não encontrado.", "error");
+        return;
+    }
+
+    closeAddressManager();
+    openAddressModal(address);
+}
+
+async function deleteProfileAddress(addressId) {
+    if (!currentProfileUserId) return;
+
+    const confirmed = confirm("Tem certeza que deseja excluir este endereço?");
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(`/users/${currentProfileUserId}/addresses/${addressId}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Erro ao excluir endereço.");
+        }
+
+        await loadAddressManager(currentProfileUserId);
+
+    } catch (error) {
+        console.error(error);
+        showProfileToast(error.message || "Não foi possível excluir o endereço.", "error");
+    }
+}
+
+function formatCepProfile(value) {
+    return String(value || "")
+        .replace(/\D/g, "")
+        .replace(/(\d{5})(\d{3})/, "$1-$2");
+}
+
+function showProfileToast(message, type = "success") {
+    let toastContainer = document.getElementById("profileToastContainer");
+
+    if (!toastContainer) {
+        toastContainer = document.createElement("div");
+        toastContainer.id = "profileToastContainer";
+        toastContainer.className = "profile-toast-container";
+        document.body.appendChild(toastContainer);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `profile-toast ${type}`;
+    toast.textContent = message;
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add("show");
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+
+        setTimeout(() => {
+            toast.remove();
+        }, 250);
+    }, 3000);
 }

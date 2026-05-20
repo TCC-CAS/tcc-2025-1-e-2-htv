@@ -60,6 +60,35 @@ public class AddressUsecases {
         return addressRepository.save(address);
     }
 
+    public AddressModel update(Long userId, Long addressId, CreateAddressDto dto) {
+        validateUserExists(userId);
+        validateAddress(dto);
+
+        AddressModel address = findOwnedAddress(addressId, userId);
+
+        address.setNomeIdentificacao(
+                dto.nomeIdentificacao() == null || dto.nomeIdentificacao().isBlank()
+                        ? "Endereço"
+                        : dto.nomeIdentificacao()
+        );
+
+        address.setCep(onlyNumbers(dto.cep()));
+        address.setLogradouro(dto.logradouro());
+        address.setNumero(dto.numero());
+        address.setComplemento(dto.complemento());
+        address.setBairro(dto.bairro());
+        address.setCidade(dto.cidade());
+        address.setEstado(dto.estado());
+        address.setUpdatedAt(LocalDateTime.now());
+
+        if (Boolean.TRUE.equals(dto.principal())) {
+            clearMainAddress(userId);
+            address.setPrincipal(true);
+        }
+
+        return addressRepository.save(address);
+    }
+
     public AddressModel findOwnedAddress(Long addressId, Long userId) {
         AddressModel address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new IllegalArgumentException("Endereço não encontrado."));
@@ -77,12 +106,25 @@ public class AddressUsecases {
 
     public void delete(Long userId, Long addressId) {
         AddressModel address = findOwnedAddress(addressId, userId);
+        boolean wasMain = address.isPrincipal();
 
         address.setAtivo(false);
         address.setPrincipal(false);
         address.setUpdatedAt(LocalDateTime.now());
 
         addressRepository.save(address);
+
+        if (wasMain) {
+            List<AddressModel> remainingAddresses =
+                    addressRepository.findByOwnerIdAndAtivoTrueOrderByPrincipalDescCreatedAtDesc(userId);
+
+            if (!remainingAddresses.isEmpty()) {
+                AddressModel newMain = remainingAddresses.get(0);
+                newMain.setPrincipal(true);
+                newMain.setUpdatedAt(LocalDateTime.now());
+                addressRepository.save(newMain);
+            }
+        }
     }
 
     public AddressModel setMain(Long userId, Long addressId) {
