@@ -232,6 +232,7 @@ public class PaymentUsecases {
 
         Map<String, Object> item = new HashMap<>();
         item.put("id", "tool-" + dto.toolId());
+        item.put("name", "Aluguel de ferramenta: " + dto.toolName());
         item.put("quantity", dto.days());
         item.put("amount", dto.totalAmount().doubleValue());
 

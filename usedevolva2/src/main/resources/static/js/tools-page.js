@@ -129,3 +129,15 @@ async function loadImages() {
         container.innerHTML = "<p>Erro ao carregar imagens</p>";
     }
 }
+function formatAvailability(tool) {
+    const hasStart = !!tool.dataInicioDisponibilidade;
+    const hasEnd = !!tool.dataFimDisponibilidade;
+    if (!hasStart && !hasEnd) return "Disponibilidade não informada.";
+    if (hasStart && !hasEnd) return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
+    if (!hasStart && hasEnd) return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
+    return `Disponível de ${formatDate(tool.dataInicioDisponibilidade)} até ${formatDate(tool.dataFimDisponibilidade)}.`;
+}
+
+function formatDate(dateString) {
+    return new Date(dateString + "T00:00:00").toLocaleDateString("pt-BR");
+}

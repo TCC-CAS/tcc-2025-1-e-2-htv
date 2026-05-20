@@ -6,6 +6,7 @@ public record CreateToolCheckoutDto(
         Long userId,
         Long toolId,
         int days,
+        String toolName,
         BigDecimal baseValue,
         BigDecimal serviceFee,
         BigDecimal totalAmount
