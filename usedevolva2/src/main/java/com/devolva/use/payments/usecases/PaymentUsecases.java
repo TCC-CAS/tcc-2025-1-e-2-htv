@@ -231,7 +231,7 @@ public class PaymentUsecases {
                 ));
     }
     @SuppressWarnings("unchecked")
-    public Object createToolPixPayment(CreateToolPaymentDto dto) {
+    public Map<String, Object> createToolPixPayment(CreateToolPaymentDto dto) {
 
         ToolModel tool = toolRepository.findById(dto.toolId())
                 .orElseThrow(() -> new RuntimeException("Ferramenta não encontrada."));
@@ -324,27 +324,31 @@ public class PaymentUsecases {
 
         metadata.put("renterId", dto.userId());
 
+        int amount = (int) Math.round(totalValue * 100);
 
-        Map<String, Object> body = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
 
-        body.put(
-                "amount",
-                (int) Math.round(totalValue * 100)
-        );
+        data.put("amount", amount);
 
-        body.put(
+        data.put(
                 "description",
                 "Aluguel da ferramenta: " + tool.getNome()
         );
 
-        body.put(
+        data.put("expiresIn", 3600);
+
+        data.put(
                 "externalId",
-                "rental-" + rental.getId() + "-" + System.currentTimeMillis()
+                "rental-" + rental.getId()
         );
 
-        body.put("metadata", metadata);
+        data.put("metadata", metadata);
 
-        body.put("expiresIn", 3600);
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("method", "PIX");
+
+        body.put("data", data);
 
         HttpEntity<Map<String, Object>> entity =
                 new HttpEntity<>(body, headers);
@@ -353,7 +357,7 @@ public class PaymentUsecases {
 
             ResponseEntity<Map> response =
                     restTemplate.postForEntity(
-                            abacateApiUrl + "/pixQrCode/create",
+                            abacateApiUrl + "/transparents/create",
                             entity,
                             Map.class
                     );
@@ -370,21 +374,22 @@ public class PaymentUsecases {
                 return responseBody;
             }
 
-            Map<String, Object> data =
+            Map<String, Object> transparentData =
                     (Map<String, Object>) responseBody.get("data");
 
             PaymentModel payment = new PaymentModel();
 
             payment.setUserId(dto.userId());
 
-            payment.setTransactionId((String) data.get("id"));
+            payment.setTransactionId((String) transparentData.get("id"));
 
             payment.setAmount(BigDecimal.valueOf(totalValue));
 
             payment.setStatus(PaymentStatus.PENDING);
 
             payment.setCreatedAt(LocalDateTime.now());
-
+            payment.setCheckoutUrl(null);
+            
             payment = paymentRepository.save(payment);
 
 
@@ -400,13 +405,13 @@ public class PaymentUsecases {
 
                     "paymentId", payment.getId(),
 
-                    "pixQrCode", data.get("brCode"),
+                    "pixQrCode", transparentData.get("brCode"),
 
-                    "pixQrCodeBase64", data.get("brCodeBase64"),
+                    "pixQrCodeBase64", transparentData.get("brCodeBase64"),
 
                     "amount", totalValue,
 
-                    "expiresAt", data.get("expiresAt")
+                    "expiresAt", transparentData.get("expiresAt")
             );
 
         } catch (HttpStatusCodeException e) {
