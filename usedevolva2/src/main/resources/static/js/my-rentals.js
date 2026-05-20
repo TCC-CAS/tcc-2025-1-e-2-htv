@@ -94,9 +94,9 @@ function renderRentals(rentals) {
                 alt="${rental.toolName}"
             >
 
-            <span class="badge ${getBadgeClass(rental.status)}">
-                ${translateStatus(rental.status)}
-            </span>
+            <span class="badge ${getStatusBadgeClass(rental.status)}">
+    ${translateStatus(rental.status)}
+</span>
 
         </div>
 
@@ -205,30 +205,6 @@ function translateStatus(status) {
     return map[status] || status;
 }
 
-function getBadgeClass(status) {
-
-    switch (status) {
-
-        case "IN_USE":
-            return "active";
-
-        case "RETURNED":
-        case "LATE_RETURNED":
-            return "done";
-
-        case "PENDING":
-        case "AWAITING_PAYMENT":
-            return "pending";
-
-        case "REJECTED":
-        case "CANCELLED":
-            return "cancelled";
-
-        default:
-            return "pending";
-    }
-}
-
 function formatDate(date) {
 
     if (!date) {
@@ -249,4 +225,22 @@ function formatCurrency(value) {
 
             currency: "BRL"
         });
+}
+
+function getStatusBadgeClass(status) {
+
+    const map = {
+
+        PENDING: "badge-pending",
+        AWAITING_PAYMENT: "badge-waiting",
+        ACCEPTED: "badge-accepted",
+        PAID: "badge-paid",
+        IN_USE: "badge-active",
+        RETURNED: "badge-finished",
+        LATE_RETURNED: "badge-late",
+        REJECTED: "badge-rejected",
+        CANCELLED: "badge-cancelled"
+    };
+
+    return map[status] || "badge-default";
 }

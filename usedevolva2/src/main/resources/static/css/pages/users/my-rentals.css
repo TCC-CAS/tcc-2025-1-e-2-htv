@@ -219,6 +219,23 @@ main {
     background: var(--primary-hover);
 }
 
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.badge-pending { background: #f1c40f; color: #000; }
+.badge-waiting { background: #3498db; color: #fff; }
+.badge-accepted { background: #9b59b6; color: #fff; }
+.badge-paid { background: #2ecc71; color: #fff; }
+.badge-active { background: #1abc9c; color: #fff; }
+.badge-finished { background: #95a5a6; color: #fff; }
+.badge-late { background: #e67e22; color: #fff; }
+.badge-rejected { background: #e74c3c; color: #fff; }
+.badge-cancelled { background: #7f8c8d; color: #fff; }
 
 
 @media (max-width: 768px) {
