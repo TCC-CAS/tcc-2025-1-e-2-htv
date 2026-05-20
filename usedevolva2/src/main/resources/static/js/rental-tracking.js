@@ -84,7 +84,7 @@ function updateProgress(status) {
     const progress = document.getElementById("linhaProgresso");
 
     const percentage =
-        ((completed - 1) / (steps.length - 1)) * 100;
+        (completed / steps.length) * 100;
 
     progress.style.width = `${percentage}%`;
 }
@@ -133,12 +133,11 @@ function formatCurrency(value) {
 }
 
 const FLOW = [
-    "PENDING",
-    "ACCEPTED",
-    "AWAITING_PAYMENT",
-    "PAID",
-    "IN_USE",
-    "RETURNED",
+    "PENDING",           // Solicitação enviada
+    "AWAITING_PAYMENT",  // Pagamento aprovado
+    "ACCEPTED",          // Aceito pelo dono
+    "IN_USE",            // Item retirado / em uso
+    "RETURNED",          // Devolvido
     "LATE_RETURNED"
 ];
 
