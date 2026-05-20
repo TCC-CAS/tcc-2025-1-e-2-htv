@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fotosInput = document.getElementById("fotos");
     const currentImagesContainer = document.getElementById("currentImagesContainer");
     const newImagesPreviewContainer = document.getElementById("newImagesPreviewContainer");
+    const addressSelect = document.getElementById("addressId");
+    const openAddressModalBtn = document.getElementById("openAddressModalBtn");
 
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -13,6 +15,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (!form) return;
+
+    if (user && user.id) {
+        initAddressModal(user.id, async (savedAddress) => {
+            await loadUserAddresses(user.id, savedAddress.id);
+        });
+    }
+
+    if (openAddressModalBtn) {
+        openAddressModalBtn.addEventListener("click", () => {
+            openAddressModal();
+        });
+    }
 
     let selectedFiles = [];
 
@@ -26,8 +40,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             newFiles.forEach(file => {
                 if (!file.type.startsWith("image/")) return;
 
-                if (selectedFiles.length >= 10) {
-                    message.textContent = "Você pode adicionar no máximo 10 novas fotos por vez.";
+                if (selectedFiles.length >= 5) {
+                    message.textContent = "Você pode adicionar no máximo 5 novas fotos por vez.";
                     return;
                 }
 
@@ -70,6 +84,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         const currentImagesCount = currentImagesContainer.querySelectorAll(".photo-item").length;
         const totalImages = currentImagesCount + selectedFiles.length;
 
+        const addressSelect = document.getElementById("addressId");
+        const selectedAddressId = addressSelect.value ? Number(addressSelect.value) : null;
+
         const toolData = {
             nome: document.getElementById("nomeFerramenta").value.trim(),
             categoria: document.getElementById("categoria").value,
@@ -77,7 +94,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             valorDiaria: Number(document.getElementById("valorDiaria").value),
             descricao: document.getElementById("descricao").value.trim(),
             quantidadeFotos: totalImages,
-            localizacao: document.getElementById("localizacao").value.trim(),
+            addressId: selectedAddressId,
+            localizacao: addressSelect.selectedOptions[0]?.textContent?.trim() || "",
             dataInicioDisponibilidade: document.getElementById("dataInicioDisponibilidade").value,
             dataFimDisponibilidade: document.getElementById("dataFimDisponibilidade").value || null,
             observacoes: document.getElementById("observacoes").value.trim()
@@ -89,10 +107,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             !toolData.estadoConservacao ||
             !toolData.valorDiaria ||
             !toolData.descricao ||
-            !toolData.localizacao ||
+            !toolData.addressId ||
             !toolData.dataInicioDisponibilidade
         ) {
-            message.textContent = "Preencha todos os campos obrigatórios.";
+            showToast("Preencha todos os campos obrigatórios.", "error");
             return;
         }
 
@@ -101,8 +119,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        if (totalImages > 10) {
-            message.textContent = "A ferramenta pode ter no máximo 10 imagens no total.";
+        if (totalImages > 5) {
+            message.textContent = "A ferramenta pode ter no máximo 5 imagens no total.";
             return;
         }
 
@@ -170,7 +188,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById("estadoConservacao").value = tool.estadoConservacao || "";
             document.getElementById("valorDiaria").value = tool.valorDiaria || "";
             document.getElementById("descricao").value = tool.descricao || "";
-            document.getElementById("localizacao").value = tool.localizacao || "";
+            await loadUserAddresses(user.id, tool.addressId || null);
             document.getElementById("dataInicioDisponibilidade").value = tool.dataInicioDisponibilidade || "";
             document.getElementById("dataFimDisponibilidade").value = tool.dataFimDisponibilidade || "";
             document.getElementById("observacoes").value = tool.observacoes || "";
@@ -179,6 +197,47 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error(error);
             alert("Não foi possível carregar os dados da ferramenta.");
             window.location.href = "/users/my-tools";
+        }
+    }
+
+    async function loadUserAddresses(userId, selectedAddressId = null) {
+        const addressSelect = document.getElementById("addressId");
+
+        if (!addressSelect) return;
+
+        try {
+            addressSelect.innerHTML = `<option value="">Carregando endereços...</option>`;
+
+            const response = await fetch(`/users/${userId}/addresses`);
+
+            if (!response.ok) {
+                throw new Error("Erro ao carregar endereços.");
+            }
+
+            const addresses = await response.json();
+
+            if (!addresses || addresses.length === 0) {
+                addressSelect.innerHTML = `<option value="">Nenhum endereço cadastrado</option>`;
+                return;
+            }
+
+            addressSelect.innerHTML = `<option value="">Selecione um endereço</option>`;
+
+            addresses.forEach((address) => {
+                const option = document.createElement("option");
+                option.value = address.id;
+                option.textContent = formatAddressLabel(address);
+
+                if (selectedAddressId && Number(selectedAddressId) === Number(address.id)) {
+                    option.selected = true;
+                }
+
+                addressSelect.appendChild(option);
+            });
+
+        } catch (error) {
+            console.error(error);
+            addressSelect.innerHTML = `<option value="">Erro ao carregar endereços</option>`;
         }
     }
 

@@ -158,10 +158,16 @@ public class ToolUsecases {
                 dto.estadoConservacao(),
                 dto.valorDiaria(),
                 dto.quantidadeFotos(),
-                null,
+                dto.addressId(),
                 dto.localizacao(),
                 dto.dataInicioDisponibilidade()
         );
+
+        AddressModel address = null;
+
+        if (dto.addressId() != null) {
+            address = addressUsecases.findOwnedAddress(dto.addressId(), ownerId);
+        }
 
         if (dto.nome() != null) tool.setNome(dto.nome());
         if (dto.descricao() != null) tool.setDescricao(dto.descricao());
@@ -170,7 +176,19 @@ public class ToolUsecases {
         if (dto.valorDiaria() != null) tool.setValorDiaria(dto.valorDiaria());
         if (dto.quantidadeFotos() > 0) tool.setQuantidadeFotos(dto.quantidadeFotos());
         if (dto.disponivel() != null) tool.setDisponivel(dto.disponivel());
-        if (dto.localizacao() != null) tool.setLocalizacao(dto.localizacao());
+        if (address != null) {
+            tool.setAddressId(address.getId());
+            tool.setCep(address.getCep());
+            tool.setLogradouro(address.getLogradouro());
+            tool.setNumero(address.getNumero());
+            tool.setComplemento(address.getComplemento());
+            tool.setBairro(address.getBairro());
+            tool.setCidade(address.getCidade());
+            tool.setEstado(address.getEstado());
+            tool.setLocalizacao(address.getEnderecoCompleto());
+        } else if (dto.localizacao() != null) {
+            tool.setLocalizacao(dto.localizacao());
+        }
         if (dto.dataInicioDisponibilidade() != null) tool.setDataInicioDisponibilidade(dto.dataInicioDisponibilidade());
         if (dto.dataFimDisponibilidade() != null) tool.setDataFimDisponibilidade(dto.dataFimDisponibilidade());
         if (dto.observacoes() != null) tool.setObservacoes(dto.observacoes());
