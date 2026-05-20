@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML" />
+    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
+      <change afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/dtos/RentalDetailsDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/payments/usecases/PaymentUsecases.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/payments/usecases/PaymentUsecases.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/RentalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/RentalController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/usecases/RentalUsecases.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/usecases/RentalUsecases.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/web/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/web/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/rentals/rental-tracking.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/rentals/rental-tracking.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-rentals.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-rentals.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,8 +24,8 @@
       <list>
         <option value="HTML File" />
         <option value="JavaScript File" />
-        <option value="Class" />
         <option value="CSS File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -103,7 +112,7 @@
       <workItem from="1779128715157" duration="4852000" />
       <workItem from="1779218756590" duration="884000" />
       <workItem from="1779247293417" duration="940000" />
-      <workItem from="1779299699500" duration="2571000" />
+      <workItem from="1779299699500" duration="3959000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />

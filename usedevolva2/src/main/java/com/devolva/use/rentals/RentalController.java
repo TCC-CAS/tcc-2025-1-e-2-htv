@@ -1,10 +1,7 @@
 package com.devolva.use.rentals;
 
 import com.devolva.use.rentals.domain.RentalModel;
-import com.devolva.use.rentals.dtos.ApproveRentalDto;
-import com.devolva.use.rentals.dtos.CreateRentalDto;
-import com.devolva.use.rentals.dtos.ReturnRentalDto;
-import com.devolva.use.rentals.dtos.StartRentalDto;
+import com.devolva.use.rentals.dtos.*;
 import com.devolva.use.rentals.usecases.RentalUsecases;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +60,17 @@ public class RentalController {
     public List<RentalModel> findByTenantId(@PathVariable Long tenantId) {
         return rentalUsecases.findByTenantId(tenantId);
     }
+    @GetMapping("/{rentalId}/details")
+    public RentalDetailsDto details(
+            @PathVariable Long rentalId,
+            @RequestParam Long userId
+    ) {
 
+        return rentalUsecases.getRentalDetails(
+                rentalId,
+                userId
+        );
+    }
     @GetMapping("/owner/{ownerId}")
     public List<RentalModel> findByOwnerId(@PathVariable Long ownerId) {
         return rentalUsecases.findByOwnerId(ownerId);

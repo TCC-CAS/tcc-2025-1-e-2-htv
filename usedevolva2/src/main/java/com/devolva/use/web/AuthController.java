@@ -66,4 +66,21 @@ public class AuthController {
         System.out.println("ROTA /payment/success CHAMADA");
         return "payments/payment-success";
     }
+
+    @GetMapping("/users/my-rentals")
+    public String myRentalsPage() {
+        return "users/my-rentals";
+    }
+
+    @GetMapping("/rentals/{id}")
+    public String rentalTrackingPage(
+            @PathVariable Long id,
+            Model model
+    ) {
+
+        model.addAttribute("rentalId", id);
+
+        return "rentals/rental-tracking";
+    }
+
 }

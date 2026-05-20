@@ -2,12 +2,11 @@ package com.devolva.use.rentals.usecases;
 
 import com.devolva.use.rentals.domain.RentalModel;
 import com.devolva.use.rentals.domain.RentalStatus;
-import com.devolva.use.rentals.dtos.ApproveRentalDto;
-import com.devolva.use.rentals.dtos.CreateRentalDto;
-import com.devolva.use.rentals.dtos.ReturnRentalDto;
-import com.devolva.use.rentals.dtos.StartRentalDto;
+import com.devolva.use.rentals.dtos.*;
 import com.devolva.use.rentals.repository.RentalRepository;
+import com.devolva.use.tools.domain.ToolImageModel;
 import com.devolva.use.tools.domain.ToolModel;
+import com.devolva.use.tools.repository.ToolImageRepository;
 import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.domain.UserStatus;
@@ -27,22 +26,87 @@ public class RentalUsecases {
 
     private static final BigDecimal SERVICE_FEE_PERCENT = new BigDecimal("0.07");
     private static final BigDecimal LATE_FEE_PERCENT_PER_DAY = new BigDecimal("0.20");
-    private static final int MAX_SIMULTANEOUS_REQUESTS = 10;
 
     private final RentalRepository rentalRepository;
     private final ToolRepository toolRepository;
     private final UserRepository userRepository;
+    private final ToolImageRepository toolImageRepository;
 
     public RentalUsecases(
             RentalRepository rentalRepository,
             ToolRepository toolRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            ToolImageRepository toolImageRepository
     ) {
+
         this.rentalRepository = rentalRepository;
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
+        this.toolImageRepository = toolImageRepository;
     }
 
+    private String getToolMainImage(Long toolId) {
+
+        return toolImageRepository
+                .findByToolId(toolId)
+                .stream()
+                .filter(ToolImageModel::isPrincipal)
+                .findFirst()
+                .map(ToolImageModel::getFilePath)
+                .orElse(null);
+    }
+
+
+    public RentalDetailsDto getRentalDetails(
+            Long rentalId,
+            Long currentUserId
+    ) {
+
+        RentalModel rental = findRentalOrThrow(rentalId);
+
+        ToolModel tool = findToolOrThrow(
+                rental.getToolId()
+        );
+
+        UserModel owner = findUserOrThrow(
+                rental.getOwnerId()
+        );
+
+        UserModel renter = findUserOrThrow(
+                rental.getRenterId()
+        );
+
+        return new RentalDetailsDto(
+
+                rental.getId(),
+
+                tool.getId(),
+
+                tool.getNome(),
+
+                getToolMainImage(tool.getId()),
+
+                owner.getId(),
+
+                owner.getNomeCompleto(),
+
+                renter.getId(),
+
+                renter.getNomeCompleto(),
+
+                rental.getStatus().name(),
+
+                rental.getStartDate().toString(),
+
+                rental.getEndDate().toString(),
+
+                rental.getTotalValue(),
+
+                owner.getId().equals(currentUserId),
+
+                renter.getId().equals(currentUserId)
+        );
+    }
     public RentalModel createRentalRequest(CreateRentalDto dto) {
         validateRentalDates(dto);
 
@@ -78,9 +142,6 @@ public class RentalUsecases {
                 .filter(this::isActiveRentalFlow)
                 .count();
 
-        if (activeRequests >= MAX_SIMULTANEOUS_REQUESTS) {
-            throw new RuntimeException("O usuário já atingiu o limite de 10 solicitações simultâneas.");
-        }
 
         boolean hasConflict = rentalRepository.findAll().stream()
                 .filter(r -> r.getToolId().equals(dto.toolId()))

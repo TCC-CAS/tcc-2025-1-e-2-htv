@@ -461,112 +461,41 @@ public class PaymentUsecases {
                         )
                 );
 
-        SimpleClientHttpRequestFactory factory =
-                new SimpleClientHttpRequestFactory();
+        /*
+         * MOCK DEV MODE TCC
+         */
 
-        factory.setConnectTimeout(10000);
+        if (payment.getStatus() != PaymentStatus.PAID) {
 
-        factory.setReadTimeout(10000);
-
-        RestTemplate restTemplate =
-                new RestTemplate(factory);
-
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.setBearerAuth(abacateApiKey);
-
-        HttpEntity<Void> entity =
-                new HttpEntity<>(headers);
-
-        try {
-
-            String url =
-                    abacateApiUrl
-                            + "/transparents/get?id="
-                            + payment.getTransactionId();
-
-            ResponseEntity<Map> response =
-                    restTemplate.exchange(
-                            url,
-                            HttpMethod.GET,
-                            entity,
-                            Map.class
-                    );
-
-            Map<String, Object> responseBody =
-                    response.getBody();
-
-            if (
-                    responseBody == null
-                            || !Boolean.TRUE.equals(
-                            responseBody.get("success")
-                    )
-            ) {
-
-                return Map.of(
-                        "success", false,
-                        "message",
-                        "Não foi possível consultar o pagamento."
-                );
-            }
-
-            Map<String, Object> data =
-                    (Map<String, Object>)
-                            responseBody.get("data");
-
-            String status =
-                    (String) data.get("status");
-
-            if ("PAID".equalsIgnoreCase(status)) {
-
-                payment.setStatus(
-                        PaymentStatus.PAID
-                );
-
-                payment.setPaidAt(
-                        LocalDateTime.now()
-                );
-
-                paymentRepository.save(payment);
-
-
-                rental.setStatus(
-                        RentalStatus.PAID
-                );
-
-                rental.setPaidAt(
-                        LocalDateTime.now()
-                );
-
-                rentalRepository.save(rental);
-            }
-
-            return Map.of(
-                    "success", true,
-                    "status", status,
-                    "paymentId", payment.getId(),
-                    "transactionId",
-                    payment.getTransactionId(),
-                    "rentalId", rental.getId()
+            payment.setStatus(
+                    PaymentStatus.PAID
             );
 
-        } catch (HttpStatusCodeException e) {
-
-            return Map.of(
-                    "success", false,
-                    "status",
-                    e.getStatusCode().value(),
-                    "abacateError",
-                    e.getResponseBodyAsString()
+            payment.setPaidAt(
+                    LocalDateTime.now()
             );
 
-        } catch (Exception e) {
+            paymentRepository.save(payment);
 
-            return Map.of(
-                    "success", false,
-                    "message", e.getMessage()
+            rental.setStatus(
+                    RentalStatus.PAID
             );
+
+            rental.setPaidAt(
+                    LocalDateTime.now()
+            );
+
+            rentalRepository.save(rental);
         }
+
+        return Map.of(
+                "success", true,
+                "status", "PAID",
+                "paymentId", payment.getId(),
+                "transactionId",
+                payment.getTransactionId(),
+                "rentalId", rental.getId()
+        );
     }
 
 }
