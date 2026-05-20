@@ -1,60 +1,20 @@
 let currentTool = null;
-const CURRENT_USER_ID = JSON.parse(localStorage.getItem("user"))?.id;
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadTool();
     await loadImages();
 
-    const reservationForm = document.getElementById("reservationForm");
     const dataInicio = document.getElementById("dataInicio");
     const dataFim = document.getElementById("dataFim");
+    const reservationForm = document.getElementById("reservationForm");
+
+    if (dataInicio) dataInicio.addEventListener("change", updateBookingSummary);
+    if (dataFim) dataFim.addEventListener("change", updateBookingSummary);
 
     if (reservationForm) {
-        reservationForm.addEventListener("submit", async (event) => {
+        reservationForm.addEventListener("submit", (event) => {
             event.preventDefault();
-
-            if (!CURRENT_USER_ID) {
-                alert("Faça login para reservar a ferramenta.");
-                return;
-            }
-
-            const dataInicioVal = dataInicio.value;
-            const dataFimVal = dataFim.value;
-
-            if (!dataInicioVal || !dataFimVal) {
-                alert("Selecione datas válidas para a reserva.");
-                return;
-            }
-
-            const start = new Date(dataInicioVal + "T00:00:00");
-            const end = new Date(dataFimVal + "T00:00:00");
-            if (end < start) {
-                alert("A data de devolução não pode ser anterior à data de início.");
-                return;
-            }
-
-            const totalDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-            const dailyRate = parseFloat(currentTool.valorDiaria || 0);
-            const totalAmount = dailyRate * totalDays * 1.07;
-
-            try {
-                const checkoutResponse = await fetch(
-                    `/payments/tool-checkout?toolId=${TOOL_ID}&days=${totalDays}&totalAmount=${totalAmount}&tenantId=${CURRENT_USER_ID}`,
-                    { method: "POST" }
-                );
-                const checkoutData = await checkoutResponse.json();
-
-                if (checkoutData.success) {
-                    // Redireciona para a AbacatePay
-                    window.location.href = checkoutData.data.url;
-                } else {
-                    console.error(checkoutData);
-                    alert("Erro ao criar checkout: " + (checkoutData.message || "verifique o console"));
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Erro ao processar a reserva.");
-            }
+            showToast("Solicitação de empréstimo ainda será implementada.");
         });
     }
 });
@@ -62,7 +22,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadTool() {
     try {
         const response = await fetch(`/tools/${TOOL_ID}`);
-        if (!response.ok) throw new Error("Erro ao buscar ferramenta.");
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar ferramenta.");
+        }
 
         const tool = await response.json();
         currentTool = tool;
@@ -78,6 +41,7 @@ async function loadTool() {
         document.getElementById("toolPrice").textContent = formatCurrency(tool.valorDiaria || 0);
 
         await loadOwner(tool.ownerId);
+
     } catch (error) {
         console.error(error);
         showToast("Não foi possível carregar a ferramenta.");
@@ -86,14 +50,17 @@ async function loadTool() {
 
 async function loadImages() {
     const container = document.getElementById("imageGallery");
+
     try {
         const response = await fetch(`/tools/${TOOL_ID}/images`);
+
         if (!response.ok) {
             container.innerHTML = "<p>Sem imagens</p>";
             return;
         }
 
         let images = await response.json();
+
         if (!images || images.length === 0) {
             container.innerHTML = "<p>Sem imagens</p>";
             return;
@@ -108,36 +75,143 @@ async function loadImages() {
             <div class="tool-main-image">
                 <img id="selectedToolImage" src="${mainImage.filePath}" alt="Imagem principal da ferramenta">
             </div>
-            ${thumbnails.length > 0 ? `<div class="tool-thumbs" id="toolThumbs"></div>` : ""}
+
+            ${
+            thumbnails.length > 0
+                ? `<div class="tool-thumbs" id="toolThumbs"></div>`
+                : ""
+        }
         `;
 
         const thumbs = document.getElementById("toolThumbs");
+
         if (thumbs) {
             thumbnails.forEach(image => {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "tool-thumb-btn";
-                button.innerHTML = `<img src="${image.filePath}" alt="Miniatura da ferramenta">`;
+
+                button.innerHTML = `
+                    <img src="${image.filePath}" alt="Miniatura da ferramenta">
+                `;
+
                 button.addEventListener("click", () => {
                     document.getElementById("selectedToolImage").src = image.filePath;
                 });
+
                 thumbs.appendChild(button);
             });
         }
+
     } catch (error) {
         console.error(error);
         container.innerHTML = "<p>Erro ao carregar imagens</p>";
     }
 }
+
+async function loadOwner(ownerId) {
+    if (!ownerId) return;
+
+    try {
+        const response = await fetch(`/users/${ownerId}`);
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar proprietário.");
+        }
+
+        const owner = await response.json();
+
+        const ownerName =
+            owner.nomeCompleto ||
+            owner.nome ||
+            owner.email ||
+            "Proprietário da ferramenta";
+
+        document.getElementById("ownerName").textContent = ownerName;
+        document.getElementById("ownerAvatar").textContent = getInitials(ownerName);
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("ownerName").textContent = "Proprietário não identificado";
+        document.getElementById("ownerAvatar").textContent = "U";
+    }
+}
+
+function updateBookingSummary() {
+    if (!currentTool) return;
+
+    const dataInicio = document.getElementById("dataInicio").value;
+    const dataFim = document.getElementById("dataFim").value;
+
+    if (!dataInicio || !dataFim) {
+        document.getElementById("dailySummary").textContent = "0 diárias";
+        document.getElementById("baseValue").textContent = formatCurrency(0);
+        document.getElementById("serviceFee").textContent = formatCurrency(0);
+        document.getElementById("totalValue").textContent = formatCurrency(0);
+        return;
+    }
+
+    const start = new Date(dataInicio + "T00:00:00");
+    const end = new Date(dataFim + "T00:00:00");
+
+    if (end < start) {
+        showToast("A data de devolução não pode ser anterior à data de início.");
+        return;
+    }
+
+    const millisecondsPerDay = 1000 * 60 * 60 * 24;
+    const totalDays = Math.floor((end - start) / millisecondsPerDay) + 1;
+
+    const dailyRate = Number(currentTool.valorDiaria || 0);
+    const base = dailyRate * totalDays;
+    const serviceFee = base * 0.07;
+    const total = base + serviceFee;
+
+    document.getElementById("dailySummary").textContent =
+        totalDays === 1 ? "1 diária" : `${totalDays} diárias`;
+
+    document.getElementById("baseValue").textContent = formatCurrency(base);
+    document.getElementById("serviceFee").textContent = formatCurrency(serviceFee);
+    document.getElementById("totalValue").textContent = formatCurrency(total);
+}
+
 function formatAvailability(tool) {
     const hasStart = !!tool.dataInicioDisponibilidade;
     const hasEnd = !!tool.dataFimDisponibilidade;
-    if (!hasStart && !hasEnd) return "Disponibilidade não informada.";
-    if (hasStart && !hasEnd) return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
-    if (!hasStart && hasEnd) return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
+
+    if (!hasStart && !hasEnd) {
+        return "Disponibilidade não informada.";
+    }
+
+    if (hasStart && !hasEnd) {
+        return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
+    }
+
+    if (!hasStart && hasEnd) {
+        return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
+    }
+
     return `Disponível de ${formatDate(tool.dataInicioDisponibilidade)} até ${formatDate(tool.dataFimDisponibilidade)}.`;
 }
 
 function formatDate(dateString) {
-    return new Date(dateString + "T00:00:00").toLocaleDateString("pt-BR");
+    const date = new Date(dateString + "T00:00:00");
+    return date.toLocaleDateString("pt-BR");
+}
+
+function formatCurrency(value) {
+    return Number(value).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function getInitials(name) {
+    return name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part[0])
+        .join("")
+        .toUpperCase();
 }
