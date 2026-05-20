@@ -84,93 +84,79 @@ function renderRentals(rentals) {
 
     container.innerHTML = rentals.map(rental => `
 
-        <article class="rental-card">
+    <article class="rental-card">
+
+        <div class="rental-image-container">
+
+            <img
+                src="${rental.toolImage || '/images/default-tool.png'}"
+                class="rental-image"
+                alt="${rental.toolName}"
+            >
+
+            <span class="badge ${getBadgeClass(rental.status)}">
+                ${translateStatus(rental.status)}
+            </span>
+
+        </div>
+
+        <div class="rental-content">
+
+            <h3 class="rental-title">
+                ${rental.toolName}
+            </h3>
+
+            <p class="rental-owner">
+                Proprietário:
+                ${rental.ownerName}
+            </p>
+
+            <div class="rental-details">
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Período
+                    </span>
+
+                    <span class="detail-value">
+                        ${formatDate(rental.startDate)}
+                        até
+                        ${formatDate(rental.endDate)}
+                    </span>
+
+                </div>
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Valor
+                    </span>
+
+                    <span class="price-value">
+                        ${formatCurrency(rental.totalValue)}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="rental-footer">
 
             <a
                 href="/rentals/${rental.rentalId}"
-                class="rental-link"
+                class="btn-view"
             >
-
-                <div class="rental-header">
-
-                    <div class="rental-title-group">
-
-                        <h3>
-                            ${rental.toolName || "Ferramenta"}
-                        </h3>
-
-                        <p>
-                            Proprietário:
-                            ${rental.ownerName || "Não informado"}
-                        </p>
-
-                    </div>
-
-                    <span class="badge ${getBadgeClass(rental.status)}">
-
-                        ${translateStatus(rental.status)}
-
-                    </span>
-
-                </div>
-
-                <div class="rental-content">
-
-                    ${renderImage(rental)}
-
-                    <div class="rental-body">
-
-                        <div class="info-block">
-
-                            <span class="info-label">
-                                Período
-                            </span>
-
-                            <span class="info-value">
-
-                                ${formatDate(rental.startDate)}
-
-                                até
-
-                                ${formatDate(rental.endDate)}
-
-                            </span>
-
-                        </div>
-
-                        <div class="info-block">
-
-                            <span class="info-label">
-                                Valor
-                            </span>
-
-                            <span class="price-value">
-
-                                ${formatCurrency(rental.totalValue)}
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="rental-actions">
-
-                    <span class="btn-outline">
-
-                        Ver aluguel
-
-                    </span>
-
-                </div>
-
+                Ver aluguel
             </a>
 
-        </article>
+        </div>
 
-    `).join("");
+    </article>
+
+`).join("");
 }
 
 function renderImage(rental) {
