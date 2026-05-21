@@ -414,14 +414,18 @@ public class RentalUsecases {
     }
 
     public List<RentalListDto> getRentalsByOwner(Long ownerId) {
+        // Filtra apenas as locações onde o usuário é o proprietário
         List<RentalModel> rentals = rentalRepository.findAll().stream()
                 .filter(r -> r.getOwnerId().equals(ownerId))
                 .toList();
 
         return rentals.stream().map(rental -> {
+            // Busca a ferramenta associada
             ToolModel tool = findToolOrThrow(rental.getToolId());
+            // Busca o locatário para obter o nome completo
             UserModel renter = findUserOrThrow(rental.getRenterId());
 
+            // Define a imagem principal da ferramenta
             String image = null;
             List<ToolImageModel> images = toolImageRepository.findByToolId(tool.getId());
             if (!images.isEmpty()) {
@@ -431,6 +435,7 @@ public class RentalUsecases {
                         .orElse(images.get(0))
                         .getFilePath();
             }
+
 
             return new RentalListDto(
                     rental.getId(),
@@ -445,6 +450,6 @@ public class RentalUsecases {
             );
         }).toList();
     }
-    
+
 }
 
