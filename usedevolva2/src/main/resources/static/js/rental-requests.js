@@ -11,22 +11,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadRequests(ownerId) {
     try {
-        const response = await fetch(`/rentals/owner/${ownerId}`);
-
-        if (!response.ok) {
-            throw new Error("Erro ao buscar solicitações");
-        }
+        const response = await fetch(`/rentals/owner-list/${ownerId}`);
+        if (!response.ok) throw new Error("Erro ao buscar solicitações");
 
         const rentals = await response.json();
 
-        // Mapear RentalModel para campos esperados no frontend
         const mappedRentals = rentals.map(r => ({
-            rentalId: r.id,
+            rentalId: r.rentalId,
             toolId: r.toolId,
-            toolName: r.tool?.nome || "Ferramenta",
+            toolName: r.toolName,
             toolImage: r.toolImage || '/images/default-tool.png',
-            renterName: r.renter?.nomeCompleto || "Usuário",
-            ownerName: r.owner?.nomeCompleto || "Proprietário",
+            renterName: r.renterName,
+            ownerName: r.ownerName,
             status: r.status,
             startDate: r.startDate,
             endDate: r.endDate,
@@ -39,32 +35,25 @@ async function loadRequests(ownerId) {
 
     } catch (err) {
         console.error(err);
-        const container = document.getElementById("requestsGrid");
-        container.innerHTML = `<p class="empty-message">Erro ao carregar solicitações.</p>`;
+        document.getElementById("requestsGrid").innerHTML = `<p class="empty-message">Erro ao carregar solicitações.</p>`;
     }
 }
 
 function renderStats(rentals) {
-    const total = rentals.length;
-    const container = document.querySelector(".filters-bar");
-    console.log(`Total de solicitações: ${total}`);
+    document.getElementById("totalRentals").textContent = rentals.length;
+    const totalSpent = rentals.reduce((sum, r) => sum + (r.totalValue || 0), 0);
+    document.getElementById("totalSpent").textContent = formatCurrency(totalSpent);
 }
 
 function renderRequests(rentals) {
     const container = document.getElementById("requestsGrid");
-
     if (!rentals.length) {
-        container.innerHTML = `
-            <div class="empty-message">
-                Nenhuma solicitação encontrada.
-            </div>
-        `;
+        container.innerHTML = `<div class="empty-message">Nenhuma solicitação encontrada.</div>`;
         return;
     }
 
     container.innerHTML = rentals.map(rental => `
         <article class="request-card">
-
             <div class="card-header">
                 <div>
                     <h3>${rental.toolName}</h3>
@@ -77,7 +66,6 @@ function renderRequests(rentals) {
                 <div class="rental-image-container">
                     <img src="${rental.toolImage}" class="rental-image" alt="${rental.toolName}">
                 </div>
-
                 <div class="info-line"><strong>Solicitante:</strong> ${rental.renterName}</div>
                 <div class="info-line"><strong>Período:</strong> ${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}</div>
                 <div class="info-line"><strong>Valor estimado:</strong> ${formatCurrency(rental.totalValue)}</div>
@@ -87,7 +75,6 @@ function renderRequests(rentals) {
             <div class="card-footer">
                 ${renderActions(rental)}
             </div>
-
         </article>
     `).join("");
 }
@@ -99,39 +86,32 @@ function renderActions(rental) {
             <button class="btn btn-approve" onclick="approveRental(${rental.rentalId})">Aprovar</button>
         `;
     }
-
     if (rental.status === "ACCEPTED") {
         return `<button class="btn btn-outline btn-full" disabled>Aguardando pagamento</button>`;
     }
-
     if (rental.status === "PAID") {
         return `<button class="btn btn-outline btn-full">Ver aluguel ativo</button>`;
     }
-
     return `<button class="btn btn-outline btn-full">Ver detalhes</button>`;
 }
 
 async function approveRental(rentalId) {
     const user = JSON.parse(localStorage.getItem("user"));
-
     await fetch(`/rentals/${rentalId}/approval`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ownerId: user.id, approved: true })
     });
-
     await loadRequests(user.id);
 }
 
 async function rejectRental(rentalId) {
     const user = JSON.parse(localStorage.getItem("user"));
-
     await fetch(`/rentals/${rentalId}/approval`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ownerId: user.id, approved: false })
     });
-
     await loadRequests(user.id);
 }
 
