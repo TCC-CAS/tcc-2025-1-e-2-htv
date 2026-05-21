@@ -184,8 +184,8 @@ public class RentalUsecases {
             throw new RuntimeException("Somente o proprietário pode aprovar ou recusar a solicitação.");
         }
 
-        if (rental.getStatus() != RentalStatus.PENDING) {
-            throw new RuntimeException("A solicitação já foi processada.");
+        if (rental.getStatus() != RentalStatus.PENDING && rental.getStatus() != RentalStatus.PAID) {
+            throw new RuntimeException("A solicitação não pode ser processada neste status.");
         }
 
         if (!tool.isDisponivel() || tool.isBloqueadaTemporariamente()) {
@@ -206,9 +206,8 @@ public class RentalUsecases {
 
         if (Boolean.TRUE.equals(dto.approved())) {
             rental.setStatus(RentalStatus.ACCEPTED);
-
         } else {
-            rental.setStatus(RentalStatus.REJECTED);
+            rental.setStatus(RentalStatus.CANCELLED);
         }
 
         return rentalRepository.save(rental);
