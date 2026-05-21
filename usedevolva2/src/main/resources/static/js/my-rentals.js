@@ -9,10 +9,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    await loadRentals(user.id);
+    // Inicializa trazendo apenas os aluguéis Ativos por padrão
+    await loadRentals(user.id, "ACTIVE");
+
+    // Escuta a mudança do filtro que você adicionou no HTML
+    const filter = document.getElementById("statusFilter");
+    if (filter) {
+        filter.addEventListener("change", async (e) => {
+            await loadRentals(user.id, e.target.value);
+        });
+    }
 });
 
-async function loadRentals(userId) {
+async function loadRentals(userId, filterStatus = "ACTIVE") {
 
     try {
 
@@ -25,7 +34,19 @@ async function loadRentals(userId) {
             throw new Error("Erro ao carregar alugueis");
         }
 
-        const rentals = await response.json();
+        let rentals = await response.json();
+
+        // APLICAÇÃO DOS FILTROS NA PERSPECTIVA DE QUEM SOLICITOU
+        if (filterStatus === "ACTIVE") {
+            rentals = rentals.filter(r =>
+                ["PENDING", "AWAITING_PAYMENT", "ACCEPTED", "PAID", "IN_USE", "RETURNED", "LATE_RETURNED"].includes(r.status)
+            );
+        } else if (filterStatus === "HISTORY") {
+            rentals = rentals.filter(r =>
+                ["FINALIZED", "REJECTED", "CANCELLED"].includes(r.status)
+            );
+        }
+        // Se for "ALL", ele ignora os blocos acima e mantém a lista completa vinda do banco
 
         renderStats(rentals);
 
@@ -73,7 +94,7 @@ function renderRentals(rentals) {
                 </h3>
 
                 <p>
-                    Você ainda não solicitou nenhuma ferramenta.
+                    Nenhum registro corresponde ao filtro selecionado.
                 </p>
 
             </div>
@@ -184,21 +205,15 @@ function renderImage(rental) {
 function translateStatus(status) {
 
     const map = {
-
         PENDING: "Pendente",
-
         AWAITING_PAYMENT: "Aguardando Pagamento",
-
-        PAID: "Pago",
-
+        ACCEPTED: "Aceito (Retirada Pendente)",
+        PAID: "Pago (Aguardando Retirada)",
         IN_USE: "Em Uso",
-
-        RETURNED: "Devolvido",
-
+        RETURNED: "Devolvido (Aguardando Confirmação)",
         LATE_RETURNED: "Devolvido com atraso",
-
-        REJECTED: "Recusado",
-
+        FINALIZED: "Finalizado",
+        REJECTED: "Recusado pelo Proprietário",
         CANCELLED: "Cancelado"
     };
 
@@ -230,7 +245,6 @@ function formatCurrency(value) {
 function getStatusBadgeClass(status) {
 
     const map = {
-
         PENDING: "badge-pending",
         AWAITING_PAYMENT: "badge-waiting",
         ACCEPTED: "badge-accepted",
@@ -238,6 +252,7 @@ function getStatusBadgeClass(status) {
         IN_USE: "badge-active",
         RETURNED: "badge-finished",
         LATE_RETURNED: "badge-late",
+        FINALIZED: "badge-finished",
         REJECTED: "badge-rejected",
         CANCELLED: "badge-cancelled"
     };

@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // Inicializa trazendo as solicitações Ativas por padrão
     await loadRequests(user.id, "ACTIVE");
 
     const filter = document.getElementById("statusFilter");
@@ -23,7 +22,6 @@ async function loadRequests(ownerId, filterStatus = "ACTIVE") {
 
         let rentals = await response.json();
 
-        // 1. FILTRO INTELIGENTE BASEADO NO DROPDOWN DO HTML
         if (filterStatus === "ACTIVE") {
             rentals = rentals.filter(r => ["PENDING", "PAID", "RETURNED", "LATE_RETURNED"].includes(r.status));
         } else if (filterStatus === "HISTORY") {
@@ -69,7 +67,6 @@ function renderRequests(rentals) {
     container.innerHTML = rentals.map(r => {
         let footerButtons = "";
 
-        // 2. BOTÕES CONDICIONAIS CORRIGIDOS PARA NÃO EXIBIR AÇÕES NO HISTÓRICO
         if (r.status === "RETURNED" || r.status === "LATE_RETURNED") {
             footerButtons = `
                 <button class="btn btn-approve" style="width: 100%;" onclick="finalizeRental(${r.rentalId})">
@@ -105,7 +102,6 @@ function renderRequests(rentals) {
     }).join("");
 }
 
-// Função auxiliar para capturar o filtro atual antes de recarregar a lista
 function getActiveFilter() {
     return document.getElementById("statusFilter")?.value || "ACTIVE";
 }
@@ -161,7 +157,6 @@ async function finalizeRental(rentalId) {
     }
 }
 
-// Mantive suas funções auxiliares de tradução e formato idênticas
 function translateStatus(status) {
     const map = {
         PENDING: "Pendente",
