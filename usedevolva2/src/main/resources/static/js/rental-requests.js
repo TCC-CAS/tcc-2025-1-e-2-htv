@@ -13,8 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadRequests(ownerId) {
 
     try {
-
-        const response = await fetch(`/rentals/owner/${ownerId}`);
+        const response = await fetch(`/rentals/renter-list/${ownerId}`);
 
         if (!response.ok) {
             throw new Error("Erro ao buscar solicitações");
