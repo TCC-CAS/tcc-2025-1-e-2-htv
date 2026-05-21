@@ -80,4 +80,10 @@ public class RentalController {
     ) {
         return rentalUsecases.getRentalsByRenter(renterId);
     }
+
+    @GetMapping("/owner-list/{ownerId}")
+    public List<RentalListDto> getRentalsByOwner(@PathVariable Long ownerId) {
+        return rentalUsecases.getRentalsByOwner(ownerId);
+    }
+
 }

@@ -413,6 +413,38 @@ public class RentalUsecases {
         }).toList();
     }
 
+    public List<RentalListDto> getRentalsByOwner(Long ownerId) {
+        List<RentalModel> rentals = rentalRepository.findAll().stream()
+                .filter(r -> r.getOwnerId().equals(ownerId))
+                .toList();
 
+        return rentals.stream().map(rental -> {
+            ToolModel tool = findToolOrThrow(rental.getToolId());
+            UserModel renter = findUserOrThrow(rental.getRenterId());
+
+            String image = null;
+            List<ToolImageModel> images = toolImageRepository.findByToolId(tool.getId());
+            if (!images.isEmpty()) {
+                image = images.stream()
+                        .filter(ToolImageModel::isPrincipal)
+                        .findFirst()
+                        .orElse(images.get(0))
+                        .getFilePath();
+            }
+
+            return new RentalListDto(
+                    rental.getId(),
+                    tool.getId(),
+                    tool.getNome(),
+                    image,
+                    renter.getNomeCompleto(),
+                    rental.getStatus().name(),
+                    rental.getStartDate().toString(),
+                    rental.getEndDate().toString(),
+                    rental.getTotalValue()
+            );
+        }).toList();
+    }
+    
 }
 
