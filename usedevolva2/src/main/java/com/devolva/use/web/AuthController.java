@@ -72,13 +72,9 @@ public class AuthController {
         return "users/my-rentals";
     }
 
-    @GetMapping("/rentals/{id}")
-    public String rentalTrackingPage(
-            @PathVariable Long id,
-            Model model
-    ) {
+    @GetMapping("/rentals/tracking/{id}")
+    public String rentalTrackingPage(@PathVariable Long id, Model model) {
         model.addAttribute("rentalId", id);
-
         return "rentals/rental-tracking";
     }
 

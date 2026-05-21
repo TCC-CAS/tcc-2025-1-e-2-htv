@@ -146,7 +146,7 @@ function renderRentals(rentals) {
         <div class="rental-footer">
 
             <a
-                href="/rentals/${rental.rentalId}"
+                href="/rentals/tracking/${rental.rentalId}"
                 class="btn-view"
             >
                 Ver aluguel
