@@ -1,177 +1,56 @@
-document.addEventListener("DOMContentLoaded", async () => {
-const user = JSON.parse(localStorage.getItem("user"));
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solicitações de Aluguel - Use e Devolva</title>
 
-if (!user || !user.id) {
-window.location.href = "/auth/login";
-return;
-}
+    <link rel="stylesheet" href="/css/fragments/header.css">
+    <link rel="stylesheet" href="/css/fragments/footer.css">
+    <link rel="stylesheet" href="/css/root.css">
+    <link rel="stylesheet" href="/css/pages/users/my-rentals.css">
 
-await loadRequests(user.id);
-});
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
-async function loadRequests(ownerId) {
-try {
-const response = await fetch(`/rentals/owner/${ownerId}`);
+<div th:replace="fragments/header :: header"></div>
 
-if (!response.ok) {
-throw new Error("Erro ao buscar solicitações");
-}
-
-const rentals = await response.json();
-
-// Mapear RentalModel para campos esperados no frontend
-const mappedRentals = rentals.map(r => ({
-rentalId: r.id,
-toolId: r.toolId,
-toolName: r.tool?.nome || "Ferramenta",
-toolImage: r.toolImage || '/images/default-tool.png',
-renterName: r.renter?.nomeCompleto || "Usuário",
-ownerName: r.owner?.nomeCompleto || "Proprietário",
-status: r.status,
-startDate: r.startDate,
-endDate: r.endDate,
-totalValue: r.totalValue,
-message: r.message || null
-}));
-
-renderStats(mappedRentals);
-renderRequests(mappedRentals);
-
-} catch (err) {
-console.error(err);
-const container = document.getElementById("requestsGrid");
-container.innerHTML = `<p class="empty-message">Erro ao carregar solicitações.</p>`;
-}
-}
-
-function renderStats(rentals) {
-// Exemplo simples: total de solicitações pendentes e aprovadas
-const total = rentals.length;
-const container = document.querySelector(".filters-bar");
-// Aqui você pode adicionar stats no HTML, se quiser
-console.log(`Total de solicitações: ${total}`);
-}
-
-function renderRequests(rentals) {
-const container = document.getElementById("requestsGrid");
-
-if (!rentals.length) {
-container.innerHTML = `
-<div class="empty-message">
-    Nenhuma solicitação encontrada.
-</div>
-`;
-return;
-}
-
-container.innerHTML = rentals.map(rental => `
-<article class="request-card">
-
-    <div class="card-header">
-        <div>
-            <h3>${rental.toolName}</h3>
-            <span class="date">Pedido em ${formatDate(rental.startDate)}</span>
-        </div>
-        <span class="badge ${getStatusBadgeClass(rental.status)}">${translateStatus(rental.status)}</span>
+<main>
+    <div class="page-header">
+        <h2>Solicitações Recebidas</h2>
+        <p>
+            Acompanhe os pedidos de aluguel das suas ferramentas,
+            visualize o status e gerencie aprovações.
+        </p>
     </div>
 
-    <div class="card-body">
-        <div class="rental-image-container">
-            <img src="${rental.toolImage}" class="rental-image" alt="${rental.toolName}">
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Total de Solicitações</h3>
+                <p id="totalRentals">0</p>
+            </div>
         </div>
 
-        <div class="info-line"><strong>Solicitante:</strong> ${rental.renterName}</div>
-        <div class="info-line"><strong>Período:</strong> ${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}</div>
-        <div class="info-line"><strong>Valor estimado:</strong> ${formatCurrency(rental.totalValue)}</div>
-        ${rental.message ? `<div class="requester-msg">"${rental.message}"</div>` : ""}
-    </div>
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>Total Estimado</h3>
+                <p id="totalSpent">R$ 0,00</p>
+            </div>
+        </div>
+    </section>
 
-    <div class="card-footer">
-        ${renderActions(rental)}
-    </div>
+    <section class="rentals-list" id="requestsGrid">
+    </section>
+</main>
 
-</article>
-`).join("");
-}
+<div th:replace="fragments/footer :: footer"></div>
 
-function renderActions(rental) {
-if (rental.status === "PENDING") {
-return `
-<button class="btn btn-reject" onclick="rejectRental(${rental.rentalId})">Recusar</button>
-<button class="btn btn-approve" onclick="approveRental(${rental.rentalId})">Aprovar</button>
-`;
-}
+<script src="/js/main.js" defer></script>
+<script src="/js/rental-requests.js" defer></script>
 
-if (rental.status === "ACCEPTED") {
-return `<button class="btn btn-outline btn-full" disabled>Aguardando pagamento</button>`;
-}
-
-if (rental.status === "PAID") {
-return `<button class="btn btn-outline btn-full">Ver aluguel ativo</button>`;
-}
-
-return `<button class="btn btn-outline btn-full">Ver detalhes</button>`;
-}
-
-async function approveRental(rentalId) {
-const user = JSON.parse(localStorage.getItem("user"));
-
-await fetch(`/rentals/${rentalId}/approval`, {
-method: "PUT",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ ownerId: user.id, approved: true })
-});
-
-await loadRequests(user.id);
-}
-
-async function rejectRental(rentalId) {
-const user = JSON.parse(localStorage.getItem("user"));
-
-await fetch(`/rentals/${rentalId}/approval`, {
-method: "PUT",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ ownerId: user.id, approved: false })
-});
-
-await loadRequests(user.id);
-}
-
-function translateStatus(status) {
-const map = {
-PENDING: "Pendente",
-ACCEPTED: "Aceito pelo dono",
-AWAITING_PAYMENT: "Aguardando pagamento",
-PAID: "Pago",
-IN_USE: "Em uso",
-RETURNED: "Devolvido",
-LATE_RETURNED: "Devolvido com atraso",
-REJECTED: "Recusado",
-CANCELLED: "Cancelado"
-};
-return map[status] || status;
-}
-
-function getStatusBadgeClass(status) {
-const map = {
-PENDING: "badge-pending",
-ACCEPTED: "badge-accepted",
-AWAITING_PAYMENT: "badge-waiting",
-PAID: "badge-paid",
-IN_USE: "badge-active",
-RETURNED: "badge-finished",
-LATE_RETURNED: "badge-late",
-REJECTED: "badge-rejected",
-CANCELLED: "badge-cancelled"
-};
-return map[status] || "badge-default";
-}
-
-function formatDate(date) {
-if (!date) return "-";
-return new Date(date + "T00:00:00").toLocaleDateString("pt-BR");
-}
-
-function formatCurrency(value) {
-return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
+</body>
+</html>
