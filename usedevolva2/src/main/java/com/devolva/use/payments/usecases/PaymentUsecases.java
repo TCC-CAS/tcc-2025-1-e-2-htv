@@ -12,6 +12,7 @@ import com.devolva.use.tools.domain.ToolModel;
 import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.repository.UserRepository;
+import com.devolva.use.chats.usecases.ChatUsecases;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -39,15 +40,20 @@ public class PaymentUsecases {
     private final UserRepository userRepository;
     private final ToolRepository toolRepository;
     private final RentalRepository rentalRepository;
+    private final ChatUsecases chatUsecases;
 
     public PaymentUsecases(
             PaymentRepository paymentRepository,
-            UserRepository userRepository, ToolRepository toolRepository, RentalRepository rentalRepository
+            UserRepository userRepository,
+            ToolRepository toolRepository,
+            RentalRepository rentalRepository,
+            ChatUsecases chatUsecases
     ) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.toolRepository = toolRepository;
         this.rentalRepository = rentalRepository;
+        this.chatUsecases = chatUsecases;
     }
     private static final String CHECKOUT_ENDPOINT = "/checkouts/create";
 
@@ -483,6 +489,7 @@ public class PaymentUsecases {
             );
 
             rentalRepository.save(rental);
+            chatUsecases.createOrGetRentalChat(rental.getId());
         }
 
         return Map.of(

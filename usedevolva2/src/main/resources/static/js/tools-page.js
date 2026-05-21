@@ -1,12 +1,20 @@
 let currentTool = null;
+let currentToolId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
+    currentToolId = Number(TOOL_ID);
+
     await loadTool();
     await loadImages();
 
     const dataInicio = document.getElementById("dataInicio");
     const dataFim = document.getElementById("dataFim");
     const reservationForm = document.getElementById("reservationForm");
+    const startToolChatBtn = document.getElementById("startToolChatBtn");
+
+    if (startToolChatBtn) {
+        startToolChatBtn.addEventListener("click", startToolChat);
+    }
 
     if (dataInicio) dataInicio.addEventListener("change", updateBookingSummary);
     if (dataFim) dataFim.addEventListener("change", updateBookingSummary);
@@ -18,6 +26,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             event.preventDefault();
 
             try {
+                const user = JSON.parse(localStorage.getItem("user"));
+
+                if (currentTool && user && Number(currentTool.ownerId) === Number(user.id)) {
+                    showToast("Você não pode alugar sua própria ferramenta.");
+                    return;
+                }
 
                 const dataInicio =
                     document.getElementById("dataInicio").value;
@@ -32,8 +46,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     showToast("Preencha as datas.");
                     return;
                 }
-
-                const user = JSON.parse(localStorage.getItem("user"));
 
                 if (!user || !user.id) {
                     showToast("Você precisa estar logado.");
@@ -87,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     }
-})
+});
 
 async function loadTool() {
     try {
@@ -99,6 +111,8 @@ async function loadTool() {
 
         const tool = await response.json();
         currentTool = tool;
+
+        applyOwnerToolRestrictions();
 
         document.getElementById("breadcrumbToolName").textContent = tool.nome || "Ferramenta";
         document.getElementById("toolName").textContent = tool.nome || "Ferramenta";
@@ -405,3 +419,95 @@ document.addEventListener("click", async (event) => {
         );
     }
 });
+
+async function startToolChat() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id) {
+        showToast("Você precisa estar logado para iniciar uma conversa.");
+        window.location.href = "/auth/login";
+        return;
+    }
+
+    if (!currentToolId) {
+        showToast("Ferramenta não encontrada para iniciar o chat.");
+        return;
+    }
+
+    if (currentTool && Number(currentTool.ownerId) === Number(user.id)) {
+        showToast("Você não pode iniciar chat com sua própria ferramenta.");
+        return;
+    }
+
+    const button = document.getElementById("startToolChatBtn");
+    const originalText = button ? button.textContent : "";
+
+    try {
+        if (button) {
+            button.disabled = true;
+            button.textContent = "Abrindo chat...";
+        }
+
+        const response = await fetch(`/chats/tools/${currentToolId}/start?userId=${user.id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: "Olá! Tenho interesse nesta ferramenta e gostaria de conversar sobre a locação."
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Erro ao iniciar chat.");
+        }
+
+        const chat = await response.json();
+
+        window.location.href = `/users/chats?chatId=${chat.id}`;
+
+    } catch (error) {
+        console.error(error);
+        showToast(error.message || "Não foi possível iniciar o chat.");
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+    }
+}
+
+function applyOwnerToolRestrictions() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id || !currentTool || !currentTool.ownerId) {
+        return;
+    }
+
+    const isOwner = Number(currentTool.ownerId) === Number(user.id);
+
+    if (!isOwner) {
+        return;
+    }
+
+    const startToolChatBtn = document.getElementById("startToolChatBtn");
+    const reservationForm = document.getElementById("reservationForm");
+    const rentSubmitBtn = reservationForm
+        ? reservationForm.querySelector("button[type='submit']")
+        : null;
+
+    const warningMessage = "Você não pode alugar ou iniciar chat com sua própria ferramenta.";
+
+    if (startToolChatBtn) {
+        startToolChatBtn.disabled = true;
+        startToolChatBtn.title = warningMessage;
+        startToolChatBtn.classList.add("disabled-owner-action");
+    }
+
+    if (rentSubmitBtn) {
+        rentSubmitBtn.disabled = true;
+        rentSubmitBtn.title = warningMessage;
+        rentSubmitBtn.classList.add("disabled-owner-action");
+    }
+}

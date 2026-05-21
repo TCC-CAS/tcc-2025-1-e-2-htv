@@ -674,3 +674,64 @@ a:focus {
      outline: none;
      box-shadow: none;
  }
+
+ .floating-chat-button {
+     position: fixed;
+     right: 28px;
+     bottom: 28px;
+     width: 62px;
+     height: 62px;
+     border: none;
+     border-radius: 50%;
+     background: var(--color-primary, #5b4bb7);
+     color: #ffffff;
+     box-shadow: 0 16px 35px rgba(91, 75, 183, 0.35);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     cursor: pointer;
+     z-index: 9000;
+     transition: transform 0.2s ease, box-shadow 0.2s ease;
+ }
+
+ .floating-chat-button:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 20px 45px rgba(91, 75, 183, 0.42);
+ }
+
+ .floating-chat-icon {
+     font-size: 1.65rem;
+     line-height: 1;
+ }
+
+ .floating-chat-unread-dot {
+     position: absolute;
+     top: 4px;
+     left: 4px;
+     width: 16px;
+     height: 16px;
+     background: #dc2626;
+     border: 3px solid #ffffff;
+     border-radius: 50%;
+     opacity: 0;
+     transform: scale(0.6);
+     transition: opacity 0.2s ease, transform 0.2s ease;
+ }
+
+ .floating-chat-unread-dot.active {
+     opacity: 1;
+     transform: scale(1);
+ }
+
+ @media (max-width: 640px) {
+     .floating-chat-button {
+         right: 18px;
+         bottom: 18px;
+         width: 56px;
+         height: 56px;
+     }
+
+     .floating-chat-icon {
+         font-size: 1.45rem;
+     }
+ }

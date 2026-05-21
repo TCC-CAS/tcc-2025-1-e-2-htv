@@ -38,7 +38,6 @@
             padding: 0 1.5rem;
         }
 
-        /* CARTÃO DE INFORMAÇÕES DO USUÁRIO */
         .profile-header {
             background: var(--card-bg);
             border-radius: 16px;
@@ -117,7 +116,6 @@
             font-weight: 600;
         }
 
-        /* GRELHA DE OPÇÕES (MENU) */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -168,14 +166,12 @@
             line-height: 1.4;
         }
 
-        /* Cores Específicas dos Ícones */
         .icon-profile { background-color: #E0E7FF; color: #4338CA; }
         .icon-rentals { background-color: #DCFCE7; color: #15803D; }
         .icon-tools { background-color: #FEF3C7; color: #B45309; }
         .icon-favorites { background-color: #FCE7F3; color: #BE185D; }
         .icon-logout { background-color: var(--danger-bg); color: var(--danger); }
 
-        /* Responsividade */
         @media (max-width: 600px) {
             .profile-header {
                 flex-direction: column;

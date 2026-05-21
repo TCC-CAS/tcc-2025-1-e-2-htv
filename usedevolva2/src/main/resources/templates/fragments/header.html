@@ -1,42 +1,46 @@
-<header th:fragment="header">
-    <div class="logo">
-        <a href="/home">Use e Devolva</a>
-    </div>
+<div th:fragment="header">
+    <header>
+        <div class="logo">
+            <a href="/home">Use e Devolva</a>
+        </div>
 
-    <nav aria-label="Menu principal">
-        <ul>
-            <li>
-                <a href="/home">Home</a>
-            </li>
+        <nav aria-label="Menu principal">
+            <ul>
+                <li>
+                    <a href="/home">Home</a>
+                </li>
 
-            <li class="dropdown">
-                <span>Categorias ▾</span>
+                <li class="dropdown">
+                    <span>Categorias ▾</span>
 
-                <ul class="dropdown-menu">
-                    <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
-                    <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
-                    <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
-                    <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
-                    <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
-                </ul>
-            </li>
+                    <ul class="dropdown-menu">
+                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                    </ul>
+                </li>
 
-            <li>
-                <form id="headerSearchForm" role="search" action="/tools/tools-list" method="get">
-                    <input
-                            type="text"
-                            id="headerSearchInput"
-                            name="busca"
-                            placeholder="Buscar ferramentas..."
-                    />
-                    <button type="submit">Buscar</button>
-                </form>
-            </li>
-        </ul>
-    </nav>
+                <li>
+                    <form id="headerSearchForm" role="search" action="/tools/tools-list" method="get">
+                        <input
+                                type="text"
+                                id="headerSearchInput"
+                                name="busca"
+                                placeholder="Buscar ferramentas..."
+                        />
+                        <button type="submit">Buscar</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
 
-    <div class="user-area">
-        <a href="/auth/login" class="btn-login">Entrar</a>
-        <a href="/auth/register" class="btn-register">Criar conta</a>
-    </div>
-</header>
+        <div class="user-area">
+            <a href="/auth/login" class="btn-login">Entrar</a>
+            <a href="/auth/register" class="btn-register">Criar conta</a>
+        </div>
+    </header>
+
+    <script src="/js/chat-widget.js" defer></script>
+</div>
