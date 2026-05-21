@@ -3,6 +3,7 @@ let currentChatId = null;
 let currentChats = [];
 let chatsAutoRefreshInterval = null;
 let isRefreshingChat = false;
+let lastRenderedMessageSignature = "";
 
 document.addEventListener("DOMContentLoaded", async () => {
     currentUser = JSON.parse(localStorage.getItem("user"));
@@ -25,6 +26,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             await sendChatMessage(currentChatId, message);
             input.value = "";
+        });
+    }
+
+    if (input) {
+        input.addEventListener("keydown", async (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+
+                const message = input.value.trim();
+
+                if (!message || !currentChatId) {
+                    return;
+                }
+
+                await sendChatMessage(currentChatId, message);
+                input.value = "";
+            }
         });
     }
 
@@ -149,6 +167,19 @@ async function openChat(chatId) {
 function renderMessages(messages) {
     const container = document.getElementById("chatMessages");
 
+    const newSignature = messages
+        .map(message => `${message.id}-${message.readByRecipient}`)
+        .join("|");
+
+    if (newSignature === lastRenderedMessageSignature) {
+        return;
+    }
+
+    const wasNearBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+
+    lastRenderedMessageSignature = newSignature;
+
     if (!messages.length) {
         container.innerHTML = `
             <div class="chat-empty-messages">
@@ -172,7 +203,9 @@ function renderMessages(messages) {
         `;
     }).join("");
 
-    container.scrollTop = container.scrollHeight;
+    if (wasNearBottom) {
+        container.scrollTop = container.scrollHeight;
+    }
 }
 
 async function sendChatMessage(chatId, message) {
