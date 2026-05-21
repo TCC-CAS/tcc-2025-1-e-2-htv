@@ -95,23 +95,48 @@ function renderRequests(rentals) {
 
 async function approveRental(rentalId) {
     const user = JSON.parse(localStorage.getItem("user"));
-    await fetch(`/rentals/${rentalId}/approval`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ownerId: user.id, approved: true })
-    });
-    await loadRequests(user.id);
-}
+    try {
+        const response = await fetch(`/rentals/${rentalId}/approval`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ownerId: user.id, approved: true })
+        });
 
+        if (!response.ok) {
+            const text = await response.text();
+            console.error("Erro ao aprovar:", text);
+            alert("Erro ao aprovar o aluguel. Veja o console.");
+            return;
+        }
+
+        await loadRequests(user.id);
+    } catch (err) {
+        console.error(err);
+        alert("Erro de rede ao aprovar o aluguel");
+    }
+}
 
 async function rejectRental(rentalId) {
     const user = JSON.parse(localStorage.getItem("user"));
-    await fetch(`/rentals/${rentalId}/approval`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ownerId: user.id, approved: false })
-    });
-    await loadRequests(user.id);
+    try {
+        const response = await fetch(`/rentals/${rentalId}/approval`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ownerId: user.id, approved: false })
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error("Erro ao recusar:", text);
+            alert("Erro ao recusar o aluguel. Veja o console.");
+            return;
+        }
+
+        await loadRequests(user.id);
+    } catch (err) {
+        console.error(err);
+        alert("Erro de rede ao recusar o aluguel");
+    }
 }
 
 // Funções utilitárias
