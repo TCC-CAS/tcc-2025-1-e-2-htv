@@ -205,7 +205,7 @@ public class RentalUsecases {
         rental.setRespondedAt(LocalDateTime.now());
 
         if (Boolean.TRUE.equals(dto.approved())) {
-            rental.setStatus(RentalStatus.AWAITING_PAYMENT);
+            rental.setStatus(RentalStatus.ACCEPTED);
 
         } else {
             rental.setStatus(RentalStatus.REJECTED);

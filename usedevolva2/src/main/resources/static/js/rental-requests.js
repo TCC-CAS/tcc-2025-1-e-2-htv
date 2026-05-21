@@ -95,38 +95,6 @@ function renderStats(rentals) {
     document.getElementById("totalSpent").textContent = formatCurrency(totalSpent);
 }
 
-function renderRequests(rentals) {
-    const container = document.getElementById("requestsGrid");
-    if (!rentals.length) {
-        container.innerHTML = `<div class="empty-message">Nenhuma solicitação encontrada.</div>`;
-        return;
-    }
-
-    container.innerHTML = rentals.map(rental => `
-        <article class="request-card">
-            <div class="card-header">
-                <div>
-                    <h3>${rental.toolName}</h3>
-                    <span class="date">Pedido em ${formatDate(rental.startDate)}</span>
-                </div>
-                <span class="badge ${getStatusBadgeClass(rental.status)}">${translateStatus(rental.status)}</span>
-            </div>
-            <div class="card-body">
-                <div class="rental-image-container">
-                    <img src="${rental.toolImage}" class="rental-image" alt="${rental.toolName}">
-                </div>
-                <div class="info-line"><strong>Solicitante:</strong> ${rental.renterName}</div>
-                <div class="info-line"><strong>Período:</strong> ${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}</div>
-                <div class="info-line"><strong>Valor estimado:</strong> ${formatCurrency(rental.totalValue)}</div>
-                ${rental.message ? `<div class="requester-msg">"${rental.message}"</div>` : ""}
-            </div>
-            <div class="card-footer">
-                ${renderActions(rental)}
-            </div>
-        </article>
-    `).join("");
-}
-
 function renderActions(rental) {
     if (rental.status === "PENDING" || rental.status === "PAID") {
         return `
