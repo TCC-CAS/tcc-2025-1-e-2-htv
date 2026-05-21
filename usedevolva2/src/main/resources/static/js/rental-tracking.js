@@ -21,32 +21,47 @@ function getRentalIdFromUrl() {
 }
 
 async function loadRental(rentalId) {
-
     try {
-
-        const user =
-            JSON.parse(localStorage.getItem("user"));
-
+        const user = JSON.parse(localStorage.getItem("user"));
         const response = await fetch(
             `/rentals/${rentalId}/details?userId=${user.id}`
         );
 
         if (!response.ok) {
-
-            throw new Error(
-                "Erro ao carregar aluguel"
-            );
+            throw new Error("Erro ao carregar aluguel");
         }
 
         const rental = await response.json();
 
         renderRental(rental);
-
         updateProgress(rental.status);
 
-    } catch (error) {
+        renderActionButtons(rental, user.id);
 
+    } catch (error) {
         console.error(error);
+    }
+}
+
+async function handleAction(endpoint, bodyData) {
+    try {
+        const response = await fetch(endpoint, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(bodyData)
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text || "Erro ao processar a ação.");
+        }
+
+        window.location.reload();
+    } catch (error) {
+        console.error(error);
+        alert("Erro: " + error.message);
     }
 }
 
