@@ -22,9 +22,9 @@ async function loadRequests(ownerId, filterStatus = "ALL") {
 
         let rentals = await response.json();
 
-        rentals = rentals.filter(r => r.status === "PENDING" || r.status === "PAID");
+//
+        rentals = rentals.filter(r => r.status === "PENDING" || r.status === "PAID" || r.status === "RETURNED" || r.status === "LATE_RETURNED");
 
-        // Aplica filtro do dropdown
         if (filterStatus !== "ALL") {
             rentals = rentals.filter(r => r.status === filterStatus);
         }
@@ -65,32 +65,39 @@ function renderRequests(rentals) {
         return;
     }
 
-    container.innerHTML = rentals.map(r => `
-        <article class="request-card">
-            <div class="card-header">
-                <div>
-                    <h3>${r.toolName}</h3>
-                    <span class="date">Pedido em ${formatDate(r.startDate)}</span>
-                </div>
-                <span class="badge ${getStatusBadgeClass(r.status)}">${translateStatus(r.status)}</span>
-            </div>
+    container.innerHTML = rentals.map(r => {
+        let footerButtons = "";
 
-            <div class="card-body">
-                <div class="rental-image-container">
-                    <img src="${r.toolImage}" class="rental-image" alt="${r.toolName}">
-                </div>
-                <div class="info-line"><strong>Solicitante:</strong> ${r.renterName}</div>
-                <div class="info-line"><strong>Período:</strong> ${formatDate(r.startDate)} até ${formatDate(r.endDate)}</div>
-                <div class="info-line"><strong>Valor estimado:</strong> ${formatCurrency(r.totalValue)}</div>
-                ${r.message ? `<div class="requester-msg">"${r.message}"</div>` : ""}
-            </div>
-
-            <div class="card-footer">
+        // Se o locatário já devolveu, exibe o botão de finalizar contrato
+        if (r.status === "RETURNED" || r.status === "LATE_RETURNED") {
+            footerButtons = `
+                <button class="btn btn-approve" style="width: 100%;" onclick="finalizeRental(${r.rentalId})">
+                    Confirmar e Finalizar Locação
+                </button>`;
+        } else {
+            footerButtons = `
                 <button class="btn btn-reject" onclick="rejectRental(${r.rentalId})">Recusar</button>
                 <button class="btn btn-approve" onclick="approveRental(${r.rentalId})">Aceitar</button>
-            </div>
-        </article>
-    `).join("");
+            `;
+        }
+
+        return `
+            <article class="request-card">
+                <div class="card-header">
+                    <div>
+                        <h3>${r.toolName}</h3>
+                        <span class="date">Pedido em ${formatDate(r.startDate)}</span>
+                    </div>
+                    <span class="badge ${getStatusBadgeClass(r.status)}">${translateStatus(r.status)}</span>
+                </div>
+                <div class="card-body">
+                    </div>
+                <div class="card-footer">
+                    ${footerButtons}
+                </div>
+            </article>
+        `;
+    }).join("");
 }
 
 async function approveRental(rentalId) {
@@ -139,14 +146,15 @@ async function rejectRental(rentalId) {
     }
 }
 
-// Funções utilitárias
 function translateStatus(status) {
     const map = {
         PENDING: "Pendente",
         ACCEPTED: "Aceito",
         PAID: "Aguardando aceitação",
         IN_USE: "Em andamento",
-        RETURNED: "Finalizado",
+        RETURNED: "Devolvido (Aguardando Confirmação)",
+        LATE_RETURNED: "Devolvido com Atraso",
+        FINALIZED: "Finalizado",
         CANCELLED: "Recusado"
     };
     return map[status] || status;
@@ -158,7 +166,9 @@ function getStatusBadgeClass(status) {
         ACCEPTED: "badge-accepted",
         PAID: "badge-waiting",
         IN_USE: "badge-active",
-        RETURNED: "badge-finished",
+        RETURNED: "badge-waiting",
+        LATE_RETURNED: "badge-rejected",
+        FINALIZED: "badge-finished",
         CANCELLED: "badge-rejected"
     };
     return map[status] || "badge-default";
@@ -171,4 +181,27 @@ function formatDate(date) {
 
 function formatCurrency(value) {
     return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+async function finalizeRental(rentalId) {
+    const user = JSON.parse(localStorage.getItem("user"));
+    try {
+        const response = await fetch(`/rentals/${rentalId}/finalize`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ownerId: user.id })
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error("Erro ao finalizar:", text);
+            alert("Erro ao finalizar a locação.");
+            return;
+        }
+
+        await loadRequests(user.id);
+    } catch (err) {
+        console.error(err);
+        alert("Erro de rede ao finalizar a locação");
+    }
 }

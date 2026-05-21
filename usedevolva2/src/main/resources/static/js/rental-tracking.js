@@ -131,20 +131,42 @@ function formatCurrency(value) {
             currency: "BRL"
         });
 }
-
 const FLOW = [
-    "PENDING",           // Solicitação enviada
-    "AWAITING_PAYMENT",  // Pagamento aprovado
-    "ACCEPTED",          // Aceito pelo dono
-    "IN_USE",            // Item retirado / em uso
-    "RETURNED",          // Devolvido
-    "LATE_RETURNED"
+    "PENDING",
+    "PAID",
+    "ACCEPTED",
+    "IN_USE",
+    "RETURNED",          // Representa a entrega do Renter (ou LATE_RETURNED)
+    "FINALIZED"          // Fim absoluto aprovado pelo Owner
 ];
 
 function getCompletedSteps(status) {
+    if (status === "LATE_RETURNED") status = "RETURNED";
+    if (status === "AWAITING_PAYMENT") status = "PENDING";
 
     const index = FLOW.indexOf(status);
-
     return index === -1 ? 0 : index + 1;
 }
 
+function renderActionButtons(rental, currentUserId) {
+    const container = document.getElementById("containerAcoes");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (rental.status === "ACCEPTED" && rental.isRenter) {
+        const btn = document.createElement("button");
+        btn.className = "btn-pagamento";
+        btn.textContent = "Confirmar Retirada da Ferramenta";
+        btn.onclick = () => handleAction(`/rentals/${rental.id}/start`, { ownerId: currentUserId });
+        container.appendChild(btn);
+    }
+    else if (rental.status === "IN_USE" && rental.isRenter) {
+        const btn = document.createElement("button");
+        btn.className = "btn-pagamento";
+        btn.textContent = "Marcar como Devolvido";
+        const hoje = new Date().toISOString().split('T')[0];
+        btn.onclick = () => handleAction(`/rentals/${rental.id}/return`, { renterId: currentUserId, actualReturnDate: hoje });
+        container.appendChild(btn);
+    }
+
+}

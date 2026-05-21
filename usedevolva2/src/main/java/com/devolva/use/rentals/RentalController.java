@@ -86,4 +86,13 @@ public class RentalController {
         return rentalUsecases.getRentalsByOwner(ownerId);
     }
 
+
+    @PutMapping("/{rentalId}/finalize")
+    public RentalModel finalizeRental(
+            @PathVariable Long rentalId,
+            @RequestBody FinalizeRentalDto dto
+    ) {
+        return rentalUsecases.finalizeRental(rentalId, dto);
+    }
+
 }

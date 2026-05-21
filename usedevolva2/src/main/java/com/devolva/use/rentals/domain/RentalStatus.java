@@ -9,5 +9,6 @@ public enum RentalStatus {
     IN_USE,
     RETURNED,
     LATE_RETURNED,
-    CANCELLED
+    CANCELLED,
+    FINALIZED
 }

@@ -231,12 +231,12 @@ public class RentalUsecases {
         RentalModel rental = findRentalOrThrow(rentalId);
         ToolModel tool = findToolOrThrow(rental.getToolId());
 
-        if (!rental.getOwnerId().equals(dto.ownerId())) {
-            throw new RuntimeException("Somente o proprietário pode finalizar a devolução.");
+        if (!rental.getRenterId().equals(dto.renterId())) {
+            throw new RuntimeException("Somente o locatário pode marcar a ferramenta como devolvida.");
         }
 
-        if (rental.getStatus() != RentalStatus.IN_USE && rental.getStatus() != RentalStatus.PAID) {
-            throw new RuntimeException("A locação não está em um estado válido para devolução.");
+        if (rental.getStatus() != RentalStatus.IN_USE) {
+            throw new RuntimeException("A locação não está em andamento.");
         }
 
         if (dto.actualReturnDate() == null) {
@@ -439,6 +439,19 @@ public class RentalUsecases {
             );
         }).toList();
     }
+    public RentalModel finalizeRental(Long rentalId, FinalizeRentalDto dto) {
+        RentalModel rental = findRentalOrThrow(rentalId);
 
+        if (!rental.getOwnerId().equals(dto.ownerId())) {
+            throw new RuntimeException("Somente o proprietário pode confirmar e finalizar a locação.");
+        }
+
+        if (rental.getStatus() != RentalStatus.RETURNED && rental.getStatus() != RentalStatus.LATE_RETURNED) {
+            throw new RuntimeException("Esta locação ainda não foi marcada como devolvida pelo locatário.");
+        }
+
+        rental.setStatus(RentalStatus.FINALIZED);
+        return rentalRepository.save(rental);
+    }
 }
 
