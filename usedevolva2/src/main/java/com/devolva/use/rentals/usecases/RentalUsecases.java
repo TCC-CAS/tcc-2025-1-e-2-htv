@@ -132,10 +132,10 @@ public class RentalUsecases {
         if (!tool.isAtivo()) {
             throw new RuntimeException("A ferramenta está inativa.");
         }
-
-        if (!tool.isDisponivel() || tool.isBloqueadaTemporariamente()) {
-            throw new RuntimeException("A ferramenta não está disponível.");
-        }
+//
+//        if (!tool.isDisponivel() || tool.isBloqueadaTemporariamente()) {
+//            throw new RuntimeException("A ferramenta não está disponível.");
+//        }
 
         long activeRequests = rentalRepository.findAll().stream()
                 .filter(r -> r.getRenterId().equals(tenant.getId()))
@@ -175,7 +175,6 @@ public class RentalUsecases {
 
         return rentalRepository.save(rental);
     }
-
     public RentalModel approveOrRejectRental(Long rentalId, ApproveRentalDto dto) {
         RentalModel rental = findRentalOrThrow(rentalId);
         ToolModel tool = findToolOrThrow(rental.getToolId());
@@ -186,10 +185,6 @@ public class RentalUsecases {
 
         if (rental.getStatus() != RentalStatus.PENDING && rental.getStatus() != RentalStatus.PAID) {
             throw new RuntimeException("A solicitação não pode ser processada neste status.");
-        }
-
-        if (!tool.isDisponivel() || tool.isBloqueadaTemporariamente()) {
-            throw new RuntimeException("A ferramenta não está disponível para aprovação.");
         }
 
         boolean hasConflict = rentalRepository.findAll().stream()
@@ -212,7 +207,6 @@ public class RentalUsecases {
 
         return rentalRepository.save(rental);
     }
-
 
 
     public RentalModel startRental(Long rentalId, StartRentalDto dto) {
