@@ -6,18 +6,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     await loadRequests(user.id);
-    setupFilters();
+
+    const filter = document.getElementById("statusFilter");
+    if (filter) {
+        filter.addEventListener("change", async (e) => {
+            await loadRequests(user.id, e.target.value);
+        });
+    }
 });
 
-async function loadRequests(ownerId) {
+async function loadRequests(ownerId, filterStatus = "ALL") {
     try {
         const response = await fetch(`/rentals/owner-list/${ownerId}`);
         if (!response.ok) throw new Error("Erro ao buscar solicitações");
 
         let rentals = await response.json();
 
-        // Filtra apenas pendentes ou pagos para aceitar/recusar
         rentals = rentals.filter(r => r.status === "PENDING" || r.status === "PAID");
+
+        // Aplica filtro do dropdown
+        if (filterStatus !== "ALL") {
+            rentals = rentals.filter(r => r.status === filterStatus);
+        }
 
         const mappedRentals = rentals.map(r => ({
             rentalId: r.rentalId,
@@ -42,67 +52,45 @@ async function loadRequests(ownerId) {
     }
 }
 
-function setupFilters() {
-    const container = document.createElement("div");
-    container.classList.add("filters-bar");
-    container.innerHTML = `
-        <label for="statusFilter">Filtrar por status:</label>
-        <select id="statusFilter">
-            <option value="ALL">Todos</option>
-            <option value="PENDING">Pendentes</option>
-            <option value="PAID">Aguardando aceitação</option>
-            <option value="IN_USE">Em andamento</option>
-            <option value="RETURNED">Finalizados</option>
-        </select>
-    `;
-    document.querySelector("main").insertBefore(container, document.getElementById("requestsGrid"));
-
-    document.getElementById("statusFilter").addEventListener("change", async (e) => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        await loadFilteredRequests(user.id, e.target.value);
-    });
-}
-
-async function loadFilteredRequests(ownerId, filterStatus) {
-    const response = await fetch(`/rentals/owner-list/${ownerId}`);
-    let rentals = await response.json();
-
-    if (filterStatus !== "ALL") {
-        rentals = rentals.filter(r => r.status === filterStatus);
-    }
-
-    const mappedRentals = rentals.map(r => ({
-        rentalId: r.rentalId,
-        toolId: r.toolId,
-        toolName: r.toolName,
-        toolImage: r.toolImage || '/images/default-tool.png',
-        renterName: r.renterName,
-        ownerName: r.ownerName,
-        status: r.status,
-        startDate: r.startDate,
-        endDate: r.endDate,
-        totalValue: r.totalValue,
-        message: r.message || null
-    }));
-
-    renderStats(mappedRentals);
-    renderRequests(mappedRentals);
-}
-
 function renderStats(rentals) {
     document.getElementById("totalRentals").textContent = rentals.length;
     const totalSpent = rentals.reduce((sum, r) => sum + (r.totalValue || 0), 0);
     document.getElementById("totalSpent").textContent = formatCurrency(totalSpent);
 }
 
-function renderActions(rental) {
-    if (rental.status === "PENDING" || rental.status === "PAID") {
-        return `
-            <button class="btn btn-reject" onclick="rejectRental(${rental.rentalId})">Recusar</button>
-            <button class="btn btn-approve" onclick="approveRental(${rental.rentalId})">Aceitar</button>
-        `;
+function renderRequests(rentals) {
+    const container = document.getElementById("requestsGrid");
+    if (!rentals.length) {
+        container.innerHTML = `<div class="empty-message">Nenhuma solicitação encontrada.</div>`;
+        return;
     }
-    return `<button class="btn btn-outline btn-full" disabled>Em andamento</button>`;
+
+    container.innerHTML = rentals.map(r => `
+        <article class="request-card">
+            <div class="card-header">
+                <div>
+                    <h3>${r.toolName}</h3>
+                    <span class="date">Pedido em ${formatDate(r.startDate)}</span>
+                </div>
+                <span class="badge ${getStatusBadgeClass(r.status)}">${translateStatus(r.status)}</span>
+            </div>
+
+            <div class="card-body">
+                <div class="rental-image-container">
+                    <img src="${r.toolImage}" class="rental-image" alt="${r.toolName}">
+                </div>
+                <div class="info-line"><strong>Solicitante:</strong> ${r.renterName}</div>
+                <div class="info-line"><strong>Período:</strong> ${formatDate(r.startDate)} até ${formatDate(r.endDate)}</div>
+                <div class="info-line"><strong>Valor estimado:</strong> ${formatCurrency(r.totalValue)}</div>
+                ${r.message ? `<div class="requester-msg">"${r.message}"</div>` : ""}
+            </div>
+
+            <div class="card-footer">
+                <button class="btn btn-reject" onclick="rejectRental(${r.rentalId})">Recusar</button>
+                <button class="btn btn-approve" onclick="approveRental(${r.rentalId})">Aceitar</button>
+            </div>
+        </article>
+    `).join("");
 }
 
 async function approveRental(rentalId) {
@@ -115,6 +103,7 @@ async function approveRental(rentalId) {
     await loadRequests(user.id);
 }
 
+
 async function rejectRental(rentalId) {
     const user = JSON.parse(localStorage.getItem("user"));
     await fetch(`/rentals/${rentalId}/approval`, {
@@ -125,6 +114,7 @@ async function rejectRental(rentalId) {
     await loadRequests(user.id);
 }
 
+// Funções utilitárias
 function translateStatus(status) {
     const map = {
         PENDING: "Pendente",
