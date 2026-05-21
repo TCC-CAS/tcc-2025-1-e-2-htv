@@ -133,10 +133,6 @@ public class RentalUsecases {
             throw new RuntimeException("A ferramenta está inativa.");
         }
 
-        if (!tool.isDisponivel() || tool.isBloqueadaTemporariamente()) {
-            throw new RuntimeException("A ferramenta não está disponível.");
-        }
-
         long activeRequests = rentalRepository.findAll().stream()
                 .filter(r -> r.getRenterId().equals(tenant.getId()))
                 .filter(this::isActiveRentalFlow)
