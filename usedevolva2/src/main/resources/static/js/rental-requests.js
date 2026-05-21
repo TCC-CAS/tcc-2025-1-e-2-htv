@@ -86,13 +86,13 @@ function renderActions(rental) {
             <button class="btn btn-approve" onclick="approveRental(${rental.rentalId})">Aprovar</button>
         `;
     }
-    if (rental.status === "ACCEPTED") {
+    if (rental.status === "ACCEPTED" || rental.status === "AWAITING_PAYMENT") {
         return `<button class="btn btn-outline btn-full" disabled>Aguardando pagamento</button>`;
     }
-    if (rental.status === "PAID") {
-        return `<button class="btn btn-outline btn-full">Ver aluguel ativo</button>`;
+    if (rental.status === "PAID" || rental.status === "IN_USE") {
+        return `<button class="btn btn-outline btn-full" disabled>Em andamento</button>`;
     }
-    return `<button class="btn btn-outline btn-full">Ver detalhes</button>`;
+    return `<button class="btn btn-outline btn-full" disabled>Ver detalhes</button>`;
 }
 
 async function approveRental(rentalId) {
