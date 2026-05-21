@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", async () => {
-
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user || !user.id) {
@@ -11,9 +10,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function loadRequests(ownerId) {
-
     try {
-        const response = await fetch(`/rentals/owner-list/${ownerId}`);;
+        // Endpoint do proprietário
+        const response = await fetch(`/rentals/owner/${ownerId}`);
 
         if (!response.ok) {
             throw new Error("Erro ao buscar solicitações");
@@ -21,7 +20,21 @@ async function loadRequests(ownerId) {
 
         const rentals = await response.json();
 
-        renderRequests(rentals);
+        // Mapear RentalModel para RentalListDto esperado
+        const mappedRentals = rentals.map(r => ({
+            id: r.id,
+            toolId: r.toolId,
+            toolName: r.tool?.nome || "Ferramenta",
+            toolImage: r.toolImage || null,
+            renterName: r.renter?.nomeCompleto || "Usuário",
+            status: r.status,
+            startDate: r.startDate,
+            endDate: r.endDate,
+            totalValue: r.totalValue,
+            message: r.message || null
+        }));
+
+        renderRequests(mappedRentals);
 
     } catch (err) {
         console.error(err);
@@ -29,153 +42,96 @@ async function loadRequests(ownerId) {
 }
 
 function renderRequests(rentals) {
-
     const container = document.getElementById("requestsGrid");
 
     if (!rentals.length) {
-
         container.innerHTML = `
             <div class="empty-message">
                 Nenhuma solicitação encontrada.
             </div>
         `;
-
         return;
     }
 
     container.innerHTML = rentals.map(rental => `
-
         <article class="request-card">
 
             <div class="card-header">
                 <div>
                     <h3>${rental.toolName}</h3>
-                    <span class="date">
-                        Pedido em ${formatDate(rental.createdAt)}
-                    </span>
+                    <span class="date">Pedido em ${formatDate(rental.createdAt)}</span>
                 </div>
-
-                <span class="badge ${getBadgeClass(rental.status)}">
-                    ${translateStatus(rental.status)}
-                </span>
+                <span class="badge ${getBadgeClass(rental.status)}">${translateStatus(rental.status)}</span>
             </div>
 
             <div class="card-body">
-
                 <div class="info-line">
                     <strong>Solicitante:</strong>
                     <span>${rental.renterName}</span>
                 </div>
-
                 <div class="info-line">
                     <strong>Período:</strong>
                     <span>${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}</span>
                 </div>
-
                 <div class="info-line">
                     <strong>Valor estimado:</strong>
                     <span>${formatCurrency(rental.totalValue)}</span>
                 </div>
-
-                ${rental.message ? `
-                    <div class="requester-msg">
-                        "${rental.message}"
-                    </div>
-                ` : ""}
-
+                ${rental.message ? `<div class="requester-msg">"${rental.message}"</div>` : ""}
             </div>
 
             <div class="card-footer">
-
                 ${renderActions(rental)}
-
             </div>
 
         </article>
-
     `).join("");
 }
 
 function renderActions(rental) {
-
     if (rental.status === "PENDING") {
-
         return `
-            <button class="btn btn-reject"
-                onclick="rejectRental(${rental.id})">
-                Recusar
-            </button>
-
-            <button class="btn btn-approve"
-                onclick="approveRental(${rental.id})">
-                Aprovar
-            </button>
+            <button class="btn btn-reject" onclick="rejectRental(${rental.id})">Recusar</button>
+            <button class="btn btn-approve" onclick="approveRental(${rental.id})">Aprovar</button>
         `;
     }
 
     if (rental.status === "ACCEPTED") {
-
-        return `
-            <button class="btn btn-outline btn-full" disabled>
-                Aguardando pagamento
-            </button>
-        `;
+        return `<button class="btn btn-outline btn-full" disabled>Aguardando pagamento</button>`;
     }
 
     if (rental.status === "PAID") {
-
-        return `
-            <button class="btn btn-outline btn-full">
-                Ver aluguel ativo
-            </button>
-        `;
+        return `<button class="btn btn-outline btn-full">Ver aluguel ativo</button>`;
     }
 
-    return `
-        <button class="btn btn-outline btn-full">
-            Ver detalhes
-        </button>
-    `;
+    return `<button class="btn btn-outline btn-full">Ver detalhes</button>`;
 }
 
 async function approveRental(id) {
-
     const user = JSON.parse(localStorage.getItem("user"));
 
     await fetch(`/rentals/${id}/approval`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            ownerId: user.id,
-            approved: true
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownerId: user.id, approved: true })
     });
 
     await loadRequests(user.id);
 }
 
 async function rejectRental(id) {
-
     const user = JSON.parse(localStorage.getItem("user"));
 
     await fetch(`/rentals/${id}/approval`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            ownerId: user.id,
-            approved: false
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownerId: user.id, approved: false })
     });
 
     await loadRequests(user.id);
 }
 
 function translateStatus(status) {
-
     return {
         PENDING: "Solicitação enviada",
         ACCEPTED: "Aceito pelo dono",
@@ -189,24 +145,13 @@ function translateStatus(status) {
 }
 
 function getBadgeClass(status) {
-
     switch (status) {
-
-        case "PENDING":
-            return "pending";
-
-        case "ACCEPTED":
-            return "approved";
-
-        case "REJECTED":
-            return "rejected";
-
+        case "PENDING": return "pending";
+        case "ACCEPTED": return "approved";
+        case "REJECTED": return "rejected";
         case "PAID":
-        case "IN_USE":
-            return "active";
-
-        default:
-            return "pending";
+        case "IN_USE": return "active";
+        default: return "pending";
     }
 }
 
