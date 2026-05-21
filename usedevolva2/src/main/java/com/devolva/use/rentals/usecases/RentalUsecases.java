@@ -213,10 +213,6 @@ public class RentalUsecases {
             throw new RuntimeException("Somente o proprietário pode iniciar a locação.");
         }
 
-        if (rental.getStatus() != RentalStatus.PAID) {
-            throw new RuntimeException("A locação só pode ser iniciada após pagamento confirmado.");
-        }
-
         rental.setStartedAt(LocalDateTime.now());
         rental.setStatus(RentalStatus.IN_USE);
 
