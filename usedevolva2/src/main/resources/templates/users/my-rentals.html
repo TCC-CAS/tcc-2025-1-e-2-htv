@@ -3,81 +3,49 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meus Aluguéis - Use e Devolva</title>
-
-
+    <title>Solicitações de Aluguel - Use e Devolva</title>
 
     <link rel="stylesheet" href="/css/fragments/header.css">
     <link rel="stylesheet" href="/css/fragments/footer.css">
     <link rel="stylesheet" href="/css/root.css">
     <link rel="stylesheet" href="/css/pages/users/my-rentals.css">
 
-<!--    -->
-<!--    <link rel="stylesheet" href="../../static/css/fragments/header.css">-->
-<!--<link rel="stylesheet" href="../../static/css/fragments/footer.css">-->
-<!--<link rel="stylesheet" href="../../static/css/root.css">-->
-<!--<link rel="stylesheet" href="../../static/css/pages/users/my-rentals.css">-->
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 </head>
 <body>
 
 <div th:replace="fragments/header :: header"></div>
 
-
 <main>
-
     <div class="page-header">
-        <h2>Minhas solicitações</h2>
-
+        <h2>Solicitações Recebidas</h2>
         <p>
-            Acompanhe as ferramentas que requisitou,
-            o estado atual e o histórico dos alugueis.
+            Acompanhe os pedidos de aluguel das suas ferramentas,
+            visualize o status e gerencie aprovações.
         </p>
     </div>
 
     <section class="stats-grid">
-
         <div class="stat-card">
-
             <div class="stat-info">
-
-                <h3>Total de Aluguéis</h3>
-
+                <h3>Total de Solicitações</h3>
                 <p id="totalRentals">0</p>
-
             </div>
-
-        </div>
-
-        <div class="stat-card">
-
-            <div class="stat-info">
-
-                <h3>Total Gasto</h3>
-
-                <p id="totalSpent">R$ 0,00</p>
-
-            </div>
-
         </div>
 
     </section>
 
-    <section
-            class="rentals-list"
-            id="rentalsList"
-    >
-    </section>
+    <section class="rentals-list" id="requestsGrid">
 
+=    </section>
 </main>
+
 <div th:replace="fragments/footer :: footer"></div>
 
 <script src="/js/main.js" defer></script>
-<script src="/js/my-rentals.js" defer></script>
+<script src="/js/rental-requests.js" defer></script>
 
 </body>
 </html>

@@ -1,108 +1,177 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Solicitações de Aluguel - Use e Devolva</title>
+document.addEventListener("DOMContentLoaded", async () => {
+const user = JSON.parse(localStorage.getItem("user"));
 
+if (!user || !user.id) {
+window.location.href = "/auth/login";
+return;
+}
 
-    <link rel="stylesheet" href="/css/fragments/header.css">
-    <link rel="stylesheet" href="/css/fragments/footer.css">
-    <link rel="stylesheet" href="/css/pages/rental-requests.css">
-    <link rel="stylesheet" href="/css/root.css">
+await loadRequests(user.id);
+});
 
-    <!--        <link rel="stylesheet" href="../../static/css/fragments/header.css">-->
-<!--<link rel="stylesheet" href="../../static/css/fragments/footer.css">-->
-<!--<link rel="stylesheet" href="../../static/css/pages/rental-requests.css">-->
-<!--<link rel="stylesheet" href="../../static/css/root.css">-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
+async function loadRequests(ownerId) {
+try {
+const response = await fetch(`/rentals/owner/${ownerId}`);
 
-<div th:replace="~{fragments/header :: header}"></div>
+if (!response.ok) {
+throw new Error("Erro ao buscar solicitações");
+}
 
+const rentals = await response.json();
 
+// Mapear RentalModel para campos esperados no frontend
+const mappedRentals = rentals.map(r => ({
+rentalId: r.id,
+toolId: r.toolId,
+toolName: r.tool?.nome || "Ferramenta",
+toolImage: r.toolImage || '/images/default-tool.png',
+renterName: r.renter?.nomeCompleto || "Usuário",
+ownerName: r.owner?.nomeCompleto || "Proprietário",
+status: r.status,
+startDate: r.startDate,
+endDate: r.endDate,
+totalValue: r.totalValue,
+message: r.message || null
+}));
 
-<body>
-<header class="dashboard-header">
-        <h1>Gestão de Solicitações</h1>
-        <p>Acompanhe e gira os pedidos de aluguel das suas ferramentas.</p>
-    </header>
+renderStats(mappedRentals);
+renderRequests(mappedRentals);
 
-    <main class="dashboard-container">
+} catch (err) {
+console.error(err);
+const container = document.getElementById("requestsGrid");
+container.innerHTML = `<p class="empty-message">Erro ao carregar solicitações.</p>`;
+}
+}
 
-        <!-- Filtros -->
-        <section class="filters-bar">
-            <div class="filter-group">
-                <label for="statusSolicitacao">Estado</label>
-                <select id="statusSolicitacao" name="statusSolicitacao">
-                    <option value="">Todos os estados</option>
-                    <option value="pendente">Pendentes</option>
-                    <option value="aprovada">Aprovadas</option>
-                    <option value="recusada">Recusadas</option>
-                </select>
-            </div>
+function renderStats(rentals) {
+// Exemplo simples: total de solicitações pendentes e aprovadas
+const total = rentals.length;
+const container = document.querySelector(".filters-bar");
+// Aqui você pode adicionar stats no HTML, se quiser
+console.log(`Total de solicitações: ${total}`);
+}
 
-            <div class="filter-group">
-                <label for="ferramentaSolicitacao">Ferramenta</label>
-                <input type="text" id="ferramentaSolicitacao" placeholder="Procurar por ferramenta..." />
-            </div>
+function renderRequests(rentals) {
+const container = document.getElementById("requestsGrid");
 
-            <button type="submit" class="btn-filter">Filtrar</button>
-        </section>
+if (!rentals.length) {
+container.innerHTML = `
+<div class="empty-message">
+    Nenhuma solicitação encontrada.
+</div>
+`;
+return;
+}
 
-        <section class="requests-grid" id="requestsGrid">
+container.innerHTML = rentals.map(rental => `
+<article class="request-card">
 
-        </section>
-
-    </main>
-
-    <div class="modal-overlay" id="modal-approve">
-        <div class="modal-content">
-            <h2 style="color: #10B981;">Aprovar Pedido?</h2>
-            <p style="font-size: 0.9rem; color: var(--req-text-light);">
-                Ao aprovar, a ferramenta ficará reservada para este utilizador nas datas selecionadas e o pagamento será processado.
-            </p>
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="closeModal('modal-approve')">Cancelar</button>
-                <button class="btn btn-approve" onclick="closeModal('modal-approve')">Confirmar Aprovação</button>
-            </div>
+    <div class="card-header">
+        <div>
+            <h3>${rental.toolName}</h3>
+            <span class="date">Pedido em ${formatDate(rental.startDate)}</span>
         </div>
+        <span class="badge ${getStatusBadgeClass(rental.status)}">${translateStatus(rental.status)}</span>
     </div>
 
-    <div class="modal-overlay" id="modal-reject">
-        <div class="modal-content">
-            <h2 style="color: #EF4444;">Recusar Pedido</h2>
-            <p style="font-size: 0.9rem; color: var(--req-text-light);">
-                Por favor, informe o utilizador do motivo da recusa (opcional, mas recomendado).
-            </p>
-
-            <label style="font-size: 0.85rem; font-weight: 600;">Motivo da recusa</label>
-            <textarea rows="3" placeholder="Ex: A ferramenta está em manutenção..."></textarea>
-
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="closeModal('modal-reject')">Voltar</button>
-                <button class="btn btn-reject" style="background: #EF4444; color: white;" onclick="closeModal('modal-reject')">Confirmar Recusa</button>
-            </div>
+    <div class="card-body">
+        <div class="rental-image-container">
+            <img src="${rental.toolImage}" class="rental-image" alt="${rental.toolName}">
         </div>
+
+        <div class="info-line"><strong>Solicitante:</strong> ${rental.renterName}</div>
+        <div class="info-line"><strong>Período:</strong> ${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}</div>
+        <div class="info-line"><strong>Valor estimado:</strong> ${formatCurrency(rental.totalValue)}</div>
+        ${rental.message ? `<div class="requester-msg">"${rental.message}"</div>` : ""}
     </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
+    <div class="card-footer">
+        ${renderActions(rental)}
+    </div>
 
-    <script>
-        function openModal(type) {
-            document.getElementById(`modal-${type}`).classList.add('active');
-        }
+</article>
+`).join("");
+}
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-    </script>
-</body>
+function renderActions(rental) {
+if (rental.status === "PENDING") {
+return `
+<button class="btn btn-reject" onclick="rejectRental(${rental.rentalId})">Recusar</button>
+<button class="btn btn-approve" onclick="approveRental(${rental.rentalId})">Aprovar</button>
+`;
+}
 
+if (rental.status === "ACCEPTED") {
+return `<button class="btn btn-outline btn-full" disabled>Aguardando pagamento</button>`;
+}
 
-<script src="/js/main.js" defer></script>
+if (rental.status === "PAID") {
+return `<button class="btn btn-outline btn-full">Ver aluguel ativo</button>`;
+}
 
+return `<button class="btn btn-outline btn-full">Ver detalhes</button>`;
+}
 
-</html>
+async function approveRental(rentalId) {
+const user = JSON.parse(localStorage.getItem("user"));
+
+await fetch(`/rentals/${rentalId}/approval`, {
+method: "PUT",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ ownerId: user.id, approved: true })
+});
+
+await loadRequests(user.id);
+}
+
+async function rejectRental(rentalId) {
+const user = JSON.parse(localStorage.getItem("user"));
+
+await fetch(`/rentals/${rentalId}/approval`, {
+method: "PUT",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ ownerId: user.id, approved: false })
+});
+
+await loadRequests(user.id);
+}
+
+function translateStatus(status) {
+const map = {
+PENDING: "Pendente",
+ACCEPTED: "Aceito pelo dono",
+AWAITING_PAYMENT: "Aguardando pagamento",
+PAID: "Pago",
+IN_USE: "Em uso",
+RETURNED: "Devolvido",
+LATE_RETURNED: "Devolvido com atraso",
+REJECTED: "Recusado",
+CANCELLED: "Cancelado"
+};
+return map[status] || status;
+}
+
+function getStatusBadgeClass(status) {
+const map = {
+PENDING: "badge-pending",
+ACCEPTED: "badge-accepted",
+AWAITING_PAYMENT: "badge-waiting",
+PAID: "badge-paid",
+IN_USE: "badge-active",
+RETURNED: "badge-finished",
+LATE_RETURNED: "badge-late",
+REJECTED: "badge-rejected",
+CANCELLED: "badge-cancelled"
+};
+return map[status] || "badge-default";
+}
+
+function formatDate(date) {
+if (!date) return "-";
+return new Date(date + "T00:00:00").toLocaleDateString("pt-BR");
+}
+
+function formatCurrency(value) {
+return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}

@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadRequests(ownerId) {
     try {
-        // Endpoint do proprietário
         const response = await fetch(`/rentals/owner/${ownerId}`);
 
         if (!response.ok) {
@@ -20,13 +19,14 @@ async function loadRequests(ownerId) {
 
         const rentals = await response.json();
 
-        // Mapear RentalModel para RentalListDto esperado
+        // Mapear RentalModel para campos esperados no frontend
         const mappedRentals = rentals.map(r => ({
-            id: r.id,
+            rentalId: r.id,
             toolId: r.toolId,
             toolName: r.tool?.nome || "Ferramenta",
-            toolImage: r.toolImage || null,
+            toolImage: r.toolImage || '/images/default-tool.png',
             renterName: r.renter?.nomeCompleto || "Usuário",
+            ownerName: r.owner?.nomeCompleto || "Proprietário",
             status: r.status,
             startDate: r.startDate,
             endDate: r.endDate,
@@ -34,11 +34,20 @@ async function loadRequests(ownerId) {
             message: r.message || null
         }));
 
+        renderStats(mappedRentals);
         renderRequests(mappedRentals);
 
     } catch (err) {
         console.error(err);
+        const container = document.getElementById("requestsGrid");
+        container.innerHTML = `<p class="empty-message">Erro ao carregar solicitações.</p>`;
     }
+}
+
+function renderStats(rentals) {
+    const total = rentals.length;
+    const container = document.querySelector(".filters-bar");
+    console.log(`Total de solicitações: ${total}`);
 }
 
 function renderRequests(rentals) {
@@ -59,24 +68,19 @@ function renderRequests(rentals) {
             <div class="card-header">
                 <div>
                     <h3>${rental.toolName}</h3>
-                    <span class="date">Pedido em ${formatDate(rental.createdAt)}</span>
+                    <span class="date">Pedido em ${formatDate(rental.startDate)}</span>
                 </div>
-                <span class="badge ${getBadgeClass(rental.status)}">${translateStatus(rental.status)}</span>
+                <span class="badge ${getStatusBadgeClass(rental.status)}">${translateStatus(rental.status)}</span>
             </div>
 
             <div class="card-body">
-                <div class="info-line">
-                    <strong>Solicitante:</strong>
-                    <span>${rental.renterName}</span>
+                <div class="rental-image-container">
+                    <img src="${rental.toolImage}" class="rental-image" alt="${rental.toolName}">
                 </div>
-                <div class="info-line">
-                    <strong>Período:</strong>
-                    <span>${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}</span>
-                </div>
-                <div class="info-line">
-                    <strong>Valor estimado:</strong>
-                    <span>${formatCurrency(rental.totalValue)}</span>
-                </div>
+
+                <div class="info-line"><strong>Solicitante:</strong> ${rental.renterName}</div>
+                <div class="info-line"><strong>Período:</strong> ${formatDate(rental.startDate)} até ${formatDate(rental.endDate)}</div>
+                <div class="info-line"><strong>Valor estimado:</strong> ${formatCurrency(rental.totalValue)}</div>
                 ${rental.message ? `<div class="requester-msg">"${rental.message}"</div>` : ""}
             </div>
 
@@ -91,8 +95,8 @@ function renderRequests(rentals) {
 function renderActions(rental) {
     if (rental.status === "PENDING") {
         return `
-            <button class="btn btn-reject" onclick="rejectRental(${rental.id})">Recusar</button>
-            <button class="btn btn-approve" onclick="approveRental(${rental.id})">Aprovar</button>
+            <button class="btn btn-reject" onclick="rejectRental(${rental.rentalId})">Recusar</button>
+            <button class="btn btn-approve" onclick="approveRental(${rental.rentalId})">Aprovar</button>
         `;
     }
 
@@ -107,10 +111,10 @@ function renderActions(rental) {
     return `<button class="btn btn-outline btn-full">Ver detalhes</button>`;
 }
 
-async function approveRental(id) {
+async function approveRental(rentalId) {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    await fetch(`/rentals/${id}/approval`, {
+    await fetch(`/rentals/${rentalId}/approval`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ownerId: user.id, approved: true })
@@ -119,10 +123,10 @@ async function approveRental(id) {
     await loadRequests(user.id);
 }
 
-async function rejectRental(id) {
+async function rejectRental(rentalId) {
     const user = JSON.parse(localStorage.getItem("user"));
 
-    await fetch(`/rentals/${id}/approval`, {
+    await fetch(`/rentals/${rentalId}/approval`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ownerId: user.id, approved: false })
@@ -132,37 +136,40 @@ async function rejectRental(id) {
 }
 
 function translateStatus(status) {
-    return {
-        PENDING: "Solicitação enviada",
+    const map = {
+        PENDING: "Pendente",
         ACCEPTED: "Aceito pelo dono",
-        AWAITING_PAYMENT: "Pagamento aprovado",
+        AWAITING_PAYMENT: "Aguardando pagamento",
         PAID: "Pago",
         IN_USE: "Em uso",
         RETURNED: "Devolvido",
+        LATE_RETURNED: "Devolvido com atraso",
         REJECTED: "Recusado",
         CANCELLED: "Cancelado"
-    }[status] || status;
+    };
+    return map[status] || status;
 }
 
-function getBadgeClass(status) {
-    switch (status) {
-        case "PENDING": return "pending";
-        case "ACCEPTED": return "approved";
-        case "REJECTED": return "rejected";
-        case "PAID":
-        case "IN_USE": return "active";
-        default: return "pending";
-    }
+function getStatusBadgeClass(status) {
+    const map = {
+        PENDING: "badge-pending",
+        ACCEPTED: "badge-accepted",
+        AWAITING_PAYMENT: "badge-waiting",
+        PAID: "badge-paid",
+        IN_USE: "badge-active",
+        RETURNED: "badge-finished",
+        LATE_RETURNED: "badge-late",
+        REJECTED: "badge-rejected",
+        CANCELLED: "badge-cancelled"
+    };
+    return map[status] || "badge-default";
 }
 
 function formatDate(date) {
     if (!date) return "-";
-    return new Date(date).toLocaleDateString("pt-BR");
+    return new Date(date + "T00:00:00").toLocaleDateString("pt-BR");
 }
 
 function formatCurrency(value) {
-    return Number(value || 0).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-    });
+    return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
