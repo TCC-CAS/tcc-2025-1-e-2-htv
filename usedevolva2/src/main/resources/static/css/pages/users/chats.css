@@ -378,3 +378,11 @@
         min-height: 0;
     }
 }
+
+.chats-card,
+.chat-content,
+.chat-conversation,
+.chat-messages,
+.chats-list {
+    overscroll-behavior: contain;
+}
