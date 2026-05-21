@@ -6,11 +6,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     createFloatingChatButton();
+
+    window.refreshFloatingChatUnreadCount = () => {
+        loadUnreadChatCount(user.id);
+    };
+
     loadUnreadChatCount(user.id);
 
     setInterval(() => {
         loadUnreadChatCount(user.id);
-    }, 30000);
+    }, 5000);
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+            loadUnreadChatCount(user.id);
+        }
+    });
+
+    window.addEventListener("focus", () => {
+        loadUnreadChatCount(user.id);
+    });
 });
 
 function createFloatingChatButton() {

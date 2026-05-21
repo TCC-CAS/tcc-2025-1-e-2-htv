@@ -1,6 +1,8 @@
 let currentUser = null;
 let currentChatId = null;
 let currentChats = [];
+let chatsAutoRefreshInterval = null;
+let isRefreshingChat = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
     currentUser = JSON.parse(localStorage.getItem("user"));
@@ -34,13 +36,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (chatIdFromUrl) {
         await openChat(Number(chatIdFromUrl));
     }
+
+    startChatsAutoRefresh();
 });
 
-async function loadChats() {
+async function loadChats(showLoading = true) {
     const list = document.getElementById("chatsList");
 
     try {
-        list.innerHTML = `<p class="chats-loading">Carregando conversas...</p>`;
+        if (showLoading && (!currentChats || currentChats.length === 0)) {
+            list.innerHTML = `<p class="chats-loading">Carregando conversas...</p>`;
+        }
 
         const response = await fetch(`/chats/user/${currentUser.id}`);
 
@@ -238,4 +244,70 @@ function escapeHtml(value) {
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+}
+
+function startChatsAutoRefresh() {
+    if (chatsAutoRefreshInterval) {
+        clearInterval(chatsAutoRefreshInterval);
+    }
+
+    chatsAutoRefreshInterval = setInterval(async () => {
+        if (document.hidden || !currentUser || !currentUser.id) {
+            return;
+        }
+
+        await refreshChatsSilently();
+    }, 500);
+}
+
+async function refreshChatsSilently() {
+    if (isRefreshingChat) {
+        return;
+    }
+
+    isRefreshingChat = true;
+
+    try {
+        await loadChats(false);
+
+        if (currentChatId) {
+            await refreshCurrentChatSilently(currentChatId);
+        }
+
+        if (typeof window.refreshFloatingChatUnreadCount === "function") {
+            window.refreshFloatingChatUnreadCount();
+        }
+
+    } catch (error) {
+        console.error("Erro ao atualizar chats automaticamente:", error);
+    } finally {
+        isRefreshingChat = false;
+    }
+}
+
+async function refreshCurrentChatSilently(chatId) {
+    const response = await fetch(`/chats/${chatId}?userId=${currentUser.id}`);
+
+    if (!response.ok) {
+        return;
+    }
+
+    const chat = await response.json();
+
+    document.getElementById("chatTitle").textContent = chat.otherUserName || "Chat";
+
+    const subtitle = document.getElementById("chatSubtitle");
+
+    if (chat.toolId && chat.toolName) {
+        subtitle.innerHTML = `
+            Ferramenta:
+            <a href="/tools/page/${chat.toolId}" class="chat-tool-link">
+                ${escapeHtml(chat.toolName)}
+            </a>
+        `;
+    } else {
+        subtitle.textContent = "";
+    }
+
+    renderMessages(chat.messages || []);
 }
