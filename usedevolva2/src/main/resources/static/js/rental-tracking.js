@@ -168,11 +168,14 @@ function renderActionButtons(rental, currentUserId) {
     if (!container) return;
     container.innerHTML = "";
 
+    const idLocacao = rental.rentalId || rental.id;
+
     if (rental.status === "ACCEPTED" && rental.isRenter) {
         const btn = document.createElement("button");
         btn.className = "btn-pagamento";
         btn.textContent = "Confirmar Retirada da Ferramenta";
-        btn.onclick = () => handleAction(`/rentals/${rental.id}/start`, { ownerId: currentUserId });
+
+        btn.onclick = () => handleAction(`/rentals/${idLocacao}/start`, { ownerId: rental.ownerId });
         container.appendChild(btn);
     }
     else if (rental.status === "IN_USE" && rental.isRenter) {
@@ -180,7 +183,8 @@ function renderActionButtons(rental, currentUserId) {
         btn.className = "btn-pagamento";
         btn.textContent = "Marcar como Devolvido";
         const hoje = new Date().toISOString().split('T')[0];
-        btn.onclick = () => handleAction(`/rentals/${rental.id}/return`, { renterId: currentUserId, actualReturnDate: hoje });
+
+        btn.onclick = () => handleAction(`/rentals/${idLocacao}/return`, { renterId: currentUserId, actualReturnDate: hoje });
         container.appendChild(btn);
     }
 
