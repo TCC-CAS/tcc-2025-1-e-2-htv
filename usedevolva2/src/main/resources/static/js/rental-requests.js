@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    await loadRequests(user.id);
+    // Inicializa trazendo as solicitações Ativas por padrão
+    await loadRequests(user.id, "ACTIVE");
 
     const filter = document.getElementById("statusFilter");
     if (filter) {
@@ -15,18 +16,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-async function loadRequests(ownerId, filterStatus = "ALL") {
+async function loadRequests(ownerId, filterStatus = "ACTIVE") {
     try {
         const response = await fetch(`/rentals/owner-list/${ownerId}`);
         if (!response.ok) throw new Error("Erro ao buscar solicitações");
 
         let rentals = await response.json();
 
-//
-        rentals = rentals.filter(r => r.status === "PENDING" || r.status === "PAID" || r.status === "RETURNED" || r.status === "LATE_RETURNED");
-
-        if (filterStatus !== "ALL") {
-            rentals = rentals.filter(r => r.status === filterStatus);
+        // 1. FILTRO INTELIGENTE BASEADO NO DROPDOWN DO HTML
+        if (filterStatus === "ACTIVE") {
+            rentals = rentals.filter(r => ["PENDING", "PAID", "RETURNED", "LATE_RETURNED"].includes(r.status));
+        } else if (filterStatus === "HISTORY") {
+            rentals = rentals.filter(r => ["FINALIZED", "CANCELLED"].includes(r.status));
         }
 
         const mappedRentals = rentals.map(r => ({
@@ -61,24 +62,26 @@ function renderStats(rentals) {
 function renderRequests(rentals) {
     const container = document.getElementById("requestsGrid");
     if (!rentals.length) {
-        container.innerHTML = `<div class="empty-message">Nenhuma solicitação encontrada.</div>`;
+        container.innerHTML = `<div class="empty-message">Nenhuma solicitação encontrada para este filtro.</div>`;
         return;
     }
 
     container.innerHTML = rentals.map(r => {
         let footerButtons = "";
 
-        // Se o locatário já devolveu, exibe o botão de finalizar contrato
+        // 2. BOTÕES CONDICIONAIS CORRIGIDOS PARA NÃO EXIBIR AÇÕES NO HISTÓRICO
         if (r.status === "RETURNED" || r.status === "LATE_RETURNED") {
             footerButtons = `
                 <button class="btn btn-approve" style="width: 100%;" onclick="finalizeRental(${r.rentalId})">
                     Confirmar e Finalizar Locação
                 </button>`;
-        } else {
+        } else if (r.status === "PENDING" || r.status === "PAID") {
             footerButtons = `
                 <button class="btn btn-reject" onclick="rejectRental(${r.rentalId})">Recusar</button>
                 <button class="btn btn-approve" onclick="approveRental(${r.rentalId})">Aceitar</button>
             `;
+        } else {
+            footerButtons = `<p style="color: #888; font-size: 0.85rem; margin: 0; text-align: center; width: 100%; font-style: italic;">Contrato Encerrado</p>`;
         }
 
         return `
@@ -91,13 +94,20 @@ function renderRequests(rentals) {
                     <span class="badge ${getStatusBadgeClass(r.status)}">${translateStatus(r.status)}</span>
                 </div>
                 <div class="card-body">
-                    </div>
+                     <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Locatário:</strong> ${r.renterName || 'Não informado'}</p>
+                     <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Valor total:</strong> ${formatCurrency(r.totalValue)}</p>
+                </div>
                 <div class="card-footer">
                     ${footerButtons}
                 </div>
             </article>
         `;
     }).join("");
+}
+
+// Função auxiliar para capturar o filtro atual antes de recarregar a lista
+function getActiveFilter() {
+    return document.getElementById("statusFilter")?.value || "ACTIVE";
 }
 
 async function approveRental(rentalId) {
@@ -109,17 +119,11 @@ async function approveRental(rentalId) {
             body: JSON.stringify({ ownerId: user.id, approved: true })
         });
 
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Erro ao aprovar:", text);
-            alert("Erro ao aprovar o aluguel. Veja o console.");
-            return;
-        }
-
-        await loadRequests(user.id);
+        if (!response.ok) throw new Error(await response.text());
+        await loadRequests(user.id, getActiveFilter());
     } catch (err) {
         console.error(err);
-        alert("Erro de rede ao aprovar o aluguel");
+        alert("Erro ao aprovar o aluguel.");
     }
 }
 
@@ -132,20 +136,32 @@ async function rejectRental(rentalId) {
             body: JSON.stringify({ ownerId: user.id, approved: false })
         });
 
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Erro ao recusar:", text);
-            alert("Erro ao recusar o aluguel. Veja o console.");
-            return;
-        }
-
-        await loadRequests(user.id);
+        if (!response.ok) throw new Error(await response.text());
+        await loadRequests(user.id, getActiveFilter());
     } catch (err) {
         console.error(err);
-        alert("Erro de rede ao recusar o aluguel");
+        alert("Erro ao recusar o aluguel.");
     }
 }
 
+async function finalizeRental(rentalId) {
+    const user = JSON.parse(localStorage.getItem("user"));
+    try {
+        const response = await fetch(`/rentals/${rentalId}/finalize`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ownerId: user.id })
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+        await loadRequests(user.id, getActiveFilter());
+    } catch (err) {
+        console.error(err);
+        alert("Erro de rede ao finalizar a locação");
+    }
+}
+
+// Mantive suas funções auxiliares de tradução e formato idênticas
 function translateStatus(status) {
     const map = {
         PENDING: "Pendente",
@@ -181,27 +197,4 @@ function formatDate(date) {
 
 function formatCurrency(value) {
     return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-async function finalizeRental(rentalId) {
-    const user = JSON.parse(localStorage.getItem("user"));
-    try {
-        const response = await fetch(`/rentals/${rentalId}/finalize`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ownerId: user.id })
-        });
-
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Erro ao finalizar:", text);
-            alert("Erro ao finalizar a locação.");
-            return;
-        }
-
-        await loadRequests(user.id);
-    } catch (err) {
-        console.error(err);
-        alert("Erro de rede ao finalizar a locação");
-    }
 }
