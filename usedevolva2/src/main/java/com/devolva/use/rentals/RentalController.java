@@ -51,7 +51,7 @@ public class RentalController {
         return rentalUsecases.findAll();
     }
 
-    @GetMapping("/api/{rentalId}")
+    @GetMapping("/{rentalId}")
     public RentalModel findById(@PathVariable Long rentalId) {
         return rentalUsecases.findById(rentalId);
     }
@@ -60,17 +60,15 @@ public class RentalController {
     public List<RentalModel> findByTenantId(@PathVariable Long tenantId) {
         return rentalUsecases.findByTenantId(tenantId);
     }
+
     @GetMapping("/{rentalId}/details")
     public RentalDetailsDto details(
             @PathVariable Long rentalId,
             @RequestParam Long userId
     ) {
-
-        return rentalUsecases.getRentalDetails(
-                rentalId,
-                userId
-        );
+        return rentalUsecases.getRentalDetails(rentalId, userId);
     }
+
     @GetMapping("/owner/{ownerId}")
     public List<RentalModel> findByOwnerId(@PathVariable Long ownerId) {
         return rentalUsecases.findByOwnerId(ownerId);
@@ -80,9 +78,6 @@ public class RentalController {
     public List<RentalListDto> getRentalsByRenter(
             @PathVariable Long renterId
     ) {
-
         return rentalUsecases.getRentalsByRenter(renterId);
     }
-
 }
-
