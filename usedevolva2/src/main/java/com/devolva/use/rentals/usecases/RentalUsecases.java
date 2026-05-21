@@ -11,6 +11,7 @@ import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.domain.UserStatus;
 import com.devolva.use.users.repository.UserRepository;
+import com.devolva.use.chats.usecases.ChatUsecases;
 import org.springframework.stereotype.Service;
 
 
@@ -31,18 +32,20 @@ public class RentalUsecases {
     private final ToolRepository toolRepository;
     private final UserRepository userRepository;
     private final ToolImageRepository toolImageRepository;
+    private final ChatUsecases chatUsecases;
 
     public RentalUsecases(
             RentalRepository rentalRepository,
             ToolRepository toolRepository,
             UserRepository userRepository,
-            ToolImageRepository toolImageRepository
+            ToolImageRepository toolImageRepository,
+            ChatUsecases chatUsecases
     ) {
-
         this.rentalRepository = rentalRepository;
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
         this.toolImageRepository = toolImageRepository;
+        this.chatUsecases = chatUsecases;
     }
 
     private String getToolMainImage(Long toolId) {
@@ -197,11 +200,29 @@ public class RentalUsecases {
 
         if (Boolean.TRUE.equals(dto.approved())) {
             rental.setStatus(RentalStatus.ACCEPTED);
+
+            RentalModel savedRental = rentalRepository.save(rental);
+
+            chatUsecases.addRentalSystemMessage(
+                    savedRental.getId(),
+                    chatUsecases.buildStatusMessage("Locação aceita pelo proprietário"),
+                    savedRental.getRenterId()
+            );
+
+            return savedRental;
         } else {
             rental.setStatus(RentalStatus.CANCELLED);
-        }
 
-        return rentalRepository.save(rental);
+            RentalModel savedRental = rentalRepository.save(rental);
+
+            chatUsecases.addRentalSystemMessage(
+                    savedRental.getId(),
+                    chatUsecases.buildStatusMessage("Solicitação de aluguel recusada pelo proprietário"),
+                    savedRental.getRenterId()
+            );
+
+            return savedRental;
+        }
     }
 
 
@@ -220,7 +241,15 @@ public class RentalUsecases {
         tool.setUpdatedAt(LocalDateTime.now());
         toolRepository.save(tool);
 
-        return rentalRepository.save(rental);
+        RentalModel savedRental = rentalRepository.save(rental);
+
+        chatUsecases.addRentalSystemMessage(
+                savedRental.getId(),
+                chatUsecases.buildStatusMessage("Ferramenta retirada / locação em uso"),
+                savedRental.getRenterId()
+        );
+
+        return savedRental;
     }
 
     public RentalModel returnRental(Long rentalId, ReturnRentalDto dto) {
@@ -260,7 +289,19 @@ public class RentalUsecases {
         tool.setUpdatedAt(LocalDateTime.now());
         toolRepository.save(tool);
 
-        return rentalRepository.save(rental);
+        RentalModel savedRental = rentalRepository.save(rental);
+
+        String statusMessage = savedRental.getStatus() == RentalStatus.LATE_RETURNED
+                ? "Ferramenta devolvida com atraso"
+                : "Ferramenta marcada como devolvida";
+
+        chatUsecases.addRentalSystemMessage(
+                savedRental.getId(),
+                chatUsecases.buildStatusMessage(statusMessage),
+                savedRental.getOwnerId()
+        );
+
+        return savedRental;
     }
 
     public List<RentalModel> findAll() {
@@ -447,7 +488,16 @@ public class RentalUsecases {
         }
 
         rental.setStatus(RentalStatus.FINALIZED);
-        return rentalRepository.save(rental);
+
+        RentalModel savedRental = rentalRepository.save(rental);
+
+        chatUsecases.addRentalSystemMessage(
+                savedRental.getId(),
+                chatUsecases.buildStatusMessage("Locação finalizada pelo proprietário"),
+                savedRental.getRenterId()
+        );
+
+        return savedRental;
     }
 }
 

@@ -16,6 +16,7 @@ import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -149,6 +150,33 @@ public class ChatUsecases {
 
     public long getUnreadCount(Long userId) {
         return chatMessageRepository.countByRecipientIdAndReadByRecipientFalse(userId);
+    }
+
+    public void addRentalSystemMessage(Long rentalId, String messageText, Long recipientId) {
+        RentalModel rental = findRental(rentalId);
+
+        ChatModel chat = createOrGetRentalChat(rentalId);
+
+        ChatMessageModel message = new ChatMessageModel();
+        message.setChatId(chat.getId());
+        message.setSenderId(getOtherUserId(chat, recipientId));
+        message.setRecipientId(recipientId);
+        message.setMessage(messageText);
+        message.setAutomaticMessage(true);
+        message.setReadByRecipient(false);
+
+        chatMessageRepository.save(message);
+
+        chat.setUpdatedAt(LocalDateTime.now());
+        chatRepository.save(chat);
+    }
+
+    public String buildStatusMessage(String statusText) {
+        String now = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH:mm")
+        );
+
+        return "Sistema: " + statusText + " em " + now + ".";
     }
 
     private void createAutomaticRentalMessage(ChatModel chat, RentalModel rental) {

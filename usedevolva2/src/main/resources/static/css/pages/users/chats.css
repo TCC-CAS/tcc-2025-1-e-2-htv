@@ -295,3 +295,13 @@
         max-width: 88%;
     }
 }
+
+.chat-tool-link {
+    color: var(--color-primary, #5b4bb7);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.chat-tool-link:hover {
+    text-decoration: underline;
+}

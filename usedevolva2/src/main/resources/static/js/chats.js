@@ -113,9 +113,19 @@ async function openChat(chatId) {
         document.getElementById("chatConversation").classList.remove("hidden");
 
         document.getElementById("chatTitle").textContent = chat.otherUserName || "Chat";
-        document.getElementById("chatSubtitle").textContent = chat.toolName
-            ? `Ferramenta: ${chat.toolName}`
-            : "";
+
+        const subtitle = document.getElementById("chatSubtitle");
+
+        if (chat.toolId && chat.toolName) {
+            subtitle.innerHTML = `
+        Ferramenta:
+        <a href="/tools/page/${chat.toolId}" class="chat-tool-link">
+            ${escapeHtml(chat.toolName)}
+        </a>
+    `;
+        } else {
+            subtitle.textContent = "";
+        }
 
         renderMessages(chat.messages || []);
 

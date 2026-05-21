@@ -170,6 +170,14 @@ function renderActionButtons(rental, currentUserId) {
 
     const idLocacao = rental.rentalId || rental.id;
 
+    const chatBtn = document.createElement("button");
+    chatBtn.className = "btn-pagamento btn-rental-chat";
+    chatBtn.textContent = "Abrir chat da locação";
+    chatBtn.type = "button";
+    chatBtn.onclick = () => openRentalChat(idLocacao);
+
+    container.appendChild(chatBtn);
+
     if (rental.status === "ACCEPTED" && rental.isRenter) {
         const btn = document.createElement("button");
         btn.className = "btn-pagamento";
@@ -188,4 +196,25 @@ function renderActionButtons(rental, currentUserId) {
         container.appendChild(btn);
     }
 
+}
+
+async function openRentalChat(rentalId) {
+    try {
+        const response = await fetch(`/chats/rentals/${rentalId}/start`, {
+            method: "POST"
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Erro ao abrir chat da locação.");
+        }
+
+        const chat = await response.json();
+
+        window.location.href = `/users/chats?chatId=${chat.id}`;
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message || "Não foi possível abrir o chat da locação.");
+    }
 }

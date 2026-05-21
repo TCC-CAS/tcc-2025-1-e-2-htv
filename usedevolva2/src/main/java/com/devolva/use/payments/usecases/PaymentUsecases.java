@@ -303,6 +303,13 @@ public class PaymentUsecases {
 
         rental = rentalRepository.save(rental);
 
+        chatUsecases.createOrGetRentalChat(rental.getId());
+
+        chatUsecases.addRentalSystemMessage(
+                rental.getId(),
+                chatUsecases.buildStatusMessage("Solicitação de aluguel enviada"),
+                rental.getOwnerId()
+        );
 
         SimpleClientHttpRequestFactory factory =
                 new SimpleClientHttpRequestFactory();
@@ -489,7 +496,14 @@ public class PaymentUsecases {
             );
 
             rentalRepository.save(rental);
+
             chatUsecases.createOrGetRentalChat(rental.getId());
+
+            chatUsecases.addRentalSystemMessage(
+                    rental.getId(),
+                    chatUsecases.buildStatusMessage("Pagamento aprovado"),
+                    rental.getOwnerId()
+            );
         }
 
         return Map.of(
