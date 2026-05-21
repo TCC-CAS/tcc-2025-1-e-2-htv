@@ -82,7 +82,8 @@ public class AuthController {
         return "rentals/rental-tracking";
     }
 
-    @GetMapping("/rentals/requests")
+    
+    @GetMapping("/rentals/details/{id}")
     public String rentalRequestsPage() {
         return "rentals/rental-requests";
     }
