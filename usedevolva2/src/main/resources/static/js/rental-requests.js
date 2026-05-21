@@ -14,7 +14,7 @@ async function loadRequests(ownerId) {
 
     try {
 
-        const response = await fetch(`/rentals/owner-requests/${ownerId}`);
+        const response = await fetch(`/rentals/owner/${ownerId}`);
 
         if (!response.ok) {
             throw new Error("Erro ao buscar solicitações");
