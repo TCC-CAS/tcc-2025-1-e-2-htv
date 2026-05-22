@@ -83,10 +83,24 @@ public class AuthController {
         return "rentals/rental-tracking";
     }
 
-
     @GetMapping("/rentals/requests")
     public String rentalRequestsPage() {
         return "rentals/rental-requests";
+    }
+
+    @GetMapping("/institutional/faq")
+    public String faqPage() {
+        return "institutional/faq";
+    }
+
+    @GetMapping("/institutional/termos-de-uso")
+    public String termsPage() {
+        return "institutional/termos-de-uso";
+    }
+
+    @GetMapping("/institutional/politica-de-privacidade")
+    public String privacyPage() {
+        return "institutional/politica-de-privacidade";
     }
 
 }
