@@ -103,4 +103,10 @@ public class AuthController {
         return "institutional/politica-de-privacidade";
     }
 
+    @GetMapping("/favorites")
+    public String favoritesPage() {
+        return "users/favorites";
+    }
+
+
 }
