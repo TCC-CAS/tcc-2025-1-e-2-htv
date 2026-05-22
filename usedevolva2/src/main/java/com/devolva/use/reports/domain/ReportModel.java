@@ -32,6 +32,9 @@ public class ReportModel {
     private LocalDateTime resolvedAt;
     private Long resolvedById;
 
+    private Long toolId;
+
+
     public ReportModel() {
         this.status = ReportStatus.PENDING;
         this.createdAt = LocalDateTime.now();

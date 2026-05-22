@@ -4,6 +4,8 @@ let currentChats = [];
 let chatsAutoRefreshInterval = null;
 let isRefreshingChat = false;
 let lastRenderedMessageSignature = "";
+let currentChatDetails = null;
+let isReportModeActive = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
     currentUser = JSON.parse(localStorage.getItem("user"));
@@ -26,6 +28,103 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             await sendChatMessage(currentChatId, message);
             input.value = "";
+        });
+    }
+
+
+    const reportModal = document.getElementById("reportModal");
+    const btnReportChat = document.getElementById("btnReportChat");
+    const btnCloseReportModal = document.getElementById("btnCloseReportModal");
+    const btnCancelReport = document.getElementById("btnCancelReport");
+    const reportForm = document.getElementById("reportForm");
+
+    if (btnReportChat) {
+        btnReportChat.addEventListener("click", () => {
+            if (!currentChatDetails) return;
+
+            if (!isReportModeActive) {
+                isReportModeActive = true;
+                btnReportChat.innerText = "✨ Confirmar Seleção";
+                btnReportChat.className = "btn btn-primary";
+
+                // Força re-renderização das mensagens aplicando os Checkboxes na tela
+                lastRenderedMessageSignature = "";
+                renderMessages(currentChatDetails.messages || []);
+            } else {
+                // Segunda etapa: Se o modo já estava ativo, abre o Modal de preenchimento
+                if (reportModal) reportModal.classList.add("active");
+            }
+        });
+    }
+
+    function resetReportMode() {
+        isReportModeActive = false;
+        if (reportModal) reportModal.classList.remove("active");
+        if (reportForm) reportForm.reset();
+
+        const evidencePreview = document.getElementById("reportedMessagesEvidence");
+        if (evidencePreview) evidencePreview.innerText = "Nenhuma mensagem selecionada.";
+
+        if (btnReportChat) {
+            btnReportChat.innerText = "⚠️ Denunciar";
+            btnReportChat.className = "btn btn-danger";
+        }
+
+        if (currentChatDetails) {
+            lastRenderedMessageSignature = "";
+            renderMessages(currentChatDetails.messages || []);
+        }
+    }
+
+    if (btnCloseReportModal) btnCloseReportModal.addEventListener("click", resetReportMode);
+    if (btnCancelReport) btnCancelReport.addEventListener("click", resetReportMode);
+
+    if (reportForm) {
+        reportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const targetType = document.getElementById("reportTargetType").value;
+            const reason = document.getElementById("reportReason").value;
+            const descriptionInput = document.getElementById("reportDescription").value;
+
+            const selectedEvidences = Array.from(document.querySelectorAll(".report-checkbox:checked"))
+                .map(cb => `"${cb.getAttribute("data-msg-text")}"`)
+                .join(" | ");
+
+            const fullDescription = selectedEvidences
+                ? `[EVIDÊNCIAS DE CONVERSA: ${selectedEvidences}] - Detalhes do denunciante: ${descriptionInput}`
+                : descriptionInput;
+
+            const reportPayload = {
+                reporterId: currentUser.id,
+                reportedUserId: targetType === "USER"
+                    ? (Number(currentUser.id) === Number(currentChatDetails.ownerId) ? currentChatDetails.renterId : currentChatDetails.ownerId)
+                    : null,
+                rentalId: currentChatDetails.rentalId || null,
+                toolId: targetType === "TOOL" ? currentChatDetails.toolId : null,
+                reason: reason,
+                description: fullDescription
+            };
+            try {
+                const response = await fetch("/reports/create", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(reportPayload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Erro de processamento no servidor ao salvar relatório.");
+                }
+
+                alert("Sua denúncia foi enviada com sucesso para nossa equipe de moderação. Obrigado!");
+                resetReportMode();
+
+            } catch (error) {
+                console.error(error);
+                alert("Não foi possível processar o envio da sua denúncia. Tente novamente.");
+            }
         });
     }
 
@@ -132,9 +231,13 @@ async function openChat(chatId) {
         }
 
         const chat = await response.json();
+        currentChatDetails = chat;
 
         document.getElementById("chatEmptyState").classList.add("hidden");
         document.getElementById("chatConversation").classList.remove("hidden");
+
+        const btnReport = document.getElementById("btnReportChat");
+        if (btnReport) btnReport.style.display = "block";
 
         document.getElementById("chatTitle").textContent = chat.otherUserName || "Chat";
 
@@ -171,7 +274,7 @@ function renderMessages(messages) {
         .map(message => `${message.id}-${message.readByRecipient}`)
         .join("|");
 
-    if (newSignature === lastRenderedMessageSignature) {
+    if (newSignature === lastRenderedMessageSignature && !isReportModeActive) {
         return;
     }
 
@@ -195,10 +298,15 @@ function renderMessages(messages) {
             ? "automatic"
             : isSent ? "sent" : "received";
 
+        const showCheckboxClass = isReportModeActive ? "active" : "";
+
         return `
-            <div class="chat-message ${messageClass}">
-                <div class="chat-message-text">${escapeHtml(message.message)}</div>
-                <div class="chat-message-time">${formatChatDateTime(message.createdAt)}</div>
+            <div class="chat-message-wrapper ${isSent ? 'sent' : ''}">
+                <input type="checkbox" class="report-checkbox ${showCheckboxClass}" data-msg-text="${escapeHtml(message.message)}" value="${message.id}">
+                <div class="chat-message ${messageClass}">
+                    <div class="chat-message-text">${escapeHtml(message.message)}</div>
+                    <div class="chat-message-time">${formatChatDateTime(message.createdAt)}</div>
+                </div>
             </div>
         `;
     }).join("");
@@ -206,6 +314,26 @@ function renderMessages(messages) {
     if (wasNearBottom) {
         container.scrollTop = container.scrollHeight;
     }
+
+    if (isReportModeActive) {
+        document.querySelectorAll(".report-checkbox").forEach(cb => {
+            cb.addEventListener("change", updateEvidencePreview);
+        });
+    }
+}
+
+function updateEvidencePreview() {
+    const checked = document.querySelectorAll(".report-checkbox:checked");
+    const previewContainer = document.getElementById("reportedMessagesEvidence");
+
+    if (checked.length === 0) {
+        previewContainer.innerHTML = "Nenhuma mensagem selecionada.";
+        return;
+    }
+
+    previewContainer.innerHTML = Array.from(checked)
+        .map(cb => `• "${cb.getAttribute("data-msg-text")}"`)
+        .join("<br>");
 }
 
 async function sendChatMessage(chatId, message) {

@@ -1,0 +1,46 @@
+<div id="reportModal" class="address-modal-overlay">
+    <div class="address-modal" style="max-width: 500px;">
+        <div class="address-modal-header">
+            <h3 id="reportModalTitle">Registrar Denúncia</h3>
+            <button type="button" class="address-modal-close" id="btnCloseReportModal">&times;</button>
+        </div>
+
+        <form id="reportForm">
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 6px;">O que você deseja denunciar?</label>
+                <select id="reportTargetType" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);" required>
+                    <option value="USER">Este Usuário do Chat</option>
+                    <option value="TOOL">A Ferramenta deste Aluguel</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 6px;">Motivo Principal</label>
+                <select id="reportReason" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);" required>
+                    <option value="COMPORTAMENTO_INADEQUADO">Comportamento Inadequado / Agressivo</option>
+                    <option value="SPAM">Spam Comercial / Perfil Falso</option>
+                    <option value="AVARIA_PRODUTO">Avaria na Ferramenta</option>
+                    <option value="NAO_DEVOLVEU">Não Devolução do Item</option>
+                    <option value="ITEM_DEFEITUOSO">Item Defeituoso ou Perigoso</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 6px;">Mensagens Selecionadas de Evidência</label>
+                <div id="reportedMessagesEvidence" style="background: #f3f4f6; padding: 10px; border-radius: 8px; max-height: 120px; overflow-y: auto; font-size: 0.85rem; color: var(--cor-texto-medio); border: 1px dashed var(--border-color);">
+                    Nenhuma mensagem selecionada.
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 6px;">Descrição / Detalhes Adicionais</label>
+                <textarea id="reportDescription" placeholder="Explique detalhadamente o ocorrido para ajudar a moderação..." rows="4" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color); resize: vertical; font-family: 'Poppins', sans-serif;" required></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn btn-outline" id="btnCancelReport" style="flex: 1;">Cancelar</button>
+                <button type="submit" class="btn btn-danger" style="flex: 1;">Enviar Denúncia</button>
+            </div>
+        </form>
+    </div>
+</div>

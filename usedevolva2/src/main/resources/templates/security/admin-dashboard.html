@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin - Use e Devolva</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../static/css/pages/admin.css">
+    <link rel="stylesheet" href="/css/pages/admin.css">
 
 </head>
 
@@ -40,8 +40,8 @@
             </div>
 
             <div class="bulk-actions" id="bulkActions">
-                <button class="btn btn-outline" onclick="alert('Denúncias ignoradas!')">🗑️ Ignorar Selecionados</button>
-                <button class="btn btn-danger" onclick="alert('Ações em massa aplicadas!')">⚠️ Sancionar Selecionados</button>
+                <button class="btn btn-outline" id="bulkIgnoreBtn">🗑️ Ignorar Selecionados</button>
+                <button class="btn btn-danger" id="bulkSanctionBtn">⚠️ Sancionar Selecionados</button>
             </div>
         </div>
 
@@ -60,88 +60,10 @@
                     <th>Ações</th>
                 </tr>
                 </thead>
-                <tbody>
-                <!-- Linha 1: Utilizador -->
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td><span class="badge badge-alta">🔴 Alta</span></td>
-                    <td><span class="badge badge-tipo-user">👤 Utilizador</span></td>
-                    <td>
-                        <a href="#" class="preview-link">
-                            #R-9021 <br><span style="font-size: 0.8rem; font-weight: normal; color: var(--cor-texto-medio);">No chat de aluguer...</span>
-                        </a>
-                    </td>
-                    <td><strong>Comportamento Agressivo</strong></td>
-                    <td>
-                        <div class="clickable-entity" onclick="loadDetails('user', 'João Silva', 'JS', '#U-881', 85, 0, '12 Jan 2024')">
-                            <div class="avatar">JS</div>
-                            <span>João S.</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="clickable-entity" onclick="loadDetails('user', 'Carlos Mau', 'CM', '#U-992', 20, 3, '05 Mai 2024')">
-                            <div class="avatar" style="background: var(--danger-bg); color: var(--danger);">CM</div>
-                            <span>Carlos M. (3x)</span>
-                        </div>
-                    </td>
-                    <td><span class="badge badge-pendente">Pendente</span></td>
-                    <td style="display: flex; gap: 4px;">
-                        <button class="btn btn-outline" style="padding: 6px;" title="Manter/Ignorar">✅</button>
-                        <button class="btn btn-danger" style="padding: 6px;" title="Banir User">🚫</button>
-                    </td>
-                </tr>
 
-                <!-- Linha 2: Ferramenta -->
-                <tr>
-                    <td><input type="checkbox" class="row-checkbox"></td>
-                    <td><span class="badge badge-alta">🔴 Alta</span></td>
-                    <td><span class="badge badge-tipo-tool">🛠️ Ferramenta</span></td>
-                    <td>
-                        <a href="#" class="preview-link">
-                            #R-9022 <br><span style="font-size: 0.8rem; font-weight: normal; color: var(--cor-texto-medio);">Anúncio Falso</span>
-                        </a>
-                    </td>
-                    <td><strong>Item Defeituoso / Perigoso</strong></td>
-                    <td>
-                        <div class="clickable-entity" onclick="loadDetails('user', 'Ana Costa', 'AC', '#U-112', 95, 0, '20 Fev 2023')">
-                            <div class="avatar">AC</div>
-                            Ana C.
-                        </div>
-                    </td>
-                    <td>
-                        <div class="clickable-entity" onclick="loadDetails('tool', 'Serra Circular XYZ', '🛠️', '#F-554', 40, 2, 'Dono: Marcos P.')">
-                            <div class="avatar tool">🛠️</div>
-                            Serra Circular XYZ
-                        </div>
-                    </td>
-                    <td><span class="badge badge-pendente">Pendente</span></td>
-                    <td style="display: flex; gap: 4px;">
-                        <button class="btn btn-outline" style="padding: 6px;" title="Manter Anúncio">✅</button>
-                        <button class="btn btn-danger" style="padding: 6px;" title="Remover Ferramenta">🗑️</button>
-                    </td>
-                </tr>
-
-                <!-- Linha 3: Utilizador (Spam) -->
-                <tr style="opacity: 0.7;">
-                    <td><input type="checkbox" class="row-checkbox" disabled></td>
-                    <td><span class="badge badge-media">🟡 Média</span></td>
-                    <td><span class="badge badge-tipo-user">👤 Utilizador</span></td>
-                    <td>#R-9018</td>
-                    <td>Spam Comercial</td>
-                    <td>
-                        <div class="clickable-entity" onclick="loadDetails('user', 'Sistema', 'SI', '#SYS', 100, 0, '-')">
-                            <div class="avatar" style="background: #333; color: white;">SI</div> Sist.
-                        </div>
-                    </td>
-                    <td>
-                        <div class="clickable-entity" onclick="loadDetails('user', 'Bot123', 'BT', '#U-555', 0, 5, 'Hoje')">
-                            <div class="avatar">BT</div> Bot123
-                        </div>
-                    </td>
-                    <td><span class="badge badge-resolvido">Resolvido</span></td>
-                    <td>-</td>
-                </tr>
+                <tbody id="reportsTableBody">
                 </tbody>
+
             </table>
         </div>
     </section>
@@ -168,7 +90,6 @@
             </div>
 
             <div class="inv-grid">
-                <!-- Coluna 1: Métricas -->
                 <div class="stats-container">
                     <div class="stat-item">
                         <span class="stat-label" id="metricLabel">Métrica Principal</span>
@@ -183,12 +104,10 @@
                     </div>
                 </div>
 
-                <!-- Coluna 2: Histórico/Timeline -->
                 <div class="timeline-container">
                     <div>
                         <h4 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--cor-texto-medio);">Histórico Recente</h4>
                         <div class="timeline" id="invTimeline">
-                            <!-- Preenchido via JS -->
                         </div>
                     </div>
                 </div>

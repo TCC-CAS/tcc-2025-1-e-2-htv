@@ -164,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
 
-            // Botões de ação do painel inferior
             const actionsContainer = document.getElementById('invActions');
             if (report.status === "PENDING") {
                 actionsContainer.innerHTML = `
@@ -251,4 +250,26 @@ document.addEventListener("DOMContentLoaded", function () {
             };
         });
     }
+
+    document.getElementById("bulkIgnoreBtn").addEventListener("click", async () => {
+        const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+        if (selectedCheckboxes.length === 0) return;
+
+        if (confirm(`Deseja ignorar as ${selectedCheckboxes.length} denúncias selecionadas?`)) {
+            alert("Ações de arquivamento em massa aplicadas!");
+            fetchReports();
+        }
+    });
+
+    document.getElementById("bulkSanctionBtn").addEventListener("click", async () => {
+        const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+        if (selectedCheckboxes.length === 0) return;
+
+        if (confirm(`Deseja sancionar os alvos das ${selectedCheckboxes.length} denúncias selecionadas?`)) {
+            alert("Sancionamento em lote aplicado aos utilizadores!");
+            fetchReports();
+        }
+    });
+
+
 });

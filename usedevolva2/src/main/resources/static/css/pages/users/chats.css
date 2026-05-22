@@ -404,3 +404,27 @@
     word-break: break-word;
     white-space: pre-wrap;
 }
+
+.chat-message-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.chat-message-wrapper.sent {
+    justify-content: flex-end;
+}
+
+.report-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--danger);
+    cursor: pointer;
+    display: none;
+}
+
+.report-checkbox.active {
+    display: inline-block;
+}

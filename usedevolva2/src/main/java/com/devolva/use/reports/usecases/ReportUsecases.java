@@ -5,6 +5,7 @@ import com.devolva.use.reports.domain.ReportStatus;
 import com.devolva.use.reports.dtos.*;
 import com.devolva.use.reports.repository.ReportRepository;
 import com.devolva.use.users.repository.UserRepository;
+import com.devolva.use.tools.repository.ToolRepository; // <-- ADICIONADO
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,10 +15,12 @@ public class ReportUsecases {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
+    private final ToolRepository toolRepository;
 
-    public ReportUsecases(ReportRepository reportRepository, UserRepository userRepository) {
+    public ReportUsecases(ReportRepository reportRepository, UserRepository userRepository, ToolRepository toolRepository) {
         this.reportRepository = reportRepository;
         this.userRepository = userRepository;
+        this.toolRepository = toolRepository;
     }
 
     public ReportModel createReport(CreateReportDto dto) {
@@ -28,9 +31,12 @@ public class ReportUsecases {
         ReportModel report = new ReportModel();
         report.setReporterId(dto.reporterId());
         report.setReportedUserId(dto.reportedUserId());
+        report.setToolId(dto.toolId());
         report.setRentalId(dto.rentalId());
         report.setReason(dto.reason());
         report.setDescription(dto.description());
+        report.setStatus(ReportStatus.PENDING);
+        report.setCreatedAt(LocalDateTime.now());
 
         return reportRepository.save(report);
     }
@@ -39,13 +45,24 @@ public class ReportUsecases {
         return reportRepository.findAll().stream().map(report -> {
             String reporterName = userRepository.findById(report.getReporterId())
                     .map(u -> u.getNomeCompleto()).orElse("Usuário Removido");
-            String reportedName = userRepository.findById(report.getReportedUserId())
-                    .map(u -> u.getNomeCompleto()).orElse("Usuário Removido");
+
+            String reportedName = null;
+            if (report.getReportedUserId() != null) {
+                reportedName = userRepository.findById(report.getReportedUserId())
+                        .map(u -> u.getNomeCompleto()).orElse("Usuário Removido");
+            }
+
+            String toolName = null;
+            if (report.getToolId() != null) {
+                toolName = toolRepository.findById(report.getToolId())
+                        .map(t -> t.getNome()).orElse("Ferramenta Removida");
+            }
 
             return new ReportDetailsDto(
                     report.getId(),
                     reporterName,
                     reportedName,
+                    report.getToolId(),                    toolName,
                     report.getRentalId(),
                     report.getReason(),
                     report.getDescription(),

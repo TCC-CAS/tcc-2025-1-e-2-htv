@@ -18,7 +18,7 @@ public class ReportController {
         this.reportUsecases = reportUsecases;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ReportModel> create(@RequestBody CreateReportDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reportUsecases.createReport(dto));
     }
@@ -31,8 +31,8 @@ public class ReportController {
     @PutMapping("/admin/{reportId}/resolve")
     public ResponseEntity<ReportModel> resolve(
             @PathVariable Long reportId,
-            @RequestParam Long adminId,
-            @RequestParam String action // "RESOLVE" ou "DISMISS"
+            @RequestHeader("X-Admin-Id") Long adminId,
+            @RequestParam String action
     ) {
         return ResponseEntity.ok(reportUsecases.resolveReport(reportId, adminId, action));
     }

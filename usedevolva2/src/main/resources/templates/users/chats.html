@@ -33,11 +33,14 @@
             </div>
 
             <div id="chatConversation" class="chat-conversation hidden">
-                <header class="chat-conversation-header">
+                <header class="chat-conversation-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div>
                         <h2 id="chatTitle">Chat</h2>
                         <p id="chatSubtitle"></p>
                     </div>
+                    <button type="button" id="btnReportChat" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem; display: none;">
+                        ⚠️ Denunciar
+                    </button>
                 </header>
 
                 <div id="chatMessages" class="chat-messages"></div>
@@ -61,6 +64,8 @@
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/chatreportmodal :: chatreportmodal}"></div>
+
 
 <script th:src="@{/js/main.js}" defer></script>
 <script th:src="@{/js/pages/users/chats.js}" defer></script>
