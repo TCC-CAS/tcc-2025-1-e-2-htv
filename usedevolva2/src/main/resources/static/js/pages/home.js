@@ -207,12 +207,15 @@ async function loadNearbyToolsMap(forceReload = false) {
 
         const userAddressText = buildAddressText(mainAddress);
 
+        console.log("Endereço principal usado no mapa:", mainAddress);
+        console.log("Texto enviado para geocodificação:", userAddressText);
+
         message.textContent = "Localizando seu endereço no mapa...";
 
-        const userLocation = await geocodeAddress(userAddressText);
+        const userLocation = await geocodeMainAddress(mainAddress);
 
         if (!userLocation) {
-            message.textContent = "Não foi possível localizar seu endereço principal no mapa.";
+            message.textContent = `Não foi possível localizar seu endereço principal no mapa. Endereço usado: ${userAddressText}`;
             return;
         }
 
@@ -302,38 +305,134 @@ async function getUserMainAddress(userId) {
 }
 
 function buildAddressText(address) {
+    const cep = formatCepForMap(address.cep);
+
     return [
         address.logradouro,
         address.numero,
         address.bairro,
         address.cidade,
         address.estado,
-        address.cep,
+        cep,
         "Brasil"
     ]
         .filter(Boolean)
         .join(", ");
 }
 
+async function geocodeMainAddress(address) {
+    const attempts = buildMainAddressGeocodeAttempts(address);
+
+    for (const attempt of attempts) {
+        const location = await geocodeAddressOnce(attempt);
+
+        if (location) {
+            sessionStorage.setItem(`geo:${attempt}`, JSON.stringify(location));
+            console.log("Endereço principal localizado por:", attempt);
+            return location;
+        }
+
+        await wait(450);
+    }
+
+    return null;
+}
+
+function buildMainAddressGeocodeAttempts(address) {
+    const cep = formatCepForMap(address.cep);
+
+    const fullAddress = [
+        address.logradouro,
+        address.numero,
+        address.bairro,
+        address.cidade,
+        address.estado,
+        cep,
+        "Brasil"
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    const streetWithNumber = [
+        address.logradouro,
+        address.numero,
+        address.cidade,
+        address.estado,
+        "Brasil"
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    const streetWithoutNumber = [
+        address.logradouro,
+        address.bairro,
+        address.cidade,
+        address.estado,
+        "Brasil"
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    const cepOnly = cep ? `${cep}, Brasil` : "";
+
+    return [
+        cepOnly,
+        fullAddress,
+        streetWithNumber,
+        streetWithoutNumber
+    ]
+        .filter(Boolean)
+        .filter((value, index, array) => array.indexOf(value) === index);
+}
+
 function buildToolAddressText(tool) {
-    const addressParts = [
+    const cep = formatCepForMap(tool.cep);
+
+    const fullAddress = [
         tool.logradouro,
         tool.numero,
         tool.bairro,
         tool.cidade,
         tool.estado,
-        tool.cep,
+        cep,
         "Brasil"
-    ].filter(Boolean);
+    ]
+        .filter(Boolean)
+        .join(", ");
 
-    if (addressParts.length > 2) {
-        return addressParts.join(", ");
-    }
+    const streetWithNumber = [
+        tool.logradouro,
+        tool.numero,
+        tool.cidade,
+        tool.estado,
+        "Brasil"
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    const streetWithoutNumber = [
+        tool.logradouro,
+        tool.bairro,
+        tool.cidade,
+        tool.estado,
+        "Brasil"
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    const cepOnly = cep ? `${cep}, Brasil` : "";
+
+    if (cepOnly) return cepOnly;
+    if (fullAddress) return fullAddress;
+    if (streetWithNumber) return streetWithNumber;
+    if (streetWithoutNumber) return streetWithoutNumber;
 
     return tool.localizacao ? `${tool.localizacao}, Brasil` : null;
 }
 
 async function geocodeAddress(addressText) {
+    if (!addressText) return null;
+
     const cacheKey = `geo:${addressText}`;
     const cached = sessionStorage.getItem(cacheKey);
 
@@ -341,37 +440,91 @@ async function geocodeAddress(addressText) {
         return JSON.parse(cached);
     }
 
+    const attempts = buildGeocodeAttempts(addressText);
+
+    for (const attempt of attempts) {
+        const location = await geocodeAddressOnce(attempt);
+
+        if (location) {
+            sessionStorage.setItem(cacheKey, JSON.stringify(location));
+            return location;
+        }
+
+        await wait(450);
+    }
+
+    return null;
+}
+
+function buildGeocodeAttempts(addressText) {
+    const cleaned = String(addressText || "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const parts = cleaned
+        .split(",")
+        .map(part => part.trim())
+        .filter(Boolean);
+
+    const attempts = [];
+
+    if (cleaned) attempts.push(cleaned);
+
+    const cepMatch = cleaned.match(/\d{5}-?\d{3}/);
+    if (cepMatch) {
+        attempts.push(`${cepMatch[0]}, Brasil`);
+    }
+
+    if (parts.length >= 4) {
+        attempts.push(parts.slice(-4).join(", "));
+    }
+
+    if (parts.length >= 3) {
+        attempts.push(parts.slice(-3).join(", "));
+    }
+
+    if (parts.length >= 2) {
+        attempts.push(parts.slice(-2).join(", "));
+    }
+
+    return [...new Set(attempts)];
+}
+
+async function geocodeAddressOnce(addressText) {
     const url = new URL("https://nominatim.openstreetmap.org/search");
     url.searchParams.set("format", "json");
     url.searchParams.set("limit", "1");
+    url.searchParams.set("countrycodes", "br");
     url.searchParams.set("q", addressText);
 
-    const response = await fetch(url.toString(), {
-        headers: {
-            "Accept": "application/json"
+    console.log("Tentando geocodificar:", addressText);
+
+    try {
+        const response = await fetch(url.toString(), {
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            return null;
         }
-    });
 
-    if (!response.ok) {
+        const data = await response.json();
+
+        if (!data || data.length === 0) {
+            return null;
+        }
+
+        return {
+            lat: Number(data[0].lat),
+            lon: Number(data[0].lon)
+        };
+
+    } catch (error) {
+        console.error("Erro ao geocodificar endereço:", error);
         return null;
     }
-
-    const data = await response.json();
-
-    if (!data || data.length === 0) {
-        return null;
-    }
-
-    const location = {
-        lat: Number(data[0].lat),
-        lon: Number(data[0].lon)
-    };
-
-    sessionStorage.setItem(cacheKey, JSON.stringify(location));
-
-    await wait(350);
-
-    return location;
 }
 
 function renderNearbyMap(userLocation, nearbyTools, mainAddress) {
@@ -411,15 +564,21 @@ function renderNearbyMap(userLocation, nearbyTools, mainAddress) {
         fillOpacity: 0.08
     }).addTo(nearbyMapMarkersLayer);
 
-    nearbyTools.forEach(tool => {
-        L.marker([tool.lat, tool.lon])
+    nearbyTools.forEach((tool, index) => {
+        const marker = L.marker([tool.lat, tool.lon], {
+            icon: createNearbyToolIcon(index + 1)
+        })
             .addTo(nearbyMapMarkersLayer)
             .bindPopup(`
-                <strong>${escapeHtmlHome(tool.nome || "Ferramenta")}</strong><br>
-                ${formatCurrency(tool.valorDiaria)} / dia<br>
-                ${tool.distanceKm.toFixed(1)} km de distância<br>
-                <a href="/tools/page/${tool.id}">Ver ferramenta</a>
-            `);
+            <strong>${escapeHtmlHome(tool.nome || "Ferramenta")}</strong><br>
+            ${formatCurrency(tool.valorDiaria)} / dia<br>
+            ${tool.distanceKm.toFixed(1)} km de distância<br>
+            <a href="/tools/page/${tool.id}">Ver ferramenta</a>
+        `);
+
+        marker.on("click", () => {
+            highlightNearbyTool(tool.id);
+        });
     });
 
     const points = [
@@ -449,9 +608,11 @@ function renderNearbyToolsList(tools) {
         return;
     }
 
-    list.innerHTML = tools.map(tool => `
-        <article class="nearby-tool-item">
-            <div>
+    list.innerHTML = tools.map((tool, index) => `
+        <article class="nearby-tool-item" data-tool-id="${tool.id}">
+            <div class="nearby-tool-index">${index + 1}</div>
+
+            <div class="nearby-tool-content">
                 <h3>${escapeHtmlHome(tool.nome || "Ferramenta")}</h3>
                 <p>${formatCurrency(tool.valorDiaria)} / dia</p>
                 <p>📍 ${tool.distanceKm.toFixed(1)} km de distância</p>
@@ -498,4 +659,40 @@ function escapeHtmlHome(value) {
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+}
+
+function formatCepForMap(cep) {
+    const onlyNumbers = String(cep || "").replace(/\D/g, "");
+
+    if (onlyNumbers.length !== 8) {
+        return cep || "";
+    }
+
+    return onlyNumbers.replace(/(\d{5})(\d{3})/, "$1-$2");
+}
+
+function createNearbyToolIcon(number) {
+    return L.divIcon({
+        className: "nearby-tool-map-marker",
+        html: `<span>${number}</span>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -34]
+    });
+}
+
+function highlightNearbyTool(toolId) {
+    document.querySelectorAll(".nearby-tool-item").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    const item = document.querySelector(`.nearby-tool-item[data-tool-id="${toolId}"]`);
+
+    if (item) {
+        item.classList.add("active");
+        item.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+    }
 }
