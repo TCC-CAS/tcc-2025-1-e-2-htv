@@ -571,3 +571,31 @@ function applyOwnerToolRestrictions() {
         rentSubmitBtn.classList.add("disabled-owner-action");
     }
 }
+
+function showToast(message, type = "error") {
+    let container = document.getElementById("toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `custom-toast ${type}`;
+
+    const icon = type === "error" ? "⚠️" : "✅";
+
+    toast.innerHTML = `
+        <span style="font-size: 1.2rem;">${icon}</span>
+        <span style="flex: 1;">${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+        if (container.childElementCount === 0) {
+            container.remove();
+        }
+    }, 4000);
+}
