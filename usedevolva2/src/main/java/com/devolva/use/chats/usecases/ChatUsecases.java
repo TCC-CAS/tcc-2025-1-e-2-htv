@@ -215,14 +215,28 @@ public class ChatUsecases {
         UserModel otherUser = findUser(getOtherUserId(chat, currentUserId));
         ToolModel tool = findTool(chat.getToolId());
 
-        String lastMessage = chatMessageRepository
-                .findTopByChatIdOrderByCreatedAtDesc(chat.getId())
-                .map(ChatMessageModel::getMessage)
-                .orElse("Nenhuma mensagem ainda.");
+        String lastMessage = "Nenhuma mensagem ainda.";
+        try {
+            lastMessage = chatMessageRepository
+                    .findTopByChatIdOrderByCreatedAtDesc(chat.getId())
+                    .map(ChatMessageModel::getMessage)
+                    .orElse("Nenhuma mensagem ainda.");
+        } catch (Exception e) {
+            System.out.println("Erro ao buscar última mensagem: " + e.getMessage());
+        }
 
-        long unreadCount = chatMessageRepository
-                .findByChatIdAndRecipientIdAndReadByRecipientFalse(chat.getId(), currentUserId)
-                .size();
+        long unreadCount = 0;
+        try {
+            unreadCount = chatMessageRepository
+                    .findByChatIdAndRecipientIdAndReadByRecipientFalse(chat.getId(), currentUserId)
+                    .size();
+        } catch (Exception e) {
+            System.out.println("Erro ao buscar contagem de não lidas: " + e.getMessage());
+        }
+
+        String updatedAtStr = (chat.getUpdatedAt() != null)
+                ? chat.getUpdatedAt().toString()
+                : java.time.LocalDateTime.now().toString();
 
         return new ChatSummaryDto(
                 chat.getId(),
@@ -233,7 +247,7 @@ public class ChatUsecases {
                 otherUser.getNomeCompleto(),
                 tool.getNome(),
                 lastMessage,
-                chat.getUpdatedAt().toString(),
+                updatedAtStr,
                 unreadCount
         );
     }
