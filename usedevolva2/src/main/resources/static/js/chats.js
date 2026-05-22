@@ -290,7 +290,7 @@ function startChatsAutoRefresh() {
         }
 
         await refreshChatsSilently();
-    }, 1000);
+    }, 1500);
 }
 
 async function refreshChatsSilently() {
