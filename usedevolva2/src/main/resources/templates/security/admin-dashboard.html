@@ -193,12 +193,10 @@
                     </div>
                 </div>
 
-                <!-- Coluna 3: Ações do Administrador -->
                 <div class="timeline-container">
                     <div>
                         <h4 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--cor-texto-medio);">Ações Disponíveis</h4>
                         <div class="action-buttons" id="invActions">
-                            <!-- Botões gerados via JS dependendo do tipo -->
                         </div>
                     </div>
                 </div>
@@ -211,135 +209,7 @@
     <p>© 2025 Use e Devolva - Ferramenta Administrativa Interna</p>
 </footer>
 
-<script>
-    // Lógica de Seleção em Massa
-    const selectAll = document.getElementById('selectAll');
-    const rowCheckboxes = document.querySelectorAll('.row-checkbox:not([disabled])');
-    const bulkActions = document.getElementById('bulkActions');
+<script src="/js/pages/admin-dashboard.js" defer></script>
 
-    function updateBulkActionsVisibility() {
-        const anyChecked = Array.from(rowCheckboxes).some(cb => cb.checked);
-        if (anyChecked) {
-            bulkActions.classList.add('active');
-        } else {
-            bulkActions.classList.remove('active');
-        }
-    }
-
-    selectAll.addEventListener('change', (e) => {
-        rowCheckboxes.forEach(cb => {
-            cb.checked = e.target.checked;
-            const row = cb.closest('tr');
-            if(e.target.checked) row.classList.add('selected');
-            else row.classList.remove('selected');
-        });
-        updateBulkActionsVisibility();
-    });
-
-    rowCheckboxes.forEach(cb => {
-        cb.addEventListener('change', (e) => {
-            const row = e.target.closest('tr');
-            if(e.target.checked) row.classList.add('selected');
-            else row.classList.remove('selected');
-
-            const allChecked = Array.from(rowCheckboxes).every(c => c.checked);
-            selectAll.checked = allChecked;
-            updateBulkActionsVisibility();
-        });
-    });
-
-    // Lógica do Painel de Investigação (Fundo da Página)
-    function loadDetails(type, name, initials, idStr, metricValue, reportsCount, subtitleStr) {
-        const panel = document.getElementById('investigationPanel');
-
-        // Fade Out
-        panel.style.opacity = '0';
-
-        setTimeout(() => {
-            // Atualizar Cabeçalho
-            document.getElementById('invName').innerText = name;
-            document.getElementById('invId').innerText = "ID: " + idStr;
-            document.getElementById('reportsReceived').innerText = reportsCount;
-            document.getElementById('invSubtitle').innerText = (type === 'user') ? "Criado em: " + subtitleStr : subtitleStr;
-
-            const avatarEl = document.getElementById('invAvatar');
-            avatarEl.innerText = initials;
-
-            const typeBadge = document.getElementById('invTypeBadge');
-            typeBadge.style.display = 'inline-flex';
-
-            // Elementos Dinâmicos baseados no TIPO (User ou Tool)
-            const metricLabel = document.getElementById('metricLabel');
-            const metricText = document.getElementById('metricText');
-            const metricBar = document.getElementById('metricBar');
-            const timeline = document.getElementById('invTimeline');
-            const actions = document.getElementById('invActions');
-
-            if (type === 'user') {
-                avatarEl.className = 'avatar';
-                typeBadge.className = 'badge badge-tipo-user';
-                typeBadge.innerText = '👤 Perfil de Utilizador';
-
-                metricLabel.innerText = "Índice de Confiança";
-                metricText.innerText = metricValue + "%";
-                metricBar.style.width = metricValue + "%";
-
-                if (metricValue < 40) metricBar.style.background = 'var(--danger)';
-                else if (metricValue < 70) metricBar.style.background = 'var(--warning)';
-                else metricBar.style.background = 'var(--success)';
-
-                timeline.innerHTML = `
-                        <div class="timeline-item danger">
-                            <strong>Hoje</strong> - Denunciado na fila atual
-                        </div>
-                        <div class="timeline-item warning">
-                            <strong>Há 2 meses</strong> - Recebeu Aviso Formal
-                        </div>
-                    `;
-
-                actions.innerHTML = `
-                        <button class="btn btn-outline" style="width: 100%; border-color: var(--warning); color: var(--warning);">⚠️ Enviar Aviso ao Utilizador</button>
-                        <button class="btn btn-danger" style="width: 100%;">🚫 Suspender Conta</button>
-                        <a href="#" class="btn btn-outline" style="width: 100%; justify-content: center;">Ver Perfil Completo ↗</a>
-                    `;
-
-            } else if (type === 'tool') {
-                avatarEl.className = 'avatar tool';
-                typeBadge.className = 'badge badge-tipo-tool';
-                typeBadge.innerText = '🛠️ Anúncio de Ferramenta';
-
-                metricLabel.innerText = "Qualidade do Anúncio / Item";
-                metricText.innerText = (metricValue > 50) ? "Regular" : "Crítica";
-                metricBar.style.width = metricValue + "%";
-
-                if (metricValue < 50) metricBar.style.background = 'var(--danger)';
-                else metricBar.style.background = 'var(--success)';
-
-                timeline.innerHTML = `
-                        <div class="timeline-item danger">
-                            <strong>Ontem</strong> - Denunciado por "Defeito não informado"
-                        </div>
-                        <div class="timeline-item">
-                            <strong>Há 1 mês</strong> - Alugada por 3 dias sem problemas
-                        </div>
-                    `;
-
-                actions.innerHTML = `
-                        <button class="btn btn-outline" style="width: 100%; border-color: var(--warning); color: var(--warning);">⚠️ Ocultar Anúncio Temporariamente</button>
-                        <button class="btn btn-danger" style="width: 100%;">🗑️ Eliminar Ferramenta</button>
-                        <a href="#" class="btn btn-outline" style="width: 100%; justify-content: center;">Ver Anúncio da Ferramenta ↗</a>
-                    `;
-            }
-
-            // Fade In e Scroll automático
-            panel.style.opacity = '1';
-            panel.style.pointerEvents = 'auto';
-
-            // Rolar a página suavemente até o painel
-            document.getElementById('investigationSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-        }, 300);
-    }
-</script>
 </body>
 </html>

@@ -108,5 +108,15 @@ public class AuthController {
         return "users/favorites";
     }
 
+    @GetMapping("/admin")
+    public String adminLoginPage() {
+        return "security/admin-login";
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String adminDashboardPage() {
+        return "security/admin-dashboard";
+    }
+
 
 }
