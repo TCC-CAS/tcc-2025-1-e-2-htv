@@ -415,24 +415,15 @@ public class RentalUsecases {
                         .getFilePath();
             }
 
-            return new RentalListDto(
-
+            return new RenterRentalListDto(
                     rental.getId(),
-
                     tool.getId(),
-
                     tool.getNome(),
-
                     image,
-
                     owner.getNomeCompleto(),
-
                     rental.getStatus().name(),
-
                     rental.getStartDate().toString(),
-
                     rental.getEndDate().toString(),
-
                     rental.getTotalValue()
             );
 
