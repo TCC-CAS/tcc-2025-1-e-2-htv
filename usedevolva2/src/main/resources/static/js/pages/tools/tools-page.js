@@ -1,11 +1,13 @@
 let currentTool = null;
 let currentToolId = null;
+let bookedPeriods = []; // Armazenará os períodos já reservados desta ferramenta
 
 document.addEventListener("DOMContentLoaded", async () => {
     currentToolId = Number(TOOL_ID);
 
     await loadTool();
     await loadImages();
+    await loadBookedPeriods(); // Carrega as reservas existentes
 
     const dataInicio = document.getElementById("dataInicio");
     const dataFim = document.getElementById("dataFim");
@@ -124,11 +126,47 @@ async function loadTool() {
         document.getElementById("toolAvailability").textContent = formatAvailability(tool);
         document.getElementById("toolPrice").textContent = formatCurrency(tool.valorDiaria || 0);
 
+        const inputInicio = document.getElementById("dataInicio");
+        const inputFim = document.getElementById("dataFim");
+
+        if (inputInicio && inputFim) {
+            const now = new Date();
+            const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+
+            let minAllowed = todayStr;
+            if (tool.dataInicioDisponibilidade && tool.dataInicioDisponibilidade > todayStr) {
+                minAllowed = tool.dataInicioDisponibilidade;
+            }
+
+            inputInicio.min = minAllowed;
+            inputFim.min = minAllowed;
+
+            if (tool.dataFimDisponibilidade) {
+                inputInicio.max = tool.dataFimDisponibilidade;
+                inputFim.max = tool.dataFimDisponibilidade;
+            }
+        }
+
         await loadOwner(tool.ownerId);
 
     } catch (error) {
         console.error(error);
         showToast("Não foi possível carregar a ferramenta.");
+    }
+}
+
+async function loadBookedPeriods() {
+    try {
+        const response = await fetch('/rentals');
+        if (response.ok) {
+            const allRentals = await response.json();
+            bookedPeriods = allRentals.filter(r =>
+                Number(r.toolId) === Number(TOOL_ID) &&
+                !["CANCELLED", "REJECTED", "FINALIZED"].includes(r.status)
+            );
+        }
+    } catch (err) {
+        console.error("Erro ao carregar histórico de agendamentos:", err);
     }
 }
 
@@ -224,8 +262,11 @@ async function loadOwner(ownerId) {
 function updateBookingSummary() {
     if (!currentTool) return;
 
-    const dataInicio = document.getElementById("dataInicio").value;
-    const dataFim = document.getElementById("dataFim").value;
+    const inputInicio = document.getElementById("dataInicio");
+    const inputFim = document.getElementById("dataFim");
+
+    const dataInicio = inputInicio.value;
+    const dataFim = inputFim.value;
 
     if (!dataInicio || !dataFim) {
         document.getElementById("dailySummary").textContent = "0 diárias";
@@ -240,6 +281,25 @@ function updateBookingSummary() {
 
     if (end < start) {
         showToast("A data de devolução não pode ser anterior à data de início.");
+        inputFim.value = "";
+        return;
+    }
+
+    const hasConflict = bookedPeriods.some(b => {
+        const bStart = new Date(b.startDate + "T00:00:00");
+        const bEnd = new Date(b.endDate + "T00:00:00");
+        return !(end < bStart || start > bEnd);
+    });
+
+    if (hasConflict) {
+        showToast("Esta ferramenta já está reservada ou solicitada neste período. Escolha outras datas!");
+        inputInicio.value = "";
+        inputFim.value = "";
+
+        document.getElementById("dailySummary").textContent = "0 diárias";
+        document.getElementById("baseValue").textContent = formatCurrency(0);
+        document.getElementById("serviceFee").textContent = formatCurrency(0);
+        document.getElementById("totalValue").textContent = formatCurrency(0);
         return;
     }
 
