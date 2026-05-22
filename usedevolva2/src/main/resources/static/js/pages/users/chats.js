@@ -298,11 +298,16 @@ function renderMessages(messages) {
             ? "automatic"
             : isSent ? "sent" : "received";
 
-        const showCheckboxClass = isReportModeActive ? "active" : "";
+        const canReport = !isSent && !message.automaticMessage;
+        const showCheckboxClass = (isReportModeActive && canReport) ? "active" : "";
 
         return `
             <div class="chat-message-wrapper ${isSent ? 'sent' : ''}">
-                <input type="checkbox" class="report-checkbox ${showCheckboxClass}" data-msg-text="${escapeHtml(message.message)}" value="${message.id}">
+                ${canReport ? `
+                    <input type="checkbox" class="report-checkbox ${showCheckboxClass}" data-msg-text="${escapeHtml(message.message)}" value="${message.id}">
+                ` : `
+                    <div class="report-checkbox-spacer ${isReportModeActive ? 'active' : ''}"></div>
+                `}
                 <div class="chat-message ${messageClass}">
                     <div class="chat-message-text">${escapeHtml(message.message)}</div>
                     <div class="chat-message-time">${formatChatDateTime(message.createdAt)}</div>
