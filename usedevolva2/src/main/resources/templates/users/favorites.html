@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Favoritos - Use e Devolva</title>
 
-    <link rel="stylesheet" href="../../static/css/fragments/header.css">
-<link rel="stylesheet" href="../../static/css/fragments/footer.css">
-<link rel="stylesheet" href="../../static/css/root.css">
-<link rel="stylesheet" href="../../static/css/pages/users/favorites.css">
+    <link rel="stylesheet" href="/css/fragments/header.css">
+<link rel="stylesheet" href="/css/fragments/footer.css">
+<link rel="stylesheet" href="/css/root.css">
+<link rel="stylesheet" href="/css/pages/users/favorites.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,45 +17,7 @@
 </head>
 <body>
 
-<header>
-        <div class="logo">
-            <a href="/">Use e Devolva</a>
-        </div>
-
-        <nav>
-            <ul>
-                <li>
-                    <a href="/">Home</a>
-                </li>
-
-                <li class="dropdown">
-                    <span>Categorias ▾</span>
-                    <ul class="dropdown-menu">
-                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
-                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
-                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
-                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
-                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
-                    </ul>
-                </li>
-
-                <li>
-                    <form>
-                        <input type="text" placeholder="Buscar ferramentas..." />
-                        <button type="submit">Buscar</button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
-
-        <div class="user-area">
-            <a href="/auth/login" class="btn-login">Entrar</a>
-            <a href="/auth/register" class="btn-register">Criar conta</a>
-            
-    
-          
-        </div>
-    </header>
+<div th:replace="fragments/header :: header"></div>
 
 <main>
         
@@ -184,32 +146,10 @@
     </main>
 
 
-    <footer>
-        <div class="footer-content">
-            <div>
-                <h3>Use e Devolva</h3>
-                <p>Plataforma de compartilhamento de ferramentas entre pessoas, promovendo sustentabilidade e economia circular.</p>
-            </div>
+<div th:replace="fragments/footer :: footer"></div>
 
-            <div>
-                <h4>Links úteis</h4>
-                <ul>
-                    <li><a href="/institutional/faq">FAQ</a></li>
-                    <li><a href="/institutional/termos-de-uso">Termos de Uso</a></li>
-                    <li><a href="/institutional/politica-de-privacidade">Política de Privacidade</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <h4>Contato</h4>
-                <p>Email: suporte@useedevolva.com</p>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            <p>© 2025 Use e Devolva - Todos os direitos reservados</p>
-        </div>
-    </footer>
+<script src="/js/pages/users/favorites.js" defer></script>
+<script src="/js/main.js" defer></script>
 
 </body>
 </html>

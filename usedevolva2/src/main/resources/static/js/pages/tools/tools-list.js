@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const headerSearchForm = document.getElementById("headerSearchForm");
     const headerSearchInput = document.getElementById("headerSearchInput");
-
+    let userFavoriteIds = [];
     let allTools = [];
     let currentSearchTerm = "";
 
@@ -63,14 +63,23 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             setLoadingState();
 
-            const response = await fetch("/tools");
-
-            if (!response.ok) {
-                throw new Error("Erro ao buscar ferramentas.");
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user && user.id) {
+                try {
+                    const favResponse = await fetch(`/favorites/user/${user.id}`);
+                    if (favResponse.ok) {
+                        const favs = await favResponse.json();
+                        userFavoriteIds = favs.map(f => f.id);
+                    }
+                } catch (e) {
+                    console.error("Erro ao carregar favoritos prévios", e);
+                }
             }
 
-            allTools = await response.json();
+            const response = await fetch("/tools");
+            if (!response.ok) throw new Error("Erro ao buscar ferramentas.");
 
+            allTools = await response.json();
             applyFilters();
 
         } catch (error) {
@@ -133,16 +142,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!tools || tools.length === 0) {
             resultsGrid.innerHTML = `
-                <div class="empty-results">
-                    <h2>Nenhuma ferramenta encontrada</h2>
-                    <p>Tente alterar os filtros ou buscar por outro termo.</p>
-                </div>
-            `;
+            <div class="empty-results">
+                <h2>Nenhuma ferramenta encontrada</h2>
+                <p>Tente alterar os filtros ou buscar por outro termo.</p>
+            </div>
+        `;
             return;
         }
 
         for (const tool of tools) {
             const imageUrl = await getMainImage(tool.id);
+            const isFavorited = userFavoriteIds.includes(tool.id);
 
             const card = document.createElement("article");
             card.className = "tool-card";
@@ -160,38 +170,56 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.location.href = `/tools/page/${tool.id}`;
                 }
             });
+
             card.innerHTML = `
-                <div class="tool-image-wrapper">
-                    <img 
-                        src="${imageUrl}" 
-                        alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" 
-                        class="tool-image"
-                    >
+            <div class="tool-image-wrapper" style="position: relative;">
+                <img 
+                    src="${imageUrl}" 
+                    alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" 
+                    class="tool-image"
+                >
+                <button 
+                    type="button" 
+                    class="btn-card-favorite ${isFavorited ? 'active' : ''}" 
+                    data-tool-id="${tool.id}"
+                    aria-label="${isFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"
+                    style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: transform 0.2s;"
+                >
+                    <svg width="20" height="20" fill="${isFavorited ? '#e02424' : 'none'}" stroke="${isFavorited ? '#e02424' : 'currentColor'}" viewBox="0 0 24 24" stroke-width="2">
+                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="tool-info">
+                <span class="tool-category">
+                    ${escapeHtml(formatCategory(tool.categoria))}
+                </span>
+
+                <a href="/tools/page/${tool.id}" class="tool-name">
+                    ${escapeHtml(tool.nome || "Ferramenta sem nome")}
+                </a>
+
+                <p class="tool-description">
+                    ${escapeHtml(limitText(tool.descricao || "Sem descrição disponível.", 90))}
+                </p>
+
+                <div class="tool-price">
+                    ${formatCurrency(tool.valorDiaria)} <span>/dia</span>
                 </div>
 
-                <div class="tool-info">
-                    <span class="tool-category">
-                        ${escapeHtml(formatCategory(tool.categoria))}
-                    </span>
-
-                    <a href="/tools/page/${tool.id}" class="tool-name">
-                        ${escapeHtml(tool.nome || "Ferramenta sem nome")}
-                    </a>
-
-                    <p class="tool-description">
-                        ${escapeHtml(limitText(tool.descricao || "Sem descrição disponível.", 90))}
-                    </p>
-
-                    <div class="tool-price">
-                        ${formatCurrency(tool.valorDiaria)} <span>/dia</span>
-                    </div>
-
-                    <div class="tool-meta">
-                        <span>📍 ${escapeHtml(tool.localizacao || "Localização não informada")}</span>
-                        <span class="status-available">Disponível</span>
-                    </div>
+                <div class="tool-meta">
+                    <span>📍 ${escapeHtml(tool.localizacao || "Localização não informada")}</span>
+                    <span class="status-available">Disponível</span>
                 </div>
-            `;
+            </div>
+        `;
+
+            const favBtn = card.querySelector(".btn-card-favorite");
+            favBtn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                await toggleFavoriteListCard(favBtn, tool.id);
+            });
 
             resultsGrid.appendChild(card);
         }
@@ -368,3 +396,38 @@ document.addEventListener("DOMContentLoaded", () => {
             .replaceAll("'", "&#039;");
     }
 });
+
+async function toggleFavoriteListCard(button, toolId) {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.id) {
+        alert("Você precisa estar logado para favoritar ferramentas.");
+        return;
+    }
+
+    const isCurrentlyFavorite = button.classList.contains("active");
+    const method = isCurrentlyFavorite ? "DELETE" : "POST";
+    const url = `/favorites?userId=${user.id}&toolId=${toolId}`;
+
+    try {
+        button.style.transform = "scale(0.8)";
+        const response = await fetch(url, { method: method });
+        if (!response.ok) throw new Error();
+
+        if (isCurrentlyFavorite) {
+            button.classList.remove("active");
+            button.querySelector("svg").setAttribute("fill", "none");
+            button.querySelector("svg").setAttribute("stroke", "currentColor");
+            userFavoriteIds = userFavoriteIds.filter(id => id !== toolId); // atualiza estado em memória
+        } else {
+            button.classList.add("active");
+            button.querySelector("svg").setAttribute("fill", "#e02424");
+            button.querySelector("svg").setAttribute("stroke", "#e02424");
+            userFavoriteIds.push(toolId); // atualiza estado em memória
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao atualizar favoritos.");
+    } finally {
+        button.style.transform = "scale(1)";
+    }
+}

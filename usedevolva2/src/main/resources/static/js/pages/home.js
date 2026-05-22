@@ -3,29 +3,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupNearbyMapButton();
 });
 
+// Substitua a função original no seu home.js por esta:
 async function loadFeaturedTools() {
     const container = document.getElementById("featuredToolsContainer");
+    if (!container) return;
 
     try {
-        const response = await fetch("/tools");
+        const user = JSON.parse(localStorage.getItem("user"));
+        let favoriteIds = [];
 
-        if (!response.ok) {
-            throw new Error("Erro ao buscar ferramentas.");
+        // 1. Busca os favoritos do usuário logado uma única vez
+        if (user && user.id) {
+            try {
+                const favResponse = await fetch(`/favorites/user/${user.id}`);
+                if (favResponse.ok) {
+                    const favs = await favResponse.ok ? await favResponse.json() : [];
+                    favoriteIds = favs.map(f => f.id);
+                }
+            } catch (err) {
+                console.error("Erro ao carregar favoritos do usuário:", err);
+            }
         }
 
-        const tools = await response.json();
+        const response = await fetch("/tools");
+        if (!response.ok) throw new Error("Erro ao buscar ferramentas.");
 
+        const tools = await response.json();
         if (!tools || tools.length === 0) {
             container.innerHTML = "<p>Nenhuma ferramenta disponível no momento.</p>";
             return;
         }
 
         container.innerHTML = "";
-
         const featuredTools = tools.slice(0, 15);
 
         for (const tool of featuredTools) {
             const imageUrl = await getMainImage(tool.id);
+            const isFavorited = favoriteIds.includes(tool.id);
 
             const card = document.createElement("article");
             card.className = "tool-card";
@@ -43,12 +57,26 @@ async function loadFeaturedTools() {
                     window.location.href = `/tools/page/${tool.id}`;
                 }
             });
+
             card.innerHTML = `
-                <img 
-                    src="${imageUrl}" 
-                    alt="${tool.nome || "Imagem da ferramenta"}" 
-                    class="tool-image"
-                >
+                <div class="tool-image-wrapper" style="position: relative;">
+                    <img 
+                        src="${imageUrl}" 
+                        alt="${tool.nome || "Imagem da ferramenta"}" 
+                        class="tool-image"
+                    >
+                    <button 
+                        type="button" 
+                        class="btn-card-favorite ${isFavorited ? 'active' : ''}" 
+                        data-tool-id="${tool.id}"
+                        aria-label="${isFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"
+                        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.85); border: none; borderRadius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: transform 0.2s;"
+                    >
+                        <svg width="20" height="20" fill="${isFavorited ? '#e02424' : 'none'}" stroke="${isFavorited ? '#e02424' : 'currentColor'}" viewBox="0 0 24 24" stroke-width="2">
+                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </button>
+                </div>
 
                 <div class="tool-info">
                     <h3>${tool.nome || "Ferramenta"}</h3>
@@ -66,12 +94,54 @@ async function loadFeaturedTools() {
                 </div>
             `;
 
+            const favBtn = card.querySelector(".btn-card-favorite");
+            favBtn.addEventListener("click", async (e) => {
+                e.stopPropagation(); // Evita clicar no card pai
+                await toggleFavoriteFromCard(favBtn, tool.id);
+            });
+
             container.appendChild(card);
         }
 
     } catch (error) {
         console.error(error);
         container.innerHTML = "<p>Não foi possível carregar as ferramentas em destaque.</p>";
+    }
+}
+
+async function toggleFavoriteFromCard(button, toolId) {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.id) {
+        showToast("Você precisa estar logado para favoritar ferramentas.");
+        return;
+    }
+
+    const isCurrentlyFavorite = button.classList.contains("active");
+    const method = isCurrentlyFavorite ? "DELETE" : "POST";
+    const url = `/favorites?userId=${user.id}&toolId=${toolId}`;
+
+    try {
+        button.style.transform = "scale(0.8)";
+        const response = await fetch(url, { method: method });
+
+        if (!response.ok) throw new Error();
+
+        if (isCurrentlyFavorite) {
+            button.classList.remove("active");
+            button.querySelector("svg").setAttribute("fill", "none");
+            button.querySelector("svg").setAttribute("stroke", "currentColor");
+            showToast("Removido dos favoritos.");
+        } else {
+            button.classList.add("active");
+            button.querySelector("svg").setAttribute("fill", "#e02424");
+            button.querySelector("svg").setAttribute("stroke", "#e02424");
+            showToast("Adicionado aos favoritos!");
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Erro ao processar favorito. Tente novamente.");
+    } finally {
+        button.style.transform = "scale(1)";
     }
 }
 
