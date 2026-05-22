@@ -265,31 +265,17 @@ async function loadNearbyToolsMap(forceReload = false) {
     }
 
     try {
-        message.textContent = "Carregando seu endereço principal...";
+        message.textContent = "Solicitando sua localização pelo navegador...";
         list.innerHTML = "";
 
-        const mainAddress = await getUserMainAddress(user.id);
-
-        if (!mainAddress) {
-            message.textContent = "Você ainda não possui endereço principal cadastrado. Cadastre um endereço no perfil.";
-            return;
-        }
-
-        const userAddressText = buildAddressText(mainAddress);
-
-        console.log("Endereço principal usado no mapa:", mainAddress);
-        console.log("Texto enviado para geocodificação:", userAddressText);
-
-        message.textContent = "Localizando seu endereço no mapa...";
-
-        const userLocation = await geocodeMainAddress(mainAddress);
+        const userLocation = await getBrowserLocation();
 
         if (!userLocation) {
-            message.textContent = `Não foi possível localizar seu endereço principal no mapa. Endereço usado: ${userAddressText}`;
+            message.textContent = "Não foi possível acessar sua localização. Permita o acesso à localização no navegador e tente novamente.";
             return;
         }
 
-        message.textContent = "Buscando ferramentas próximas...";
+        message.textContent = "Buscando ferramentas próximas da sua localização atual...";
 
         const response = await fetch("/tools");
 
@@ -341,11 +327,11 @@ async function loadNearbyToolsMap(forceReload = false) {
 
         nearbyTools.sort((a, b) => a.distanceKm - b.distanceKm);
 
-        renderNearbyMap(userLocation, nearbyTools, mainAddress);
+        renderNearbyMap(userLocation, nearbyTools);
         renderNearbyToolsList(nearbyTools);
 
         if (nearbyTools.length === 0) {
-            message.textContent = `Nenhuma ferramenta encontrada em um raio de ${NEARBY_RADIUS_KM} km do seu endereço principal.`;
+            message.textContent = `Nenhuma ferramenta encontrada em um raio de ${NEARBY_RADIUS_KM} km da sua localização atual.`;
         } else {
             message.textContent = `${nearbyTools.length} ferramenta(s) encontrada(s) em até ${NEARBY_RADIUS_KM} km.`;
         }
@@ -356,103 +342,6 @@ async function loadNearbyToolsMap(forceReload = false) {
         console.error(error);
         message.textContent = "Não foi possível carregar o mapa de ferramentas próximas.";
     }
-}
-
-async function getUserMainAddress(userId) {
-    const response = await fetch(`/users/${userId}/addresses`);
-
-    if (!response.ok) {
-        throw new Error("Erro ao buscar endereços do usuário.");
-    }
-
-    const addresses = await response.json();
-
-    if (!addresses || addresses.length === 0) {
-        return null;
-    }
-
-    return addresses.find(address => address.principal) || addresses[0];
-}
-
-function buildAddressText(address) {
-    const cep = formatCepForMap(address.cep);
-
-    return [
-        address.logradouro,
-        address.numero,
-        address.bairro,
-        address.cidade,
-        address.estado,
-        cep,
-        "Brasil"
-    ]
-        .filter(Boolean)
-        .join(", ");
-}
-
-async function geocodeMainAddress(address) {
-    const attempts = buildMainAddressGeocodeAttempts(address);
-
-    for (const attempt of attempts) {
-        const location = await geocodeAddressOnce(attempt);
-
-        if (location) {
-            sessionStorage.setItem(`geo:${attempt}`, JSON.stringify(location));
-            console.log("Endereço principal localizado por:", attempt);
-            return location;
-        }
-
-        await wait(450);
-    }
-
-    return null;
-}
-
-function buildMainAddressGeocodeAttempts(address) {
-    const cep = formatCepForMap(address.cep);
-
-    const fullAddress = [
-        address.logradouro,
-        address.numero,
-        address.bairro,
-        address.cidade,
-        address.estado,
-        cep,
-        "Brasil"
-    ]
-        .filter(Boolean)
-        .join(", ");
-
-    const streetWithNumber = [
-        address.logradouro,
-        address.numero,
-        address.cidade,
-        address.estado,
-        "Brasil"
-    ]
-        .filter(Boolean)
-        .join(", ");
-
-    const streetWithoutNumber = [
-        address.logradouro,
-        address.bairro,
-        address.cidade,
-        address.estado,
-        "Brasil"
-    ]
-        .filter(Boolean)
-        .join(", ");
-
-    const cepOnly = cep ? `${cep}, Brasil` : "";
-
-    return [
-        cepOnly,
-        fullAddress,
-        streetWithNumber,
-        streetWithoutNumber
-    ]
-        .filter(Boolean)
-        .filter((value, index, array) => array.indexOf(value) === index);
 }
 
 function buildToolAddressText(tool) {
@@ -597,7 +486,7 @@ async function geocodeAddressOnce(addressText) {
     }
 }
 
-function renderNearbyMap(userLocation, nearbyTools, mainAddress) {
+function renderNearbyMap(userLocation, nearbyTools) {
     const mapElement = document.getElementById("nearbyToolsMap");
 
     if (!mapElement) return;
@@ -623,9 +512,9 @@ function renderNearbyMap(userLocation, nearbyTools, mainAddress) {
     L.marker([userLocation.lat, userLocation.lon])
         .addTo(nearbyMapMarkersLayer)
         .bindPopup(`
-            <strong>Seu endereço principal</strong><br>
-            ${escapeHtmlHome(mainAddress.nomeIdentificacao || "Endereço principal")}
-        `);
+        <strong>Sua localização atual</strong><br>
+        Localização informada pelo navegador
+    `);
 
     L.circle([userLocation.lat, userLocation.lon], {
         radius: NEARBY_RADIUS_KM * 1000,
@@ -765,4 +654,31 @@ function highlightNearbyTool(toolId) {
             block: "nearest"
         });
     }
+}
+
+function getBrowserLocation() {
+    return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+            resolve(null);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                resolve({
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                });
+            },
+            (error) => {
+                console.error("Erro ao obter localização do navegador:", error);
+                resolve(null);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
+    });
 }
