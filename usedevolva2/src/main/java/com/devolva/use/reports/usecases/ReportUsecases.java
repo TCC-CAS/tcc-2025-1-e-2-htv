@@ -43,35 +43,43 @@ public class ReportUsecases {
 
     public List<ReportDetailsDto> listAllReports() {
         return reportRepository.findAll().stream().map(report -> {
-            String reporterName = userRepository.findById(report.getReporterId())
-                    .map(u -> u.getNomeCompleto()).orElse("Usuário Removido");
+            String reporterName = "Usuário Desconhecido";
+            if (report.getReporterId() != null) {
+                reporterName = userRepository.findById(report.getReporterId())
+                        .map(u -> u.getNomeCompleto()).orElse("Usuário Removido");
+            }
 
-            String reportedName = null;
+            String reportedName = "N/A";
             if (report.getReportedUserId() != null) {
                 reportedName = userRepository.findById(report.getReportedUserId())
                         .map(u -> u.getNomeCompleto()).orElse("Usuário Removido");
             }
 
-            String toolName = null;
+            String toolName = "N/A";
             if (report.getToolId() != null) {
                 toolName = toolRepository.findById(report.getToolId())
                         .map(t -> t.getNome()).orElse("Ferramenta Removida");
             }
 
+            String reasonStr = report.getReason() != null ? report.getReason() : "GERAL";
+            String descStr = report.getDescription() != null ? report.getDescription() : "";
+            String statusStr = report.getStatus() != null ? report.getStatus().name() : "PENDING";
+            String createdAtStr = report.getCreatedAt() != null ? report.getCreatedAt().toString() : java.time.LocalDateTime.now().toString();
+
             return new ReportDetailsDto(
                     report.getId(),
                     reporterName,
                     reportedName,
-                    report.getToolId(),                    toolName,
+                    report.getToolId(),
+                    toolName,
                     report.getRentalId(),
-                    report.getReason(),
-                    report.getDescription(),
-                    report.getStatus().name(),
-                    report.getCreatedAt().toString()
+                    reasonStr,
+                    descStr,
+                    statusStr,
+                    createdAtStr
             );
         }).toList();
     }
-
     public ReportModel resolveReport(Long reportId, Long adminId, String action) {
         ReportModel report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Denúncia não encontrada."));
