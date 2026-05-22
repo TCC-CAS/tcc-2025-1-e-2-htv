@@ -417,12 +417,12 @@ async function toggleFavoriteListCard(button, toolId) {
             button.classList.remove("active");
             button.querySelector("svg").setAttribute("fill", "none");
             button.querySelector("svg").setAttribute("stroke", "currentColor");
-            userFavoriteIds = userFavoriteIds.filter(id => id !== toolId); // atualiza estado em memória
+            userFavoriteIds = userFavoriteIds.filter(id => id !== toolId);
         } else {
             button.classList.add("active");
             button.querySelector("svg").setAttribute("fill", "#e02424");
             button.querySelector("svg").setAttribute("stroke", "#e02424");
-            userFavoriteIds.push(toolId); // atualiza estado em memória
+            userFavoriteIds.push(toolId);
         }
     } catch (err) {
         console.error(err);
