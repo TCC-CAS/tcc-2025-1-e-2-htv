@@ -19,6 +19,10 @@
     <link rel="stylesheet" href="/css/root.css">
     <script src="/js/main.js" defer></script>
 
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
 </head>
 
 
@@ -40,7 +44,9 @@
                     Use a busca por localização para encontrar ferramentas disponíveis perto de você
                     ou em uma região escolhida no mapa.
                 </p>
-                <button type="button" class="btn-action">📍 Abrir mapa interativo</button>
+                <button type="button" class="btn-action" id="openNearbyMapBtn">
+                    📍 Abrir mapa interativo
+                </button>
             </div>
 
             <div class="carousel" aria-label="Carrossel de ferramentas">
@@ -64,6 +70,29 @@
             </div>
         </section>
 
+        <section class="nearby-map-section hidden" id="nearbyMapSection" aria-labelledby="nearbyMapTitle">
+            <div class="nearby-map-header">
+                <div>
+                    <h2 id="nearbyMapTitle">Ferramentas próximas de você</h2>
+                    <p id="nearbyMapDescription">
+                        Buscando ferramentas em um raio de até 10 km do seu endereço principal.
+                    </p>
+                </div>
+
+                <button type="button" class="btn-action btn-map-refresh" id="refreshNearbyMapBtn">
+                    Atualizar mapa
+                </button>
+            </div>
+
+            <div id="nearbyMapMessage" class="nearby-map-message">
+                Clique para carregar o mapa.
+            </div>
+
+            <div id="nearbyToolsMap" class="nearby-tools-map"></div>
+
+            <div id="nearbyToolsList" class="nearby-tools-list"></div>
+        </section>
+
         <section aria-labelledby="featuredToolsTitle">
             <h2 id="featuredToolsTitle">Ferramentas em destaque</h2>
             <p>As ferramentas mais procuradas na sua região.</p>
@@ -84,6 +113,11 @@
     </main>
 
 <div th:replace="fragments/footer :: footer"></div>
+
+<script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        defer
+></script>
 <script src="/js/pages/home.js" defer></script>
 </body>
 
