@@ -20,9 +20,9 @@ public class Application {
 		return args -> {
 			try {
 				AdminDto novoAdmin = new AdminDto(
-						"admin@usedevolva.com",
+						"admin@admin.com",
 						"admin123",
-						"Admin Geral",
+						"Admin",
 						true
 				);
 
