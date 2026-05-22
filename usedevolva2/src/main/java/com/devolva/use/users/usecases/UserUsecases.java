@@ -42,7 +42,7 @@ public class UserUsecases {
         user.setAceitouTermosUso(dto.aceitouTermosUso());
         user.setAceitouPoliticaPrivacidade(dto.aceitouPoliticaPrivacidade());
         user.setStatus(UserStatus.ATIVO);
-        user.setPlano(UserModel.Plano.FREE); // Definindo o plano como FREE por padrão
+        user.setPlano(UserModel.Plano.FREE);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 

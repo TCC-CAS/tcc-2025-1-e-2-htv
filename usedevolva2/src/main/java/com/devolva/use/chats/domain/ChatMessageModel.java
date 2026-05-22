@@ -1,5 +1,6 @@
 package com.devolva.use.chats.domain;
 
+import com.devolva.use.chats.infrastructure.JpaCryptoConverter; // Importe o conversor aqui
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,18 +18,15 @@ public class ChatMessageModel {
     private Long id;
 
     private Long chatId;
-
     private Long senderId;
-
     private Long recipientId;
 
     @Column(length = 3000)
+    @Convert(converter = JpaCryptoConverter.class) 
     private String message;
 
     private boolean automaticMessage;
-
     private boolean readByRecipient;
-
     private LocalDateTime createdAt;
 
     public ChatMessageModel() {
