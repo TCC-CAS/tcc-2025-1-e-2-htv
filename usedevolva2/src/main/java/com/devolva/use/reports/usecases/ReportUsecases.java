@@ -20,7 +20,6 @@ public class ReportUsecases {
         this.userRepository = userRepository;
     }
 
-    // Fluxo do Usuário: Criar denúncia
     public ReportModel createReport(CreateReportDto dto) {
         if (dto.description() == null || dto.description().isBlank()) {
             throw new IllegalArgumentException("A descrição é obrigatória.");
@@ -56,7 +55,6 @@ public class ReportUsecases {
         }).toList();
     }
 
-    // Fluxo do Admin: Atualizar o status da denúncia
     public ReportModel resolveReport(Long reportId, Long adminId, String action) {
         ReportModel report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Denúncia não encontrada."));
