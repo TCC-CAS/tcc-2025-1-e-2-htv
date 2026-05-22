@@ -22,7 +22,7 @@ public class ChatMessageModel {
     private Long recipientId;
 
     @Column(length = 3000)
-    @Convert(converter = JpaCryptoConverter.class) 
+    @Convert(converter = JpaCryptoConverter.class)
     private String message;
 
     private boolean automaticMessage;

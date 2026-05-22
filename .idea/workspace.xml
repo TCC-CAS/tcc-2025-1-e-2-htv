@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
+      <change afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/dtos/RenterRentalListDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/usecases/UserUsecases.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/usecases/UserUsecases.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/chats/domain/ChatMessageModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/chats/domain/ChatMessageModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/RentalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/RentalController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/usecases/RentalUsecases.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/rentals/usecases/RentalUsecases.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +22,8 @@
         <option value="HTML File" />
         <option value="CSS File" />
         <option value="Interface" />
-        <option value="Class" />
         <option value="JavaScript File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -111,7 +113,7 @@
       <workItem from="1779299699500" duration="9262000" />
       <workItem from="1779332873334" duration="1590000" />
       <workItem from="1779384269789" duration="531000" />
-      <workItem from="1779480198661" duration="6313000" />
+      <workItem from="1779480198661" duration="7440000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />

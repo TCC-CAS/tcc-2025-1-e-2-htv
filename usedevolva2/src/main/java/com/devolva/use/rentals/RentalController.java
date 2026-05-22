@@ -75,7 +75,7 @@ public class RentalController {
     }
 
     @GetMapping("/renter-list/{renterId}")
-    public List<RentalListDto> getRentalsByRenter(
+    public List<RenterRentalListDto> getRentalsByRenter(
             @PathVariable Long renterId
     ) {
         return rentalUsecases.getRentalsByRenter(renterId);

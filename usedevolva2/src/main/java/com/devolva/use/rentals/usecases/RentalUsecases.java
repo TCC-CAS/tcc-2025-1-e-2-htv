@@ -386,7 +386,7 @@ public class RentalUsecases {
         return value.setScale(2, RoundingMode.HALF_UP);
     }
 
-    public List<RentalListDto> getRentalsByRenter(Long renterId) {
+    public List<RenterRentalListDto> getRentalsByRenter(Long renterId) {
 
         List<RentalModel> rentals =
                 rentalRepository.findAll().stream()
