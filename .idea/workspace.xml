@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-      <change afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/fragments/chatreportmodal.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/reports/ReportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/reports/ReportController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/admin.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/admin.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/users/chats.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/users/chats.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/security/admin-dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/security/admin-dashboard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/users/chats.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/users/chats.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/security/admin-dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/security/admin-dashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/chats.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/chats.html" afterDir="false" />
-    </list>
+    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
