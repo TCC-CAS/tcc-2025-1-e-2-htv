@@ -1,33 +1,30 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. VERIFICAÇÃO DE SEGURANÇA LOCAL
     const adminData = JSON.parse(localStorage.getItem("admin"));
 
-    // Se não houver dados de admin logado, chuta o intruso de volta pro login secreto
     if (!adminData || !adminData.id) {
         alert("Acesso não autorizado. Por favor, faça login.");
         window.location.href = "/admin";
         return;
     }
 
-    // Atualiza o cabeçalho com o nome do admin logado dinamicamente
-    document.querySelector("header div style span").textContent = `Olá, ${adminData.nome}`;
+    const adminSpan = document.querySelector("header div span");
+    if (adminSpan) {
+        adminSpan.textContent = `Olá, ${adminData.nome}`;
+    }
 
-    // Captura os elementos da tabela
     const tableBody = document.querySelector("#reportsTable tbody");
     const selectAll = document.getElementById('selectAll');
     const bulkActions = document.getElementById('bulkActions');
 
-    // Inicializa a listagem de denúncias
     fetchReports();
 
-    // 2. FUNÇÃO PARA BUSCAR AS DENÚNCIAS DO BACKEND
     async function fetchReports() {
         try {
             const response = await fetch("/reports/admin/list", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-Admin-Id": adminData.id // Enviando o Header que nosso interceptor exige!
+                    "X-Admin-Id": adminData.id
                 }
             });
 
@@ -44,13 +41,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // 3. RENDERIZAÇÃO DINÂMICA DA TABELA
     function renderTable(reports) {
-        tableBody.innerHTML = ""; // Limpa os mocks estáticos do HTML
+        tableBody.innerHTML = "";
 
-        // Atualiza o contador de pendentes
         const pendentesCount = reports.filter(r => r.status === 'PENDING').length;
-        document.querySelector(".card-header span").textContent = `${pendentesCount} Pendentes`;
+        const contadorSpan = document.querySelector(".card-header span");
+        if (contadorSpan) {
+            contadorSpan.textContent = `${pendentesCount} Pendentes`;
+        }
 
         if (reports.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center;">Nenhuma denúncia registrada no sistema.</td></tr>`;
@@ -60,15 +58,16 @@ document.addEventListener("DOMContentLoaded", function () {
         reports.forEach(report => {
             const tr = document.createElement("tr");
 
-            // Aplica opacidade reduzida se já estiver resolvido/arquivado
             if (report.status !== "PENDING") {
                 tr.style.opacity = "0.6";
             }
 
-            // Tradução visual e classes de badge com base no motivo da denúncia
             const isPending = report.status === "PENDING";
             const statusBadgeClass = report.status === "PENDING" ? "badge-pendente" : "badge-resolvido";
             const statusText = report.status === "PENDING" ? "Pendente" : "Resolvido";
+
+            const nomeDenunciado = report.reportedUserName || report.reportedName || "N/A";
+            const nomeDenunciante = report.reporterName || "N/A";
 
             tr.innerHTML = `
                 <td><input type="checkbox" class="row-checkbox" ${!isPending ? 'disabled' : ''}></td>
@@ -85,14 +84,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td><strong>${mapReason(report.reason)}</strong></td>
                 <td>
                     <div class="clickable-entity" data-role="reporter">
-                        <div class="avatar">${getInitials(report.reporterName)}</div>
-                        <span>${report.reporterName}</span>
+                        <div class="avatar">${getInitials(nomeDenunciante)}</div>
+                        <span>${nomeDenunciante}</span>
                     </div>
                 </td>
                 <td>
                     <div class="clickable-entity" data-role="reported">
-                        <div class="avatar" style="background: var(--danger-bg); color: var(--danger);">${getInitials(report.reportedUserName)}</div>
-                        <span>${report.reportedUserName}</span>
+                        <div class="avatar" style="background: var(--danger-bg); color: var(--danger);">${getInitials(nomeDenunciado)}</div>
+                        <span>${nomeDenunciado}</span>
                     </div>
                 </td>
                 <td><span class="badge ${statusBadgeClass}">${statusText}</span></td>
@@ -104,18 +103,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 </td>
             `;
 
-            // Vincula o evento de clique nos blocos de usuários para abrir o Modo Investigação
             tr.querySelector('[data-role="reported"]').addEventListener("click", () => {
-                loadInvestigationPanel(report, "ALVO (DENUNCIADO)", report.reportedUserName);
+                loadInvestigationPanel(report, "ALVO (DENUNCIADO)", nomeDenunciado);
             });
             tr.querySelector('[data-role="reporter"]').addEventListener("click", () => {
-                loadInvestigationPanel(report, "DENUNCIANTE", report.reporterName);
+                loadInvestigationPanel(report, "DENUNCIANTE", nomeDenunciante);
             });
 
-            // Vincula ações dos botões de ação direta na linha (Aprovar/Recusar denúncia)
             if (isPending) {
                 tr.querySelectorAll(".btn-action").forEach(btn => {
-                    btn.addEventListener("click", async function() {
+                    btn.addEventListener("click", async function(e) {
+                        e.stopPropagation(); // Evita conflitos com outros cliques na linha
                         const id = this.getAttribute("data-id");
                         const action = this.getAttribute("data-action");
                         await handleResolveReport(id, action);
@@ -126,63 +124,74 @@ document.addEventListener("DOMContentLoaded", function () {
             tableBody.appendChild(tr);
         });
 
-        // Eventos de checkboxes de massa reconstruídos dinamicamente
         bindCheckboxEvents();
     }
 
-    // 4. MODO INVESTIGAÇÃO DINÂMICO (RODAPÉ)
     function loadInvestigationPanel(report, roleTitle, targetName) {
         const panel = document.getElementById('investigationPanel');
+        if (!panel) return;
+
         panel.style.opacity = '0';
 
         setTimeout(() => {
             document.getElementById('invName').innerText = targetName;
             document.getElementById('invId').innerText = `Contexto Denúncia: #R-${report.id}`;
-            document.getElementById('invSubtitle').innerText = `${roleTitle} • Aberto em: ${new Date(report.createdAt).toLocaleDateString('pt-BR')}`;
+
+            const dataCriacao = report.createdAt ? new Date(report.createdAt).toLocaleDateString('pt-BR') : "Data indisponível";
+            document.getElementById('invSubtitle').innerText = `${roleTitle} • Aberto em: ${dataCriacao}`;
 
             const avatarEl = document.getElementById('invAvatar');
-            avatarEl.innerText = getInitials(targetName);
-            avatarEl.className = 'avatar';
+            if (avatarEl) {
+                avatarEl.innerText = getInitials(targetName);
+                avatarEl.className = 'avatar';
+            }
 
             const typeBadge = document.getElementById('invTypeBadge');
-            typeBadge.style.display = 'inline-flex';
-            typeBadge.className = 'badge badge-tipo-user';
-            typeBadge.innerText = `👤 Contexto: ${mapReason(report.reason)}`;
+            if (typeBadge) {
+                typeBadge.style.display = 'inline-flex';
+                typeBadge.className = 'badge badge-tipo-user';
+                typeBadge.innerText = `👤 Contexto: ${mapReason(report.reason)}`;
+            }
 
             document.getElementById('metricLabel').innerText = "Status do Caso";
             document.getElementById('metricText').innerText = report.status;
 
             const metricBar = document.getElementById('metricBar');
-            metricBar.style.width = report.status === "PENDING" ? "50%" : "100%";
-            metricBar.style.background = report.status === "PENDING" ? "var(--warning)" : "var(--success)";
+            if (metricBar) {
+                metricBar.style.width = report.status === "PENDING" ? "50%" : "100%";
+                metricBar.style.background = report.status === "PENDING" ? "var(--warning)" : "var(--success)";
+            }
 
-            // Insere a descrição real digitada pelo usuário na denúncia dentro da timeline
             document.getElementById('invTimeline').innerHTML = `
                 <div class="timeline-item danger">
                     <strong>Relato do Denunciante:</strong><br>
-                    "${report.description}"
+                    "${report.description || 'Sem descrição fornecida.'}"
                 </div>
             `;
 
             const actionsContainer = document.getElementById('invActions');
-            if (report.status === "PENDING") {
-                actionsContainer.innerHTML = `
-                    <button class="btn btn-outline" id="paneDismiss" style="width: 100%; border-color: var(--warning); color: var(--warning);">🗑️ Ignorar Denúncia</button>
-                    <button class="btn btn-danger" id="paneResolve" style="width: 100%;">🚫 Aplicar Sanção (Resolver)</button>
-                `;
+            if (actionsContainer) {
+                if (report.status === "PENDING") {
+                    actionsContainer.innerHTML = `
+                        <button class="btn btn-outline" id="paneDismiss" style="width: 100%; border-color: var(--warning); color: var(--warning);">🗑️ Ignorar Denúncia</button>
+                        <button class="btn btn-danger" id="paneResolve" style="width: 100%;">🚫 Aplicar Sanção (Resolver)</button>
+                    `;
 
-                document.getElementById("paneDismiss").addEventListener("click", () => handleResolveReport(report.id, "DISMISS"));
-                document.getElementById("paneResolve").addEventListener("click", () => handleResolveReport(report.id, "RESOLVE"));
-            } else {
-                actionsContainer.innerHTML = `<p style="color:var(--cor-texto-medio); font-style:italic;">Esta denúncia já foi encerrada.</p>`;
+                    document.getElementById("paneDismiss").addEventListener("click", () => handleResolveReport(report.id, "DISMISS"));
+                    document.getElementById("paneResolve").addEventListener("click", () => handleResolveReport(report.id, "RESOLVE"));
+                } else {
+                    actionsContainer.innerHTML = `<p style="color:var(--cor-texto-medio); font-style:italic;">Esta denúncia já foi encerrada.</p>`;
+                }
             }
 
             panel.style.opacity = '1';
-            document.getElementById('investigationSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const invSection = document.getElementById('investigationSection');
+            if (invSection) {
+                invSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }, 300);
     }
 
-    // 5. ENVIAR RESOLUÇÃO PARA O BACKEND
     async function handleResolveReport(reportId, action) {
         const confirmar = confirm(`Tem certeza que deseja aplicar a ação [${action === 'RESOLVE' ? 'SANCIONAR' : 'IGNORAR'}] para esta denúncia?`);
         if (!confirmar) return;
@@ -201,8 +210,8 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Denúncia atualizada com sucesso!");
             fetchReports(); // Recarrega a tabela limpa atualizada
 
-            // Reseta o painel de investigação inferior
-            document.getElementById('investigationPanel').style.opacity = '0';
+            const panel = document.getElementById('investigationPanel');
+            if (panel) panel.style.opacity = '0';
             document.getElementById('invName').innerText = "Selecione um item";
         } catch (error) {
             alert(error.message);
@@ -230,45 +239,51 @@ document.addEventListener("DOMContentLoaded", function () {
     function bindCheckboxEvents() {
         const rowCheckboxes = document.querySelectorAll('.row-checkbox:not([disabled])');
 
-        selectAll.checked = false;
-        bulkActions.classList.remove('active');
+        if (selectAll) selectAll.checked = false;
+        if (bulkActions) bulkActions.classList.remove('active');
 
-        selectAll.onclick = (e) => {
-            rowCheckboxes.forEach(cb => {
-                cb.checked = e.target.checked;
-                cb.closest('tr').classList.toggle('selected', e.target.checked);
-            });
-            bulkActions.classList.toggle('active', Array.from(rowCheckboxes).some(c => c.checked));
-        };
+        if (selectAll) {
+            selectAll.onclick = (e) => {
+                rowCheckboxes.forEach(cb => {
+                    cb.checked = e.target.checked;
+                    cb.closest('tr').classList.toggle('selected', e.target.checked);
+                });
+                if (bulkActions) bulkActions.classList.toggle('active', Array.from(rowCheckboxes).some(c => c.checked));
+            };
+        }
 
         rowCheckboxes.forEach(cb => {
             cb.onchange = () => {
                 cb.closest('tr').classList.toggle('selected', cb.checked);
-                selectAll.checked = Array.from(rowCheckboxes).every(c => c.checked);
-                bulkActions.classList.toggle('active', Array.from(rowCheckboxes).some(c => c.checked));
+                if (selectAll) selectAll.checked = Array.from(rowCheckboxes).every(c => c.checked);
+                if (bulkActions) bulkActions.classList.toggle('active', Array.from(rowCheckboxes).some(c => c.checked));
             };
         });
     }
 
-    document.getElementById("bulkIgnoreBtn").addEventListener("click", async () => {
-        const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
-        if (selectedCheckboxes.length === 0) return;
+    const bulkIgnoreBtn = document.getElementById("bulkIgnoreBtn");
+    if (bulkIgnoreBtn) {
+        bulkIgnoreBtn.addEventListener("click", async () => {
+            const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+            if (selectedCheckboxes.length === 0) return;
 
-        if (confirm(`Deseja ignorar as ${selectedCheckboxes.length} denúncias selecionadas?`)) {
-            alert("Ações de arquivamento em massa aplicadas!");
-            fetchReports();
-        }
-    });
+            if (confirm(`Deseja ignorar as ${selectedCheckboxes.length} denúncias selecionadas?`)) {
+                alert("Ações de arquivamento em massa aplicadas!");
+                fetchReports();
+            }
+        });
+    }
 
-    document.getElementById("bulkSanctionBtn").addEventListener("click", async () => {
-        const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
-        if (selectedCheckboxes.length === 0) return;
+    const bulkSanctionBtn = document.getElementById("bulkSanctionBtn");
+    if (bulkSanctionBtn) {
+        bulkSanctionBtn.addEventListener("click", async () => {
+            const selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+            if (selectedCheckboxes.length === 0) return;
 
-        if (confirm(`Deseja sancionar os alvos das ${selectedCheckboxes.length} denúncias selecionadas?`)) {
-            alert("Sancionamento em lote aplicado aos utilizadores!");
-            fetchReports();
-        }
-    });
-
-
+            if (confirm(`Deseja sancionar os alvos das ${selectedCheckboxes.length} denúncias selecionadas?`)) {
+                alert("Sancionamento em lote aplicado aos utilizadores!");
+                fetchReports();
+            }
+        });
+    }
 });
