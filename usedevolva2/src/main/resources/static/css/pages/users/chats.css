@@ -386,3 +386,21 @@
 .chats-list {
     overscroll-behavior: contain;
 }
+
+.chat-messages {
+    overflow-x: hidden;
+}
+
+.chat-message {
+    max-width: 72%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.chat-message-text {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
