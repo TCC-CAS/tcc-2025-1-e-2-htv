@@ -406,7 +406,7 @@ document.addEventListener("click", async (event) => {
         setTimeout(() => {
 
             window.location.href =
-                "/users/my-rentals";
+                `/rentals/tracking/${data.rentalId}`;
 
         }, 1500);
 
