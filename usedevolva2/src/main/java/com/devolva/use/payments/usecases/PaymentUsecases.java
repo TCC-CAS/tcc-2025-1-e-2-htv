@@ -13,6 +13,8 @@ import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.repository.UserRepository;
 import com.devolva.use.chats.usecases.ChatUsecases;
+import com.devolva.use.chats.domain.ChatModel;
+import com.devolva.use.chats.dtos.SendChatMessageDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -303,13 +305,23 @@ public class PaymentUsecases {
 
         rental = rentalRepository.save(rental);
 
-        chatUsecases.createOrGetRentalChat(rental.getId());
+        ChatModel chat = chatUsecases.createOrGetRentalChat(rental.getId());
 
         chatUsecases.addRentalSystemMessage(
                 rental.getId(),
                 chatUsecases.buildStatusMessage("Solicitação de aluguel enviada"),
                 rental.getOwnerId()
         );
+
+        if (dto.message() != null && !dto.message().isBlank()) {
+            chatUsecases.sendMessage(
+                    chat.getId(),
+                    new SendChatMessageDto(
+                            dto.userId(),
+                            dto.message().trim()
+                    )
+            );
+        }
 
         SimpleClientHttpRequestFactory factory =
                 new SimpleClientHttpRequestFactory();
