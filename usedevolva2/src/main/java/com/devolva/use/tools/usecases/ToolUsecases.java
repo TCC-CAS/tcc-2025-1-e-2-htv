@@ -407,9 +407,11 @@ public class ToolUsecases {
     }
 
     public List<ToolModel> listAvailableTools() {
-        return toolRepository.findByAtivoTrueAndDisponivelTrue();
+        List<ToolModel> tools = toolRepository.findByAtivoTrueAndDisponivelTrue();
+        return tools.stream()
+                .filter(tool -> isOwnerWithinPlanLimit(tool.getOwnerId()))
+                .toList();
     }
-
     public boolean hasPendingRentals(Long toolId) {
         List<RentalModel> rentals = rentalRepository.findByToolId(toolId);
 
@@ -433,27 +435,41 @@ public class ToolUsecases {
             throw new IllegalStateException("Não é possível bloquear a ferramenta. Existem pendências de aluguel ou reservas em andamento.");
         }
 
+        if (!dto.bloqueadaTemporariamente()) {
+            UserModel owner = userRepository.findById(ownerId)
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário proprietário não encontrado."));
+
+            long activeTools = toolRepository.countActiveToolsByOwnerId(ownerId);
+            int limit = getToolLimitByPlan(owner.getPlano());
+
+            if (activeTools >= limit) {
+                throw new IllegalStateException("Não é possível reativar. Você já atingiu o limite de " + limit + " ferramentas do plano " + owner.getPlano() + ". Exclua ou desative outras primeiro.");
+            }
+        }
+
         tool.setBloqueadaTemporariamente(dto.bloqueadaTemporariamente());
         if (dto.bloqueadaTemporariamente()) {
-            tool.setDisponivel(false);  
+            tool.setDisponivel(false);
+        } else {
+            tool.setDisponivel(true);
         }
 
         tool.setUpdatedAt(LocalDateTime.now());
         return toolRepository.save(tool);
     }
-
     @Transactional
     public ToolModel createToolWithImages(Long ownerId, CreateToolDto dto, MultipartFile[] files) {
         ToolModel tool = createTool(ownerId, dto);
         uploadImages(tool.getId(), ownerId, files);
         return tool;
     }
+    
     public List<ToolModel> searchTools(ToolFilterDto filter) {
         String busca = normalize(filter.busca());
         String categoria = normalize(filter.categoria());
         String estadoConservacao = normalize(filter.estadoConservacao());
 
-        return toolRepository.searchTools(
+        List<ToolModel> tools = toolRepository.searchTools(
                 busca,
                 categoria,
                 estadoConservacao,
@@ -461,6 +477,10 @@ public class ToolUsecases {
                 filter.valorMaximo(),
                 filter.disponivel()
         );
+
+        return tools.stream()
+                .filter(tool -> isOwnerWithinPlanLimit(tool.getOwnerId()))
+                .toList();
     }
 
     private String normalize(String value) {
@@ -470,4 +490,13 @@ public class ToolUsecases {
 
         return value.trim();
     }
+
+    private boolean isOwnerWithinPlanLimit(Long ownerId) {
+        return userRepository.findById(ownerId).map(owner -> {
+            long activeTools = toolRepository.countActiveToolsByOwnerId(ownerId);
+            int limit = getToolLimitByPlan(owner.getPlano());
+            return activeTools <= limit; // Retorna true se estiver dentro ou igual ao limite
+        }).orElse(false);
+    }
+
 }
