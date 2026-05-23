@@ -395,39 +395,45 @@ document.addEventListener("DOMContentLoaded", () => {
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
     }
-});
+    
+        async function toggleFavoriteListCard(button, toolId) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (!user || !user.id) {
+                alert("Você precisa estar logado para favoritar ferramentas.");
+                return;
+            }
 
-async function toggleFavoriteListCard(button, toolId) {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user || !user.id) {
-        alert("Você precisa estar logado para favoritar ferramentas.");
-        return;
-    }
+            const isCurrentlyFavorite = button.classList.contains("active");
+            const method = isCurrentlyFavorite ? "DELETE" : "POST";
+            const url = `/favorites?userId=${user.id}&toolId=${toolId}`;
 
-    const isCurrentlyFavorite = button.classList.contains("active");
-    const method = isCurrentlyFavorite ? "DELETE" : "POST";
-    const url = `/favorites?userId=${user.id}&toolId=${toolId}`;
+            try {
+                button.style.transform = "scale(0.8)";
+                const response = await fetch(url, { method: method });
+                if (!response.ok) throw new Error();
 
-    try {
-        button.style.transform = "scale(0.8)";
-        const response = await fetch(url, { method: method });
-        if (!response.ok) throw new Error();
-
-        if (isCurrentlyFavorite) {
-            button.classList.remove("active");
-            button.querySelector("svg").setAttribute("fill", "none");
-            button.querySelector("svg").setAttribute("stroke", "currentColor");
-            userFavoriteIds = userFavoriteIds.filter(id => id !== toolId);
-        } else {
-            button.classList.add("active");
-            button.querySelector("svg").setAttribute("fill", "#e02424");
-            button.querySelector("svg").setAttribute("stroke", "#e02424");
-            userFavoriteIds.push(toolId);
+                if (isCurrentlyFavorite) {
+                    button.classList.remove("active");
+                    button.querySelector("svg").setAttribute("fill", "none");
+                    button.querySelector("svg").setAttribute("stroke", "currentColor");
+                    userFavoriteIds = userFavoriteIds.filter(id => id !== toolId);
+                } else {
+                    button.classList.add("active");
+                    button.querySelector("svg").setAttribute("fill", "#e02424");
+                    button.querySelector("svg").setAttribute("stroke", "#e02424");
+                    userFavoriteIds.push(toolId);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao atualizar favoritos.");
+            } finally {
+                button.style.transform = "scale(1)";
+            }
         }
-    } catch (err) {
-        console.error(err);
-        alert("Erro ao atualizar favoritos.");
-    } finally {
-        button.style.transform = "scale(1)";
-    }
+
+
+
 }
+);
+
+
