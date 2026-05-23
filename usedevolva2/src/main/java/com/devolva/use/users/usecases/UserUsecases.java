@@ -1,5 +1,6 @@
 package com.devolva.use.users.usecases;
 
+import com.devolva.use.emails.EmailService;
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.domain.UserStatus;
 import com.devolva.use.users.dtos.CreateUserDto;
@@ -9,19 +10,24 @@ import com.devolva.use.users.dtos.VerifyUserDto;
 import com.devolva.use.users.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class UserUsecases {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public UserUsecases(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+
+    public UserUsecases(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     public UserModel createUser(CreateUserDto dto) {
@@ -138,4 +144,34 @@ public class UserUsecases {
             throw new IllegalArgumentException("Aceite da política de privacidade é obrigatório.");
         }
     }
+
+    public void requestPasswordReset(String email) {
+        UserModel user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("E-mail não encontrado."));
+
+        String token = UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setResetPasswordTokenExpiresAt(LocalDateTime.now().plusHours(1)); // Expira em 1 hora
+        userRepository.save(user);
+
+        Context context = new Context();
+        context.setVariable("nome", user.getNomeCompleto());
+        context.setVariable("link", "https://seu-site.com/auth/reset-password?token=" + token);
+
+        emailService.enviarEmail(email, "Recuperação de Senha", "emails/reset-password-email", context);
+    }
+    public void resetPassword(String token, String newPassword) {
+        UserModel user = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Token inválido."));
+
+        if (user.getResetPasswordTokenExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Token expirado.");
+        }
+
+        user.setSenha(passwordEncoder.encode(newPassword));
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiresAt(null);
+        userRepository.save(user);
+    }
+
 }

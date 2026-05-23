@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/users")
@@ -47,6 +49,19 @@ public class UserController {
     public ResponseEntity<UserModel> findById(@PathVariable Long id) {
         return ResponseEntity.ok(userUsecases.findById(id));
     }
+
+    @PostMapping("/auth/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        userUsecases.requestPasswordReset(body.get("email"));
+        return ResponseEntity.ok("E-mail de recuperação enviado com sucesso.");
+    }
+
+    @PostMapping("/auth/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        userUsecases.resetPassword(body.get("token"), body.get("newPassword"));
+        return ResponseEntity.ok("Senha alterada com sucesso.");
+    }
+
 
     
 }

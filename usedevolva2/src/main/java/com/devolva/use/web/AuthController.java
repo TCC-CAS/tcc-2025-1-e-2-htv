@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthController {
@@ -118,5 +119,15 @@ public class AuthController {
         return "security/admin-dashboard";
     }
 
+    @GetMapping("/auth/forgot-password")
+    public String forgotPasswordPage() {
+        return "auth/forgot-password";
+    }
+
+    @GetMapping("/auth/reset-password")
+    public String resetPasswordPage(@RequestParam String token, Model model) {
+        model.addAttribute("token", token);
+        return "auth/reset-password";
+    }
 
 }

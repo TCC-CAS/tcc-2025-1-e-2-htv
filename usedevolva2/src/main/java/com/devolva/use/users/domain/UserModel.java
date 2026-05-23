@@ -47,6 +47,9 @@ public class UserModel {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String resetPasswordToken;
+    private LocalDateTime resetPasswordTokenExpiresAt;
+    
     public enum Plano {
         FREE, PRATA, OURO,
     }
