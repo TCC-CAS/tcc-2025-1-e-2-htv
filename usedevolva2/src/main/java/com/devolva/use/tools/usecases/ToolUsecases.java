@@ -442,8 +442,8 @@ public class ToolUsecases {
             long activeTools = toolRepository.countActiveToolsByOwnerId(ownerId);
             int limit = getToolLimitByPlan(owner.getPlano());
 
-            if (activeTools >= limit) {
-                throw new IllegalStateException("Não é possível reativar. Você já atingiu o limite de " + limit + " ferramentas do plano " + owner.getPlano() + ". Exclua ou desative outras primeiro.");
+            if (activeTools > limit) {
+                throw new IllegalStateException("Não é possível reativar. Você está acima do limite de " + limit + " ferramentas do plano " + owner.getPlano() + ". Exclua outras primeiro.");
             }
         }
 
@@ -457,13 +457,14 @@ public class ToolUsecases {
         tool.setUpdatedAt(LocalDateTime.now());
         return toolRepository.save(tool);
     }
+
     @Transactional
     public ToolModel createToolWithImages(Long ownerId, CreateToolDto dto, MultipartFile[] files) {
         ToolModel tool = createTool(ownerId, dto);
         uploadImages(tool.getId(), ownerId, files);
         return tool;
     }
-    
+
     public List<ToolModel> searchTools(ToolFilterDto filter) {
         String busca = normalize(filter.busca());
         String categoria = normalize(filter.categoria());

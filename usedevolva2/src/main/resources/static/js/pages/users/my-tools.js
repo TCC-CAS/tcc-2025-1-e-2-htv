@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("Erro ao carregar a página de ferramentas:", error);
     }
 });
+
 function renderStats(tools) {
     const total = tools.length;
     const disponiveis = tools.filter(tool => tool.disponivel && !tool.bloqueadaTemporariamente).length;
@@ -54,8 +55,32 @@ function renderStats(tools) {
     const planoUsuario = user?.plano || "FREE";
     const limitePlano = getToolLimitByPlan(planoUsuario);
 
-    document.getElementById("totalTools").textContent = total;
-    document.getElementById("planLimit").textContent = ` / ${limitePlano}`;
+    const totalToolsEl = document.getElementById("totalTools");
+    const planLimitEl = document.getElementById("planLimit");
+
+    totalToolsEl.textContent = total;
+    planLimitEl.textContent = ` / ${limitePlano}`;
+
+    const antigoAvisoInline = document.getElementById("inlineLimitWarning");
+    if (antigoAvisoInline) antigoAvisoInline.remove();
+
+    if (total > limitePlano) {
+        totalToolsEl.style.color = "#DC2626";
+        planLimitEl.style.color = "#DC2626";
+
+        const avisoInline = document.createElement("span");
+        avisoInline.id = "inlineLimitWarning";
+        avisoInline.style.color = "#DC2626";
+        avisoInline.style.fontSize = "0.85rem";
+        avisoInline.style.fontWeight = "bold";
+        avisoInline.style.marginLeft = "8px";
+        avisoInline.textContent = "⚠️ Limite Excedido (Anúncios ocultados no Marketplace)";
+
+        planLimitEl.after(avisoInline);
+    } else {
+        totalToolsEl.style.color = "";
+        planLimitEl.style.color = "";
+    }
 
     const planBadge = document.getElementById("planBadge");
     if (planBadge) {
@@ -199,14 +224,15 @@ async function toggleBlockTool(toolId, ownerId, blockValue) {
         });
 
         if (!response.ok) {
-            throw new Error("Erro ao alterar status.");
+            const errorText = await response.text();
+            throw new Error(errorText || "Erro ao alterar status.");
         }
 
         window.location.reload();
 
     } catch (error) {
         console.error(error);
-        alert("Não foi possível alterar o status da ferramenta.");
+        alert(error.message || "Não foi possível alterar o status da ferramenta.");
     }
 }
 

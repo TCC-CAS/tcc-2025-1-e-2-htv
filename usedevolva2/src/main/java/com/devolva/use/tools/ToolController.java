@@ -125,17 +125,19 @@ public class ToolController {
     }
 
     @PatchMapping("/{toolId}/owner/{ownerId}/block")
-    public ResponseEntity<ToolModel> blockTool(
-            @PathVariable Long toolId,
-            @PathVariable Long ownerId,
-            @RequestBody BlockToolDto dto
+    public ResponseEntity<?> blockTool( 
+                                        @PathVariable Long toolId,
+                                        @PathVariable Long ownerId,
+                                        @RequestBody BlockToolDto dto
     ) {
         try {
             ToolModel tool = toolUsecases.blockTool(toolId, ownerId, dto);
             return ResponseEntity.ok(tool);
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Retorna erro
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
 
 }
