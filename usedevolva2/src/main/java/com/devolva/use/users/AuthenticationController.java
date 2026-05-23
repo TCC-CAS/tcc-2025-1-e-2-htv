@@ -28,6 +28,7 @@ public class AuthenticationController {
         }
     }
 
+
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
         userUsecases.resetPassword(body.get("token"), body.get("newPassword"));

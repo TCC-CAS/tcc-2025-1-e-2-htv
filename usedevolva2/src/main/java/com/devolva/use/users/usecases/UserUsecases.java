@@ -151,7 +151,7 @@ public class UserUsecases {
 
         String token = UUID.randomUUID().toString();
         user.setResetPasswordToken(token);
-        user.setResetPasswordTokenExpiresAt(LocalDateTime.now().plusHours(1)); // Expira em 1 hora
+        user.setResetPasswordTokenExpiresAt(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
 
         Context context = new Context();
