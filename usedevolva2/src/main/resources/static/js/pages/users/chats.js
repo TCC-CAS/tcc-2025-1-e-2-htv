@@ -88,12 +88,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             const descriptionInput = document.getElementById("reportDescription").value;
 
             const selectedEvidences = Array.from(document.querySelectorAll(".report-checkbox:checked"))
-                .map(cb => `"${cb.getAttribute("data-msg-text")}"`)
-                .join(" | ");
-
-            const fullDescription = selectedEvidences
-                ? `[EVIDÊNCIAS DE CONVERSA: ${selectedEvidences}] - Detalhes do denunciante: ${descriptionInput}`
-                : descriptionInput;
+                .map(cb => cb.getAttribute("data-msg-text"))
+                .join("\n");
 
             const reportPayload = {
                 reporterId: currentUser.id,
@@ -103,8 +99,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 rentalId: currentChatDetails.rentalId || null,
                 toolId: targetType === "TOOL" ? currentChatDetails.toolId : null,
                 reason: reason,
-                description: fullDescription
+                description: descriptionInput,
+                reportedMessages: selectedEvidences || null
             };
+
             try {
                 const response = await fetch("/reports/create", {
                     method: "POST",
@@ -115,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error("Erro de processamento no servidor ao salvar relatório.");
+                    throw new Error("Erro de processing no servidor ao salvar relatório.");
                 }
 
                 alert("Sua denúncia foi enviada com sucesso para nossa equipe de moderação. Obrigado!");
