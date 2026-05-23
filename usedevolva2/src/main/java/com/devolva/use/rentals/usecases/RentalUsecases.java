@@ -168,8 +168,8 @@ public class RentalUsecases {
 
         BigDecimal serviceFee = scale(baseValue.multiply(feePercent));
 
-        BigDecimal totalValue = baseValue;
-        BigDecimal ownerNetValue = baseValue.subtract(serviceFee);
+        BigDecimal totalValue = baseValue.add(serviceFee);
+        BigDecimal ownerNetValue = baseValue;
 
         RentalModel rental = new RentalModel();
         rental.setToolId(tool.getId());

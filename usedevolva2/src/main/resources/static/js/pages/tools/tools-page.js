@@ -314,16 +314,17 @@ function updateBookingSummary() {
     const feePercent = (ownerPlano === "OURO") ? 0.05 : 0.07;
     const serviceFee = base * feePercent;
 
-    const total = base;
+    const total = base + serviceFee;
 
     document.getElementById("dailySummary").textContent =
         totalDays === 1 ? "1 diária" : `${totalDays} diárias`;
 
     document.getElementById("baseValue").textContent = formatCurrency(base);
 
-    document.getElementById("serviceFee").textContent = `${formatCurrency(serviceFee)} (Inclusa)`;
+    document.getElementById("serviceFee").textContent = formatCurrency(serviceFee);
     document.getElementById("totalValue").textContent = formatCurrency(total);
 }
+
 function formatAvailability(tool) {
     const hasStart = !!tool.dataInicioDisponibilidade;
     const hasEnd = !!tool.dataFimDisponibilidade;
