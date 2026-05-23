@@ -1,6 +1,7 @@
 package com.devolva.use.users;
 
 import com.devolva.use.users.usecases.UserUsecases;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -16,9 +17,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/request-recovery")
-    public ResponseEntity<String> requestRecovery(@RequestBody Map<String, String> body) {
-        userUsecases.requestPasswordReset(body.get("email"));
-        return ResponseEntity.ok("E-mail de recuperação enviado com sucesso.");
+    public ResponseEntity<?> requestRecovery(@RequestBody Map<String, String> body) {
+        try {
+            userUsecases.requestPasswordReset(body.get("email"));
+            return ResponseEntity.ok("E-mail de recuperação enviado com sucesso.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno.");
+        }
     }
 
     @PostMapping("/reset-password")

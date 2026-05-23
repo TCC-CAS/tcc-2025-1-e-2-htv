@@ -45,7 +45,7 @@ if (loginForm) {
 }
 
 document.querySelector('.auth-form').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Impede o envio tradicional
+    e.preventDefault();
 
     const email = document.getElementById('email').value;
     const messageEl = document.querySelector('.form-message');
