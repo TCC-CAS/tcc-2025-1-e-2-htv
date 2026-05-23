@@ -43,3 +43,28 @@ if (loginForm) {
         }
     });
 }
+
+document.querySelector('.auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault(); // Impede o envio tradicional
+
+    const email = document.getElementById('email').value;
+    const messageEl = document.querySelector('.form-message');
+
+    try {
+        const response = await fetch('/auth/request-recovery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+
+        if (response.ok) {
+            messageEl.style.color = 'green';
+            messageEl.textContent = 'Verifique sua caixa de entrada, enviamos o link de recuperação!';
+        } else {
+            throw new Error("E-mail não encontrado ou erro no servidor.");
+        }
+    } catch (err) {
+        messageEl.style.color = 'red';
+        messageEl.textContent = err.message;
+    }
+});

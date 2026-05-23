@@ -50,6 +50,12 @@ public class UserController {
         return ResponseEntity.ok(userUsecases.findById(id));
     }
 
+    @PostMapping("/auth/request-recovery")
+    public ResponseEntity<String> requestRecovery(@RequestBody Map<String, String> body) {
+        userUsecases.requestPasswordReset(body.get("email"));
+        return ResponseEntity.ok("Enviado");
+    }
+
     @PostMapping("/auth/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
         userUsecases.requestPasswordReset(body.get("email"));
