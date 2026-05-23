@@ -112,8 +112,14 @@ async function renderTools(tools, ownerId) {
         const mainImage = images.length > 0 ? images[0].filePath : null;
         const status = getToolStatus(tool);
 
+        const avisoExpiradoHtml = status.expirada
+            ? `<div style="margin-top: 12px; padding: 8px 12px; background-color: #FEF2F2; border: 1px solid #FEE2E2; border-radius: 6px; color: #DC2626; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+                ⚠️ A data de disponibilidade passou. Você precisa editar este anúncio.
+               </div>`
+            : "";
+
         container.innerHTML += `
-            <article class="tool-card">
+            <article class="tool-card" ${status.expirada ? 'style="border-color: #FCA5A5;"' : ''}>
                 <div class="tool-image-container">
                     ${
             mainImage
@@ -139,11 +145,13 @@ async function renderTools(tools, ownerId) {
 
                         <div class="detail-item">
                             <strong>Disponibilidade</strong>
-                            <span>${status.label}</span>
+                            <span ${status.expirada ? 'style="color: #DC2626; font-weight: bold;"' : ''}>${status.label}</span>
                         </div>
                     </div>
 
-                    <div class="price-tag">
+                    ${avisoExpiradoHtml} 
+
+                    <div class="price-tag" style="margin-top: 12px;">
                         R$ ${formatMoney(tool.valorDiaria)} <span>/ dia</span>
                     </div>
                 </div>
@@ -153,7 +161,7 @@ async function renderTools(tools, ownerId) {
                         Ver
                     </button>
 
-                    <button class="action-btn" title="Editar" onclick="editTool(${tool.id})">
+                    <button class="action-btn" title="Editar" onclick="editTool(${tool.id})" ${status.expirada ? 'style="background-color: #DC2626; color: white;"' : ''}>
                         Editar
                     </button>
 
@@ -199,6 +207,22 @@ function getToolStatus(tool) {
             label: "Em uso",
             className: "badge-rented"
         };
+    }
+
+    if (tool.dataFimDisponibilidade) {
+        const dataExpiracao = new Date(tool.dataFimDisponibilidade);
+        const hoje = new Date();
+
+        hoje.setHours(0, 0, 0, 0);
+        dataExpiracao.setHours(0, 0, 0, 0);
+
+        if (dataExpiracao < hoje) {
+            return {
+                label: "Expirada",
+                className: "badge-expired",
+                expirada: true
+            };
+        }
     }
 
     return {
