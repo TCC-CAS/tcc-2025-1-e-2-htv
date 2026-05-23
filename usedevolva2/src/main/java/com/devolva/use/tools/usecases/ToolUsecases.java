@@ -137,6 +137,9 @@ public class ToolUsecases {
         return toolRepository.save(tool);
     }
     private int getToolLimitByPlan(UserModel.Plano plano) {
+        if (plano == null) {
+            return 3;
+        }
         switch (plano) {
             case FREE:
                 return 3;
@@ -406,12 +409,36 @@ public class ToolUsecases {
         toolRepository.save(tool);
     }
 
+    @Transactional(readOnly = true)
     public List<ToolModel> listAvailableTools() {
         List<ToolModel> tools = toolRepository.findByAtivoTrueAndDisponivelTrue();
-        return tools.stream()
-                .filter(tool -> isOwnerWithinPlanLimit(tool.getOwnerId()))
-                .toList();
+        List<ToolModel> filteredTools = new java.util.ArrayList<>();
+
+        java.util.Map<Long, Boolean> ownerStatusCache = new java.util.HashMap<>();
+
+        for (ToolModel tool : tools) {
+            Long ownerId = tool.getOwnerId();
+
+            boolean isValid = ownerStatusCache.computeIfAbsent(ownerId, id -> {
+                try {
+                    return userRepository.findById(id).map(owner -> {
+                        long activeTools = toolRepository.countActiveToolsByOwnerId(id);
+                        int limit = getToolLimitByPlan(owner.getPlano());
+                        return activeTools <= limit;
+                    }).orElse(false);
+                } catch (Exception e) {
+                    System.err.println("Erro ao validar limite do plano para o usuário " + id + ": " + e.getMessage());
+                    return false;
+                }
+            });
+
+            if (isValid) {
+                filteredTools.add(tool);
+            }
+        }
+        return filteredTools;
     }
+
     public boolean hasPendingRentals(Long toolId) {
         List<RentalModel> rentals = rentalRepository.findByToolId(toolId);
 
@@ -465,6 +492,7 @@ public class ToolUsecases {
         return tool;
     }
 
+    @Transactional(readOnly = true)
     public List<ToolModel> searchTools(ToolFilterDto filter) {
         String busca = normalize(filter.busca());
         String categoria = normalize(filter.categoria());
@@ -479,9 +507,29 @@ public class ToolUsecases {
                 filter.disponivel()
         );
 
-        return tools.stream()
-                .filter(tool -> isOwnerWithinPlanLimit(tool.getOwnerId()))
-                .toList();
+        List<ToolModel> filteredTools = new java.util.ArrayList<>();
+        java.util.Map<Long, Boolean> ownerStatusCache = new java.util.HashMap<>();
+
+        for (ToolModel tool : tools) {
+            Long ownerId = tool.getOwnerId();
+
+            boolean isValid = ownerStatusCache.computeIfAbsent(ownerId, id -> {
+                try {
+                    return userRepository.findById(id).map(owner -> {
+                        long activeTools = toolRepository.countActiveToolsByOwnerId(id);
+                        int limit = getToolLimitByPlan(owner.getPlano());
+                        return activeTools <= limit;
+                    }).orElse(false);
+                } catch (Exception e) {
+                    return false;
+                }
+            });
+
+            if (isValid) {
+                filteredTools.add(tool);
+            }
+        }
+        return filteredTools;
     }
 
     private String normalize(String value) {
