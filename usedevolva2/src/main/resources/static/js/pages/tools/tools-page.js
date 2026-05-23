@@ -1,14 +1,15 @@
 let currentTool = null;
 let currentToolId = null;
-let bookedPeriods = []; // Armazenará os períodos já reservados desta ferramenta
+let bookedPeriods = [];
+let ownerPlano = null;
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     currentToolId = Number(TOOL_ID);
 
     await loadTool();
     await loadImages();
-    await loadBookedPeriods(); // Carrega as reservas existentes
-
+    await loadBookedPeriods();
     const dataInicio = document.getElementById("dataInicio");
     const dataFim = document.getElementById("dataFim");
     const reservationForm = document.getElementById("reservationForm");
@@ -242,6 +243,7 @@ async function loadOwner(ownerId) {
         }
 
         const owner = await response.json();
+        ownerPlano = owner.plano;
 
         const ownerName =
             owner.nomeCompleto ||
@@ -308,14 +310,18 @@ function updateBookingSummary() {
 
     const dailyRate = Number(currentTool.valorDiaria || 0);
     const base = dailyRate * totalDays;
-    const serviceFee = base * 0.07;
-    const total = base + serviceFee;
+
+    const feePercent = (ownerPlano === "OURO") ? 0.05 : 0.07;
+    const serviceFee = base * feePercent;
+
+    const total = base;
 
     document.getElementById("dailySummary").textContent =
         totalDays === 1 ? "1 diária" : `${totalDays} diárias`;
 
     document.getElementById("baseValue").textContent = formatCurrency(base);
-    document.getElementById("serviceFee").textContent = formatCurrency(serviceFee);
+
+    document.getElementById("serviceFee").textContent = "R$ 0,00 (Inclusa)";
     document.getElementById("totalValue").textContent = formatCurrency(total);
 }
 

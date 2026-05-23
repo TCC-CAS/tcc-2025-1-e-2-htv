@@ -147,7 +147,6 @@ public class RentalUsecases {
                 .filter(this::isActiveRentalFlow)
                 .count();
 
-
         boolean hasConflict = rentalRepository.findAll().stream()
                 .filter(r -> r.getToolId().equals(dto.toolId()))
                 .filter(this::isActiveRentalFlow)
@@ -161,8 +160,16 @@ public class RentalUsecases {
 
         BigDecimal dailyRate = tool.getValorDiaria();
         BigDecimal baseValue = dailyRate.multiply(BigDecimal.valueOf(totalDays));
-        BigDecimal serviceFee = calculateServiceFee(baseValue);
-        BigDecimal totalValue = baseValue.add(serviceFee);
+
+
+        BigDecimal feePercent = (owner.getPlano() != null && owner.getPlano() == UserModel.Plano.OURO)
+                ? new BigDecimal("0.05")
+                : new BigDecimal("0.07");
+
+        BigDecimal serviceFee = scale(baseValue.multiply(feePercent));
+
+        BigDecimal totalValue = baseValue;
+        BigDecimal ownerNetValue = baseValue.subtract(serviceFee);
 
         RentalModel rental = new RentalModel();
         rental.setToolId(tool.getId());
@@ -175,7 +182,7 @@ public class RentalUsecases {
         rental.setBaseValue(baseValue.doubleValue());
         rental.setServiceFee(serviceFee.doubleValue());
         rental.setTotalValue(totalValue.doubleValue());
-        rental.setOwnerNetValue(baseValue.doubleValue());
+        rental.setOwnerNetValue(ownerNetValue.doubleValue());
         rental.setStatus(RentalStatus.PENDING);
 
         RentalModel savedRental = rentalRepository.save(rental);
