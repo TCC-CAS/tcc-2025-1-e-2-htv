@@ -151,8 +151,8 @@ const FLOW = [
     "PAID",
     "ACCEPTED",
     "IN_USE",
-    "RETURNED",          // Representa a entrega do Renter (ou LATE_RETURNED)
-    "FINALIZED"          // Fim absoluto aprovado pelo Owner
+    "RETURNED",
+    "FINALIZED"
 ];
 
 function getCompletedSteps(status) {

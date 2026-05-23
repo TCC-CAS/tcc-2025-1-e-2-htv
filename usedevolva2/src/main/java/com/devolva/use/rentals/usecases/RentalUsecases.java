@@ -13,6 +13,7 @@ import com.devolva.use.users.domain.UserStatus;
 import com.devolva.use.users.repository.UserRepository;
 import com.devolva.use.chats.usecases.ChatUsecases;
 import org.springframework.stereotype.Service;
+import com.devolva.use.emails.EmailNotificationService;
 
 
 import java.math.BigDecimal;
@@ -33,19 +34,21 @@ public class RentalUsecases {
     private final UserRepository userRepository;
     private final ToolImageRepository toolImageRepository;
     private final ChatUsecases chatUsecases;
+    private final EmailNotificationService emailNotificationService;
 
     public RentalUsecases(
             RentalRepository rentalRepository,
             ToolRepository toolRepository,
             UserRepository userRepository,
             ToolImageRepository toolImageRepository,
-            ChatUsecases chatUsecases
+            ChatUsecases chatUsecases, EmailNotificationService emailNotificationService
     ) {
         this.rentalRepository = rentalRepository;
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
         this.toolImageRepository = toolImageRepository;
         this.chatUsecases = chatUsecases;
+        this.emailNotificationService = emailNotificationService;
     }
 
     private String getToolMainImage(Long toolId) {
@@ -172,6 +175,9 @@ public class RentalUsecases {
         rental.setOwnerNetValue(baseValue.doubleValue());
         rental.setStatus(RentalStatus.PENDING);
 
+        RentalModel savedRental = rentalRepository.save(rental);
+        emailNotificationService.notifyBothParties(savedRental, translateStatus(savedRental.getStatus()));
+
         return rentalRepository.save(rental);
     }
     public RentalModel approveOrRejectRental(Long rentalId, ApproveRentalDto dto) {
@@ -220,7 +226,7 @@ public class RentalUsecases {
                     chatUsecases.buildStatusMessage("Solicitação de aluguel recusada pelo proprietário"),
                     savedRental.getRenterId()
             );
-
+            emailNotificationService.notifyBothParties(savedRental, translateStatus(savedRental.getStatus()));
             return savedRental;
         }
     }
@@ -248,6 +254,8 @@ public class RentalUsecases {
                 chatUsecases.buildStatusMessage("Ferramenta retirada / locação em uso"),
                 savedRental.getRenterId()
         );
+
+        emailNotificationService.notifyBothParties(savedRental, translateStatus(savedRental.getStatus()));
 
         return savedRental;
     }
@@ -300,6 +308,8 @@ public class RentalUsecases {
                 chatUsecases.buildStatusMessage(statusMessage),
                 savedRental.getOwnerId()
         );
+
+        emailNotificationService.notifyBothParties(savedRental, translateStatus(savedRental.getStatus()));
 
         return savedRental;
     }
@@ -431,18 +441,14 @@ public class RentalUsecases {
     }
 
     public List<RentalListDto> getRentalsByOwner(Long ownerId) {
-        // Filtra apenas as locações onde o usuário é o proprietário
         List<RentalModel> rentals = rentalRepository.findAll().stream()
                 .filter(r -> r.getOwnerId().equals(ownerId))
                 .toList();
 
         return rentals.stream().map(rental -> {
-            // Busca a ferramenta associada
             ToolModel tool = findToolOrThrow(rental.getToolId());
-            // Busca o locatário para obter o nome completo
             UserModel renter = findUserOrThrow(rental.getRenterId());
 
-            // Define a imagem principal da ferramenta
             String image = null;
             List<ToolImageModel> images = toolImageRepository.findByToolId(tool.getId());
             if (!images.isEmpty()) {
@@ -487,8 +493,25 @@ public class RentalUsecases {
                 chatUsecases.buildStatusMessage("Locação finalizada pelo proprietário"),
                 savedRental.getRenterId()
         );
+        emailNotificationService.notifyBothParties(savedRental, translateStatus(savedRental.getStatus()));
 
         return savedRental;
     }
+
+    private String translateStatus(RentalStatus status) {
+        return switch (status) {
+            case PENDING -> "Solicitação enviada";
+            case ACCEPTED -> "Aceito pelo dono";
+            case PAID -> "Pagamento confirmado";
+            case IN_USE -> "Em Uso";
+            case RETURNED -> "Devolvido";
+            case LATE_RETURNED -> "Devolvido com atraso";
+            case FINALIZED -> "Locação finalizada";
+            case CANCELLED -> "Cancelado";
+            default -> status.name();
+        };
+    }
+
+
 }
 
