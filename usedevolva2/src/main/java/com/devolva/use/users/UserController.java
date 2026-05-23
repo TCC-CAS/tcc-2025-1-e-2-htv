@@ -29,7 +29,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<UserModel> login(@RequestBody LoginUserDto dto) {
         return ResponseEntity.ok(userUsecases.login(dto));
@@ -49,25 +48,5 @@ public class UserController {
     public ResponseEntity<UserModel> findById(@PathVariable Long id) {
         return ResponseEntity.ok(userUsecases.findById(id));
     }
-
-    @PostMapping("/auth/request-recovery")
-    public ResponseEntity<String> requestRecovery(@RequestBody Map<String, String> body) {
-        userUsecases.requestPasswordReset(body.get("email"));
-        return ResponseEntity.ok("Enviado");
-    }
-
-    @PostMapping("/auth/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
-        userUsecases.requestPasswordReset(body.get("email"));
-        return ResponseEntity.ok("E-mail de recuperação enviado com sucesso.");
-    }
-
-    @PostMapping("/auth/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-        userUsecases.resetPassword(body.get("token"), body.get("newPassword"));
-        return ResponseEntity.ok("Senha alterada com sucesso.");
-    }
-
-
     
 }
