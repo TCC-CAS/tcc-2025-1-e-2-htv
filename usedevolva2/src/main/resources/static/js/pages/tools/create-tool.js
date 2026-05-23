@@ -16,6 +16,37 @@ document.addEventListener("DOMContentLoaded", async () => {
         initAddressModal(savedUser.id, async (savedAddress) => {
             await loadUserAddresses(savedUser.id, savedAddress.id);
         });
+        try {
+            const response = await fetch(`/tools/owner/${savedUser.id}`);
+            if (response.ok) {
+                const tools = await response.json();
+                // Conta apenas as ferramentas que estão ativas no banco
+                const activeToolsCount = tools.filter(tool => tool.ativo).length;
+
+                // Define o limite com base no plano salvo no localStorage
+                const plano = savedUser.plano || "FREE";
+                let limite = 3;
+                if (plano === "PRATA") limite = 30;
+                if (plano === "OURO") limite = 100;
+
+                // Se bateu ou passou o limite, bloqueia o formulário imediatamente
+                if (activeToolsCount >= limite) {
+                    showToast(`Aviso: Você atingiu o limite de ${limite} ferramentas do seu plano ${plano}.`, "error");
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.textContent = "Limite do Plano Atingido";
+                        submitButton.style.backgroundColor = "#6B7280"; // Deixa o botão cinza
+                        submitButton.style.cursor = "not-allowed";
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao verificar limite do plano no carregamento:", error);
+        }
+
+        initAddressModal(savedUser.id, async (savedAddress) => {
+            await loadUserAddresses(savedUser.id, savedAddress.id);
+        });
 
         await loadUserAddresses(savedUser.id);
     }

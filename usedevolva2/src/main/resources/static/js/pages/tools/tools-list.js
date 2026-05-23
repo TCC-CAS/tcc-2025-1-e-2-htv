@@ -395,7 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
     }
-    
+
         async function toggleFavoriteListCard(button, toolId) {
             const user = JSON.parse(localStorage.getItem("user"));
             if (!user || !user.id) {

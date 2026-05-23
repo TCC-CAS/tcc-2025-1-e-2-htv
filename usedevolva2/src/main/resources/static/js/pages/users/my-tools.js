@@ -30,7 +30,21 @@ function renderStats(tools) {
     const bloqueadas = tools.filter(tool => tool.bloqueadaTemporariamente).length;
     const alugadas = tools.filter(tool => !tool.disponivel && !tool.bloqueadaTemporariamente).length;
 
+    const user = JSON.parse(localStorage.getItem("user"));
+    const planoUsuario = user?.plano || "FREE";
+    const limitePlano = getToolLimitByPlan(planoUsuario);
+
     document.getElementById("totalTools").textContent = total;
+    document.getElementById("planLimit").textContent = ` / ${limitePlano}`;
+
+    const planBadge = document.getElementById("planBadge");
+    if (planBadge) {
+        planBadge.textContent = `Plano: ${planoUsuario}`;
+        if (planoUsuario === "OURO") planBadge.style.color = "#D97706";
+        else if (planoUsuario === "PRATA") planBadge.style.color = "#4B5563";
+        else planBadge.style.color = "#2563EB";
+    }
+
     document.getElementById("availableTools").textContent = disponiveis;
     document.getElementById("rentedTools").textContent = alugadas;
     document.getElementById("blockedTools").textContent = bloqueadas;
@@ -204,4 +218,13 @@ function viewTool(toolId) {
 
 function editTool(toolId) {
     window.location.href = `/users/edit-tool/${toolId}`;
+}
+
+function getToolLimitByPlan(plano) {
+    switch (plano) {
+        case "FREE": return 3;
+        case "PRATA": return 30;
+        case "OURO": return 100;
+        default: return 0;
+    }
 }
