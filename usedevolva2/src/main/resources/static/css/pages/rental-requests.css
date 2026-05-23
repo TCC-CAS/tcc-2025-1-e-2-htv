@@ -24,14 +24,13 @@
             color: white
         }
 
-        /* CONTAINER PRINCIPAL */
         .dashboard-container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
 
-        /* BARRA DE FILTROS */
+
         .filters-bar {
             background: var(--req-card);
             padding: 1.5rem;
