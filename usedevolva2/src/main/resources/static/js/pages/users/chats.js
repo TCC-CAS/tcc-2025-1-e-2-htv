@@ -416,7 +416,7 @@ function startChatsAutoRefresh() {
     }
 
     chatsAutoRefreshInterval = setInterval(async () => {
-        if (document.hidden || !currentUser || !currentUser.id) {
+        if (document.hidden || !currentUser || !currentUser.id || isReportModeActive) {
             return;
         }
 
@@ -425,7 +425,7 @@ function startChatsAutoRefresh() {
 }
 
 async function refreshChatsSilently() {
-    if (isRefreshingChat) {
+    if (isRefreshingChat || isReportModeActive) { // Trava de segurança dupla
         return;
     }
 
