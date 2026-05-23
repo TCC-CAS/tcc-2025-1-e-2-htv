@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. VERIFICAÇÃO DE SEGURANÇA LOCAL
     const adminData = JSON.parse(localStorage.getItem("admin"));
 
     if (!adminData || !adminData.id) {
@@ -28,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     "X-Admin-Id": adminData.id
                 }
             });
-
             if (!response.ok) {
                 throw new Error("Erro ao carregar a lista de denúncias.");
             }
@@ -131,11 +129,37 @@ document.addEventListener("DOMContentLoaded", function () {
         bindCheckboxEvents();
     }
 
-    function loadInvestigationPanel(report, roleTitle, targetName) {
+    async function loadInvestigationPanel(report, roleTitle, targetName) {
         const panel = document.getElementById('investigationPanel');
         if (!panel) return;
 
         panel.style.opacity = '0';
+
+        // Busca a imagem se houver uma ferramenta associada à denúncia
+        let toolImageHtml = "";
+        if (report.toolId) {
+            try {
+                const imgResponse = await fetch(`/tools/${report.toolId}/images`);
+                if (imgResponse.ok) {
+                    const images = await imgResponse.json();
+                    if (images && images.length > 0) {
+                        // Encontra a imagem marcada como principal ou pega a primeira
+                        const mainImg = images.find(i => i.principal) || images[0];
+
+                        toolImageHtml = `
+                            <div class="timeline-item structural" style="margin-bottom: 12px; padding: 12px; background: #f8f9fa; border-left: 4px solid #6c757d; border-radius: 4px;">
+                                <strong style="color: #495057;">🛠️ Ferramenta Alvo: <span style="font-weight:normal;">${report.toolName || 'N/A'} (ID #${report.toolId})</span></strong>
+                                <div style="margin-top: 8px; text-align: center; background: #fff; border: 1px solid #dee2e6; padding: 8px; border-radius: 4px;">
+                                    <img src="${mainImg.filePath}" alt="Imagem da Ferramenta" style="max-width: 100%; max-height: 200px; object-fit: contain; border-radius: 4px; display: block; margin: 0 auto;">
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (err) {
+                console.error("Erro ao buscar as imagens da ferramenta para o relatório: ", err);
+            }
+        }
 
         setTimeout(() => {
             document.getElementById('invName').innerText = targetName;
@@ -152,7 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (typeBadge) {
                 typeBadge.style.display = 'inline-flex';
                 typeBadge.className = 'badge badge-tipo-user';
-                typeBadge.innerText = `👤 Contexto: ${mapReason(report.reason)}`;
+                typeBadge.innerText = `👤 Motivo: ${mapReason(report.reason)}`;
             }
 
             document.getElementById('metricLabel').innerText = "Status do Caso";
@@ -165,12 +189,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             document.getElementById('invTimeline').innerHTML = `
+                ${toolImageHtml}
+                
                 ${report.reportedMessages ? `
                     <div class="timeline-item" style="margin-bottom: 12px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
                         <strong style="color: #856404;">💬 Mensagens Denunciadas no Chat:</strong><br>
                         <p style="font-style: italic; margin-top: 5px; white-space: pre-wrap; color: #856404;">"${report.reportedMessages}"</p>
                     </div>
                 ` : ''}
+                
                 <div class="timeline-item danger">
                     <strong>📝 Relato Adicional do Denunciante:</strong><br>
                     <p style="margin-top: 5px; white-space: pre-wrap;">"${report.description || 'Sem descrição fornecida.'}"</p>
@@ -200,7 +227,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 300);
     }
 
-    // 5. ENVIAR RESOLUÇÃO PARA O BACKEND
     async function handleResolveReport(reportId, action) {
         const confirmar = confirm(`Tem certeza que deseja aplicar a ação [${action === 'RESOLVE' ? 'SANCIONAR' : 'IGNORAR'}] para esta denúncia?`);
         if (!confirmar) return;
@@ -260,11 +286,15 @@ document.addEventListener("DOMContentLoaded", function () {
             "AVARIA_PRODUTO": "Avaria na Ferramenta",
             "NAO_DEVOLVEU": "Não Devolução do Item",
             "ITEM_DEFEITUOSO": "Item Defeituoso / Perigoso",
-            "SPAM": "Spam Comercial / Anúncio Falso"
+            "SPAM": "Spam Comercial / Anúncio Falso",
+            "CONTEUDO_INADEQUADO": "Nome ou Foto Inadequada da Ferramenta",
+            "PRODUTO_PROIBIDO": "Produto Proibido ou Ilegal",
+            "FRAUDE_GOLPE": "Suspeita de Fraude / Golpe",
+            "CATEGORIA_INCORRETA": "Categoria Incorreta",
+            "PERFIL_INADEQUADO": "Perfil Inadequado (Nome/Foto)"
         };
         return reasons[reason] || reason;
     }
-
     function bindCheckboxEvents() {
         const rowCheckboxes = document.querySelectorAll('.row-checkbox:not([disabled])');
 
