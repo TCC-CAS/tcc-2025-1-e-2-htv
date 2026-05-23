@@ -45,6 +45,7 @@ public class ToolUsecases {
     private final ToolImageRepository toolImageRepository;
     private final Cloudinary cloudinary;
     private final AddressUsecases addressUsecases;
+    private final com.devolva.use.users.usecases.UserUsecases userUsecases;
 
     public ToolUsecases(
             ToolRepository toolRepository,
@@ -52,7 +53,8 @@ public class ToolUsecases {
             RentalRepository rentalRepository,
             ToolImageRepository toolImageRepository,
             Cloudinary cloudinary,
-            AddressUsecases addressUsecases
+            AddressUsecases addressUsecases,
+            com.devolva.use.users.usecases.UserUsecases userUsecases
     ) {
         this.toolRepository = toolRepository;
         this.userRepository = userRepository;
@@ -60,6 +62,7 @@ public class ToolUsecases {
         this.toolImageRepository = toolImageRepository;
         this.cloudinary = cloudinary;
         this.addressUsecases = addressUsecases;
+        this.userUsecases = userUsecases;
     }
 
     public ToolModel createTool(Long ownerId, CreateToolDto dto) {
@@ -544,8 +547,21 @@ public class ToolUsecases {
         return userRepository.findById(ownerId).map(owner -> {
             long activeTools = toolRepository.countActiveToolsByOwnerId(ownerId);
             int limit = getToolLimitByPlan(owner.getPlano());
-            return activeTools <= limit; // Retorna true se estiver dentro ou igual ao limite
+            return activeTools <= limit;
         }).orElse(false);
     }
+
+    @Transactional
+    public ToolModel impulsionarFerramenta(Long toolId, Long ownerId) {
+        ToolModel tool = findOwnedTool(toolId, ownerId);
+
+        userUsecases.deduzirCreditoImpulsionamento(ownerId);
+
+        tool.setDataFimImpulsionamento(LocalDateTime.now().plusDays(30));
+        tool.setUpdatedAt(LocalDateTime.now());
+
+        return toolRepository.save(tool);
+    }
+
 
 }

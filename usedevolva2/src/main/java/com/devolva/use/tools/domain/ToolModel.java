@@ -1,6 +1,6 @@
 package com.devolva.use.tools.domain;
 
-import jakarta.persistence.*; // Importante para o Spring Boot 3+
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.math.BigDecimal;
@@ -42,9 +42,16 @@ public class ToolModel {
 
     private LocalDate dataInicioDisponibilidade;
     private LocalDate dataFimDisponibilidade;
+    private LocalDateTime dataFimImpulsionamento;
+
+    public boolean isImpulsionada() {
+        return dataFimImpulsionamento != null && dataFimImpulsionamento.isAfter(LocalDateTime.now());
+    }
 
     @Column(length = 1000)
     private String observacoes;
+
+
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
