@@ -6,5 +6,6 @@ public record CreateReportDto(
         Long toolId,
         Long rentalId,
         String reason,
+        String reportedMessages,
         String description
 ) {}

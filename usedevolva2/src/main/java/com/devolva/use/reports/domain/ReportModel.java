@@ -28,6 +28,7 @@ public class ReportModel {
     @Enumerated(EnumType.STRING)
     private ReportStatus status;
 
+    @Column(columnDefinition = "TEXT")
     private String reportedMessages;
 
 

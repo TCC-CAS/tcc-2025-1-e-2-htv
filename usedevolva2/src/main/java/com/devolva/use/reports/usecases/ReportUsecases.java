@@ -5,7 +5,7 @@ import com.devolva.use.reports.domain.ReportStatus;
 import com.devolva.use.reports.dtos.*;
 import com.devolva.use.reports.repository.ReportRepository;
 import com.devolva.use.users.repository.UserRepository;
-import com.devolva.use.tools.repository.ToolRepository; // <-- ADICIONADO
+import com.devolva.use.tools.repository.ToolRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +35,9 @@ public class ReportUsecases {
         report.setRentalId(dto.rentalId());
         report.setReason(dto.reason());
         report.setDescription(dto.description());
+
+        report.setReportedMessages(dto.reportedMessages());
+
         report.setStatus(ReportStatus.PENDING);
         report.setCreatedAt(LocalDateTime.now());
 
@@ -74,13 +77,14 @@ public class ReportUsecases {
                     toolName,
                     report.getRentalId(),
                     reasonStr,
-                    descStr,
                     report.getReportedMessages(),
+                    descStr,
                     statusStr,
                     createdAtStr
             );
         }).toList();
     }
+
     public ReportModel resolveReport(Long reportId, Long adminId, String action) {
         ReportModel report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Denúncia não encontrada."));
