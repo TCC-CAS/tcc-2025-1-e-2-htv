@@ -599,3 +599,113 @@ function showToast(message, type = "error") {
         }
     }, 4000);
 }
+
+
+const btnReportTool = document.getElementById("btnReportTool");
+const btnReportOwner = document.getElementById("btnReportOwner");
+const productReportModal = document.getElementById("productReportModal");
+const btnCloseProductReportModal = document.getElementById("btnCloseProductReportModal");
+const btnCancelProductReport = document.getElementById("btnCancelProductReport");
+const productReportForm = document.getElementById("productReportForm");
+const productReportTargetType = document.getElementById("productReportTargetType");
+const productReportReasonSelect = document.getElementById("productReportReason");
+const productReportModalTitle = document.getElementById("productReportModalTitle");
+
+const toolReasons = `
+        <option value="">Selecione o motivo...</option>
+        <option value="CONTEUDO_INADEQUADO">Nome ou foto inadequada/ofensiva</option>
+        <option value="PRODUTO_PROIBIDO">Produto perigoso, proibido ou ilegal</option>
+        <option value="FRAUDE_GOLPE">Anúncio falso ou tentativa de golpe</option>
+        <option value="CATEGORIA_INCORRETA">Categoria ou informações completamente erradas</option>
+    `;
+
+const userReasons = `
+        <option value="">Selecione o motivo...</option>
+        <option value="PERFIL_INADEQUADO">Nome ou foto de perfil ofensiva/inadequada</option>
+        <option value="COMPORTAMENTO_INADEQUADO">Comportamento inadequado ou abusivo</option>
+        <option value="FRAUDE_GOLPE">Usuário suspeito de aplicar golpes</option>
+        <option value="SPAM">Envio de propagandas ou SPAM</option>
+    `;
+
+if (btnReportTool) {
+    btnReportTool.addEventListener("click", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.id) {
+            showToast("Você precisa fazer login para fazer uma denúncia.");
+            return;
+        }
+        productReportTargetType.value = "TOOL";
+        productReportModalTitle.innerText = "Denunciar Ferramenta";
+        productReportReasonSelect.innerHTML = toolReasons;
+        productReportModal.classList.add("active");
+    });
+}
+
+if (btnReportOwner) {
+    btnReportOwner.addEventListener("click", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.id) {
+            showToast("Você precisa fazer login para fazer uma denúncia.");
+            return;
+        }
+        if (currentTool && Number(currentTool.ownerId) === Number(user.id)) {
+            showToast("Você não pode denunciar a si mesmo.");
+            return;
+        }
+        productReportTargetType.value = "USER";
+        productReportModalTitle.innerText = "Denunciar Usuário";
+        productReportReasonSelect.innerHTML = userReasons;
+        productReportModal.classList.add("active");
+    });
+}
+
+function closeProductReport() {
+    productReportModal.classList.remove("active");
+    if (productReportForm) productReportForm.reset();
+}
+
+if (btnCloseProductReportModal) btnCloseProductReportModal.addEventListener("click", closeProductReport);
+if (btnCancelProductReport) btnCancelProductReport.addEventListener("click", closeProductReport);
+
+if (productReportForm) {
+    productReportForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        const targetType = productReportTargetType.value;
+        const reason = productReportReasonSelect.value;
+        const description = document.getElementById("productReportDescription").value;
+
+        const payload = {
+            reporterId: user.id,
+            reportedUserId: targetType === "USER" ? currentTool.ownerId : null,
+            toolId: targetType === "TOOL" ? currentToolId : null,
+            rentalId: null,
+            reason: reason,
+            description: description,
+            reportedMessages: null
+        };
+
+        try {
+            const response = await fetch("/reports/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro no processamento do servidor.");
+            }
+
+            showToast("Sua denúncia foi registrada com sucesso!", "success");
+            closeProductReport();
+
+        } catch (error) {
+            console.error(error);
+            showToast("Não foi possível enviar a denúncia. Tente novamente.");
+        }
+    });
+}
+
