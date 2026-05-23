@@ -34,8 +34,8 @@ public class EmailNotificationService {
         context.setVariable("userName", user.getNomeCompleto());
         context.setVariable("rentalId", rental.getId());
         context.setVariable("status", statusLabel);
-        context.setVariable("link", "http://usedevolva.sa-east-1.elasticbeanstalk.com/rentals/" + rental.getId());
-
+        context.setVariable("link", "http://usedevolva.sa-east-1.elasticbeanstalk.com/rentals/tracking/" + rental.getId());
+        
         emailService.enviarEmail(user.getEmail(), "Atualização no aluguel #" + rental.getId(), "emails/rental-update", context);
     }
 }
