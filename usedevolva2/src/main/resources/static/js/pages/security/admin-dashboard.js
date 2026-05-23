@@ -135,7 +135,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         panel.style.opacity = '0';
 
-        // Busca a imagem se houver uma ferramenta associada à denúncia
         let toolImageHtml = "";
         if (report.toolId) {
             try {
@@ -143,7 +142,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (imgResponse.ok) {
                     const images = await imgResponse.json();
                     if (images && images.length > 0) {
-                        // Encontra a imagem marcada como principal ou pega a primeira
                         const mainImg = images.find(i => i.principal) || images[0];
 
                         toolImageHtml = `
