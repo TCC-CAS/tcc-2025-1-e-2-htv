@@ -14,6 +14,7 @@ import com.devolva.use.users.repository.UserRepository;
 import com.devolva.use.chats.usecases.ChatUsecases;
 import org.springframework.stereotype.Service;
 import com.devolva.use.emails.EmailNotificationService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@Transactional
 public class RentalUsecases {
 
     private static final BigDecimal SERVICE_FEE_PERCENT = new BigDecimal("0.07");
@@ -113,6 +115,7 @@ public class RentalUsecases {
                 renter.getId().equals(currentUserId)
         );
     }
+
     public RentalModel createRentalRequest(CreateRentalDto dto) {
         validateRentalDates(dto);
 
@@ -177,9 +180,9 @@ public class RentalUsecases {
 
         RentalModel savedRental = rentalRepository.save(rental);
         emailNotificationService.notifyBothParties(savedRental, translateStatus(savedRental.getStatus()));
-
-        return rentalRepository.save(rental);
+        return savedRental;
     }
+
     public RentalModel approveOrRejectRental(Long rentalId, ApproveRentalDto dto) {
         RentalModel rental = findRentalOrThrow(rentalId);
         ToolModel tool = findToolOrThrow(rental.getToolId());
