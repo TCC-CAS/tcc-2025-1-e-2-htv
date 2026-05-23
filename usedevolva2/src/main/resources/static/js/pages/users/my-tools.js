@@ -1,26 +1,47 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const savedUser = JSON.parse(localStorage.getItem("user"));
 
-    if (!user || !user.id) {
+    if (!savedUser || !savedUser.id) {
         window.location.href = "/auth/login";
         return;
     }
 
     try {
-        const response = await fetch(`/tools/owner/${user.id}`);
+        // 1. Busca o usuário atualizado do banco (para garantir o Plano correto)
+        const userResponse = await fetch(`/users/${savedUser.id}`);
+        if (!userResponse.ok) throw new Error("Erro ao buscar dados do usuário.");
+        const user = await userResponse.json();
 
-        if (!response.ok) {
-            throw new Error("Erro ao buscar ferramentas.");
+        localStorage.setItem("user", JSON.stringify(user));
+
+        const toolsResponse = await fetch(`/tools/owner/${user.id}`);
+        if (!toolsResponse.ok) throw new Error("Erro ao carregar ferramentas.");
+        const tools = await toolsResponse.json();
+
+        const activeToolsCount = tools.filter(tool => tool.ativo).length;
+
+        const plano = user.plano || "FREE";
+        let limite = 3;
+        if (plano === "PRATA") limite = 30;
+        if (plano === "OURO") limite = 100;
+
+        const currentPlanEl = document.getElementById("currentPlan"); // Onde exibe o nome do plano
+        if (currentPlanEl) {
+            currentPlanEl.textContent = plano;
         }
 
-        const tools = await response.json();
+        const counterEl = document.getElementById("toolsCounter"); // Onde exibe o 4/0 -> 4/3
+        if (counterEl) {
+            counterEl.textContent = `${activeToolsCount}/${limite}`;
+        }
 
-        renderStats(tools);
-        await renderTools(tools, user.id);
+        if (activeToolsCount > limite) {
+            mostrarAvisoLimiteExcedido(activeToolsCount, limite, plano);
+        }
+
 
     } catch (error) {
-        console.error(error);
-        alert("Não foi possível carregar suas ferramentas.");
+        console.error("Erro ao carregar a página de ferramentas:", error);
     }
 });
 
@@ -227,4 +248,22 @@ function getToolLimitByPlan(plano) {
         case "OURO": return 100;
         default: return 0;
     }
+}
+
+function mostrarAvisoLimiteExcedido(ativas, limite, plano) {
+    const container = document.getElementById("warningContainer") || document.body;
+
+    if (document.getElementById("limitAlertBanner")) return;
+
+    const alertBanner = document.createElement("div");
+    alertBanner.id = "limitAlertBanner";
+    alertBanner.className = "alert-banner danger"; 
+    alertBanner.innerHTML = `
+        <div class="alert-content">
+            <strong>⚠️ Atenção: Limite do plano excedido!</strong>
+            <p>Você possui <strong>${ativas}</strong> ferramentas ativas, mas o seu plano <strong>${plano}</strong> permite apenas <strong>${limite}</strong>. Desative ou exclua alguma ferramenta para voltar ao limite do seu plano.</p>
+        </div>
+    `;
+
+    container.prepend(alertBanner);
 }

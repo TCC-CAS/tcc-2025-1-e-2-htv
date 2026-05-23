@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const previewContainer = document.getElementById("imagePreviewContainer");
     const addressSelect = document.getElementById("addressId");
     const openAddressModalBtn = document.getElementById("openAddressModalBtn");
+    const submitButton = form ? form.querySelector("button[type='submit']") : null;
 
     let selectedFiles = [];
 
@@ -13,18 +14,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
 
     if (savedUser && savedUser.id) {
-        initAddressModal(savedUser.id, async (savedAddress) => {
-            await loadUserAddresses(savedUser.id, savedAddress.id);
-        });
+        // --- VALIDAÇÃO DO PLANO DIRETO DO BANCO DE DADOS ---
         try {
-            const response = await fetch(`/tools/owner/${savedUser.id}`);
-            if (response.ok) {
-                const tools = await response.json();
-                // Conta apenas as ferramentas que estão ativas no banco
+            // 1. Busca os dados atualizados do usuário (igual ao profile.js)
+            const userResponse = await fetch(`/users/${savedUser.id}`);
+            if (!userResponse.ok) {
+                throw new Error("Erro ao carregar dados atualizados do usuário.");
+            }
+            const freshUser = await userResponse.json();
+
+            // Aproveita e atualiza o localStorage para manter tudo sincronizado
+            localStorage.setItem("user", JSON.stringify(freshUser));
+
+            // 2. Busca as ferramentas do usuário para contar as ativas
+            const toolsResponse = await fetch(`/tools/owner/${savedUser.id}`);
+            if (toolsResponse.ok) {
+                const tools = await toolsResponse.json();
                 const activeToolsCount = tools.filter(tool => tool.ativo).length;
 
-                // Define o limite com base no plano salvo no localStorage
-                const plano = savedUser.plano || "FREE";
+                // Pega o plano atualizado direto do banco
+                const plano = freshUser.plano || "FREE";
                 let limite = 3;
                 if (plano === "PRATA") limite = 30;
                 if (plano === "OURO") limite = 100;
@@ -35,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (submitButton) {
                         submitButton.disabled = true;
                         submitButton.textContent = "Limite do Plano Atingido";
-                        submitButton.style.backgroundColor = "#6B7280"; // Deixa o botão cinza
+                        submitButton.style.backgroundColor = "#6B7280"; // Botão cinza
                         submitButton.style.cursor = "not-allowed";
                     }
                 }
@@ -43,6 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
             console.error("Erro ao verificar limite do plano no carregamento:", error);
         }
+        // ---------------------------------------------------
 
         initAddressModal(savedUser.id, async (savedAddress) => {
             await loadUserAddresses(savedUser.id, savedAddress.id);
@@ -152,7 +162,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         event.preventDefault();
 
         const user = JSON.parse(localStorage.getItem("user"));
-        const submitButton = form.querySelector("button[type='submit']");
 
         if (!user || !user.id) {
             window.location.href = "/auth/login";
@@ -279,4 +288,3 @@ function showToast(message, type = "success") {
         }, 3400);
     }
 }
-

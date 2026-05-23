@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             await loadAddressManager(savedUser.id);
         });
     } else {
-        alert("Erro: arquivo address-modal.js não foi carregado.");
+        alert("Erro: Recarregue a página e tente novamente.");
         return;
     }
 
