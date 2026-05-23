@@ -155,8 +155,8 @@ public class UserUsecases {
         userRepository.save(user);
 
         Context context = new Context();
-        context.setVariable("nome", user.getNomeCompleto());
-        context.setVariable("link", "https://seu-site.com/auth/reset-password?token=" + token);
+        String resetUrl = "http://usedevolva.sa-east-1.elasticbeanstalk.com/reset-password?token=" + token;
+        context.setVariable("link", resetUrl);
 
         emailService.enviarEmail(email, "Recuperação de Senha", "emails/reset-password-email", context);
     }
