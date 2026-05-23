@@ -11,7 +11,7 @@ import org.thymeleaf.context.Context;
 public class EmailNotificationService {
 
     private final EmailService emailService;
-    private final UserRepository userRepository; 
+    private final UserRepository userRepository;
 
     public EmailNotificationService(EmailService emailService, UserRepository userRepository) {
         this.emailService = emailService;
