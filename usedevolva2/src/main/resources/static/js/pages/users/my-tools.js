@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // 1. Busca o usuário atualizado do banco (para garantir o Plano correto)
         const userResponse = await fetch(`/users/${savedUser.id}`);
         if (!userResponse.ok) throw new Error("Erro ao buscar dados do usuário.");
         const user = await userResponse.json();
@@ -18,19 +17,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!toolsResponse.ok) throw new Error("Erro ao carregar ferramentas.");
         const tools = await toolsResponse.json();
 
-        const activeToolsCount = tools.filter(tool => tool.ativo).length;
+        renderStats(tools);
+        await renderTools(tools, user.id);
 
+        const activeToolsCount = tools.filter(tool => tool.ativo).length;
         const plano = user.plano || "FREE";
         let limite = 3;
         if (plano === "PRATA") limite = 30;
         if (plano === "OURO") limite = 100;
 
-        const currentPlanEl = document.getElementById("currentPlan"); // Onde exibe o nome do plano
+        const currentPlanEl = document.getElementById("currentPlan");
         if (currentPlanEl) {
             currentPlanEl.textContent = plano;
         }
 
-        const counterEl = document.getElementById("toolsCounter"); // Onde exibe o 4/0 -> 4/3
+        const counterEl = document.getElementById("toolsCounter");
         if (counterEl) {
             counterEl.textContent = `${activeToolsCount}/${limite}`;
         }
@@ -39,12 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             mostrarAvisoLimiteExcedido(activeToolsCount, limite, plano);
         }
 
-
     } catch (error) {
         console.error("Erro ao carregar a página de ferramentas:", error);
     }
 });
-
 function renderStats(tools) {
     const total = tools.length;
     const disponiveis = tools.filter(tool => tool.disponivel && !tool.bloqueadaTemporariamente).length;
@@ -257,7 +256,7 @@ function mostrarAvisoLimiteExcedido(ativas, limite, plano) {
 
     const alertBanner = document.createElement("div");
     alertBanner.id = "limitAlertBanner";
-    alertBanner.className = "alert-banner danger"; 
+    alertBanner.className = "alert-banner danger";
     alertBanner.innerHTML = `
         <div class="alert-content">
             <strong>⚠️ Atenção: Limite do plano excedido!</strong>
