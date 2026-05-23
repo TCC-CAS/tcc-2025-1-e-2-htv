@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // 1. VERIFICAÇÃO DE SEGURANÇA LOCAL
     const adminData = JSON.parse(localStorage.getItem("admin"));
 
     if (!adminData || !adminData.id) {
@@ -7,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    const adminSpan = document.querySelector("header div span");
+    const adminSpan = document.querySelector("header div[style] span");
     if (adminSpan) {
         adminSpan.textContent = `Olá, ${adminData.nome}`;
     }
@@ -71,13 +72,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             tr.innerHTML = `
                 <td><input type="checkbox" class="row-checkbox" ${!isPending ? 'disabled' : ''}></td>
-                <td><span class="badge badge-alta">🔴 Alta</span></td>
+                <td>${getPriorityBadge(report.reason)}</td>
                 <td><span class="badge badge-tipo-user">👤 Utilizador</span></td>
                 <td>
-                    <a href="#" class="preview-link">
-                        #R-${report.id} <br>
-                        <span style="font-size: 0.8rem; font-weight: normal; color: var(--cor-texto-medio);">
+                    <a href="#" class="preview-link" style="text-decoration: none; color: inherit;">
+                        <strong>#R-${report.id}</strong> <br>
+                        <span style="font-size: 0.8rem; color: var(--cor-texto-medio);">
                             Locação: #${report.rentalId || 'N/A'}
+                        </span><br>
+                        <span style="font-size: 0.75rem; color: #888; display: block; margin-top: 2px;">
+                            📅 ${formatDateTime(report.createdAt)}
                         </span>
                     </a>
                 </td>
@@ -113,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (isPending) {
                 tr.querySelectorAll(".btn-action").forEach(btn => {
                     btn.addEventListener("click", async function(e) {
-                        e.stopPropagation(); // Evita conflitos com outros cliques na linha
+                        e.stopPropagation();
                         const id = this.getAttribute("data-id");
                         const action = this.getAttribute("data-action");
                         await handleResolveReport(id, action);
@@ -136,9 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
             document.getElementById('invName').innerText = targetName;
             document.getElementById('invId').innerText = `Contexto Denúncia: #R-${report.id}`;
-
-            const dataCriacao = report.createdAt ? new Date(report.createdAt).toLocaleDateString('pt-BR') : "Data indisponível";
-            document.getElementById('invSubtitle').innerText = `${roleTitle} • Aberto em: ${dataCriacao}`;
+            document.getElementById('invSubtitle').innerText = `${roleTitle} • Enviado em: ${formatDateTime(report.createdAt)}`;
 
             const avatarEl = document.getElementById('invAvatar');
             if (avatarEl) {
@@ -163,9 +165,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             document.getElementById('invTimeline').innerHTML = `
+                ${report.reportedMessages ? `
+                    <div class="timeline-item" style="margin-bottom: 12px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                        <strong style="color: #856404;">💬 Mensagens Denunciadas no Chat:</strong><br>
+                        <p style="font-style: italic; margin-top: 5px; white-space: pre-wrap; color: #856404;">"${report.reportedMessages}"</p>
+                    </div>
+                ` : ''}
                 <div class="timeline-item danger">
-                    <strong>Relato do Denunciante:</strong><br>
-                    "${report.description || 'Sem descrição fornecida.'}"
+                    <strong>📝 Relato Adicional do Denunciante:</strong><br>
+                    <p style="margin-top: 5px; white-space: pre-wrap;">"${report.description || 'Sem descrição fornecida.'}"</p>
                 </div>
             `;
 
@@ -192,6 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 300);
     }
 
+    // 5. ENVIAR RESOLUÇÃO PARA O BACKEND
     async function handleResolveReport(reportId, action) {
         const confirmar = confirm(`Tem certeza que deseja aplicar a ação [${action === 'RESOLVE' ? 'SANCIONAR' : 'IGNORAR'}] para esta denúncia?`);
         if (!confirmar) return;
@@ -208,13 +217,33 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!response.ok) throw new Error("Falha ao atualizar denúncia.");
 
             alert("Denúncia atualizada com sucesso!");
-            fetchReports(); // Recarrega a tabela limpa atualizada
+            fetchReports();
 
             const panel = document.getElementById('investigationPanel');
             if (panel) panel.style.opacity = '0';
             document.getElementById('invName').innerText = "Selecione um item";
         } catch (error) {
             alert(error.message);
+        }
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return "Data indisponível";
+        const date = new Date(dateStr);
+        return date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    }
+
+    function getPriorityBadge(reason) {
+        switch (reason) {
+            case "NAO_DEVOLVEU":
+            case "ITEM_DEFEITUOSO":
+                return `<span class="badge badge-alta" style="background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;">🔴 Alta</span>`;
+            case "AVARIA_PRODUTO":
+            case "COMPORTAMENTO_INADEQUADO":
+                return `<span class="badge badge-media" style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba;">🟡 Média</span>`;
+            case "SPAM":
+            default:
+                return `<span class="badge badge-baixa" style="background: #cce5ff; color: #004085; border: 1px solid #b8daff;">🔵 Baixa</span>`;
         }
     }
 

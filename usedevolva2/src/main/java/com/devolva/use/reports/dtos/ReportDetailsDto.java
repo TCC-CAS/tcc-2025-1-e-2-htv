@@ -8,6 +8,7 @@ public record ReportDetailsDto(
         String toolName,
         Long rentalId,
         String reason,
+        String reportedMessages,
         String description,
         String status,
         String createdAt

@@ -28,6 +28,9 @@ public class ReportModel {
     @Enumerated(EnumType.STRING)
     private ReportStatus status;
 
+    private String reportedMessages;
+
+
     private LocalDateTime createdAt;
     private LocalDateTime resolvedAt;
     private Long resolvedById;

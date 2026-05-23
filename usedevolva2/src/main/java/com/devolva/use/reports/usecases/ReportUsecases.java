@@ -75,6 +75,7 @@ public class ReportUsecases {
                     report.getRentalId(),
                     reasonStr,
                     descStr,
+                    report.getReportedMessages(),
                     statusStr,
                     createdAtStr
             );
