@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth") // Caminho base: /auth
+@RequestMapping("/auth")
 public class AuthenticationController {
 
     private final UserUsecases userUsecases;
