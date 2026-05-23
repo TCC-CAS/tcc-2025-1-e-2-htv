@@ -321,10 +321,9 @@ function updateBookingSummary() {
 
     document.getElementById("baseValue").textContent = formatCurrency(base);
 
-    document.getElementById("serviceFee").textContent = "R$ 0,00 (Inclusa)";
+    document.getElementById("serviceFee").textContent = `${formatCurrency(serviceFee)} (Inclusa)`;
     document.getElementById("totalValue").textContent = formatCurrency(total);
 }
-
 function formatAvailability(tool) {
     const hasStart = !!tool.dataInicioDisponibilidade;
     const hasEnd = !!tool.dataFimDisponibilidade;
