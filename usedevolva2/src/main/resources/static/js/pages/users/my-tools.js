@@ -93,19 +93,6 @@ function renderStats(tools) {
     document.getElementById("availableTools").textContent = disponiveis;
     document.getElementById("rentedTools").textContent = alugadas;
     document.getElementById("blockedTools").textContent = bloqueadas;
-
-    const boostCreditsBadge = document.getElementById("boostCreditsBadge");
-    const boostCreditsValue = document.getElementById("boostCreditsValue");
-
-    if (boostCreditsBadge && boostCreditsValue) {
-        if (planoUsuario === "PRATA" || planoUsuario === "OURO") {
-            boostCreditsBadge.style.display = "block";
-            boostCreditsValue.textContent = user?.creditosImpulsionamento ?? 0;
-        } else {
-            boostCreditsBadge.style.display = "none";
-        }
-    }
-
 }
 
 async function renderTools(tools, ownerId) {
@@ -134,32 +121,57 @@ async function renderTools(tools, ownerId) {
         container.innerHTML += `
             <article class="tool-card" ${status.expirada ? 'style="border-color: #FCA5A5;"' : ''}>
                 <div class="tool-image-container">
-                    ${mainImage ? `<img src="${mainImage}" alt="${tool.nome}" class="tool-image">` : `<div class="tool-image-placeholder">Sem imagem</div>`}
-                    <span class="tool-badge ${status.className}">${status.label}</span>
+                    ${
+            mainImage
+                ? `<img src="${mainImage}" alt="${tool.nome}" class="tool-image">`
+                : `<div class="tool-image-placeholder">Sem imagem</div>`
+        }
+
+                    <span class="tool-badge ${status.className}">
+                        ${status.label}
+                    </span>
                 </div>
 
                 <div class="tool-info">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="tool-category">${tool.categoria || "Sem categoria"}</div>
-                        ${tool.impulsionada ? `<span style="background-color: #FEF3C7; color: #D97706; font-size: 0.75rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 2px;">✨ Impulsionada</span>` : ''}
-                    </div>
+                    <div class="tool-category">${tool.categoria || "Sem categoria"}</div>
 
                     <h3 class="tool-title">${tool.nome}</h3>
-                   
+
+                    <div class="tool-details">
+                        <div class="detail-item">
+                            <strong>Estado</strong>
+                            <span>${tool.estadoConservacao || "Não informado"}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <strong>Disponibilidade</strong>
+                            <span ${status.expirada ? 'style="color: #DC2626; font-weight: bold;"' : ''}>${status.label}</span>
+                        </div>
+                    </div>
+
+                    ${avisoExpiradoHtml} 
+
+                    <div class="price-tag" style="margin-top: 12px;">
+                        R$ ${formatMoney(tool.valorDiaria)} <span>/ dia</span>
+                    </div>
+                </div>
+
                 <div class="tool-actions">
-                    <button class="action-btn" title="Ver Anúncio Público" onclick="viewTool(${tool.id})">Ver</button>
-                    <button class="action-btn" title="Editar" onclick="editTool(${tool.id})" ${status.expirada ? 'style="background-color: #DC2626; color: white;"' : ''}>Editar</button>
-                    
-                    <button class="action-btn" title="Impulsionar Anúncio" 
-                            onclick="boostTool(${tool.id}, ${ownerId})" 
-                            ${tool.impulsionada || tool.bloqueadaTemporariamente || !tool.disponivel ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
-                        ${tool.impulsionada ? "Impulsionada" : "Impulsionar ✨"}
+                    <button class="action-btn" title="Ver Anúncio Público" onclick="viewTool(${tool.id})">
+                        Ver
+                    </button>
+
+                    <button class="action-btn" title="Editar" onclick="editTool(${tool.id})" ${status.expirada ? 'style="background-color: #DC2626; color: white;"' : ''}>
+                        Editar
                     </button>
 
                     <button class="action-btn" title="Bloquear ou reativar" onclick="toggleBlockTool(${tool.id}, ${ownerId}, ${!tool.bloqueadaTemporariamente})">
                         ${tool.bloqueadaTemporariamente ? "Reativar" : "Bloquear"}
                     </button>
-                    <button class="action-btn danger" title="Excluir" onclick="deleteTool(${tool.id}, ${ownerId})">Excluir</button>
+
+                    <button class="action-btn danger" title="Excluir" onclick="deleteTool(${tool.id}, ${ownerId})">
+                        Excluir
+                    </button>
                 </div>
             </article>
         `;
@@ -304,27 +316,3 @@ function mostrarAvisoLimiteExcedido(ativas, limite, plano) {
 
     container.prepend(alertBanner);
 }
-
-async function boostTool(toolId, ownerId) {
-    const confirmBoost = confirm("Deseja utilizar 1 crédito mensal para impulsionar esta ferramenta por 30 dias no topo do marketplace?");
-    if (!confirmBoost) return;
-
-    try {
-        const response = await fetch(`/tools/${toolId}/owner/${ownerId}/boost`, {
-            method: "POST"
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || "Erro ao tentar impulsionar a ferramenta.");
-        }
-
-        alert("Ferramenta impulsionada com sucesso! Ela ficará em destaque pelos próximos 30 dias. ✨");
-        window.location.reload();
-
-    } catch (error) {
-        console.error(error);
-        alert(error.message || "Não foi possível concluir o impulsionamento.");
-    }
-}
-

@@ -49,7 +49,6 @@ public class UserUsecases {
         user.setAceitouPoliticaPrivacidade(dto.aceitouPoliticaPrivacidade());
         user.setStatus(UserStatus.ATIVO);
         user.setPlano(UserModel.Plano.FREE);
-        user.setCreditosImpulsionamento(0);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
@@ -175,49 +174,5 @@ public class UserUsecases {
         user.setResetPasswordTokenExpiresAt(null);
         userRepository.save(user);
     }
-
-    public UserModel atualizarPlano(Long userId, UserModel.Plano novoPlano) {
-        UserModel user = findActiveUser(userId);
-        user.setPlano(novoPlano);
-
-        if (novoPlano == UserModel.Plano.OURO) {
-            user.setCreditosImpulsionamento(30);
-        } else if (novoPlano == UserModel.Plano.PRATA) {
-            user.setCreditosImpulsionamento(5);
-        } else {
-            user.setCreditosImpulsionamento(0);
-        }
-
-        user.setUpdatedAt(LocalDateTime.now());
-        return userRepository.save(user);
-    }
-
-    public void deduzirCreditoImpulsionamento(Long userId) {
-        UserModel user = findActiveUser(userId);
-
-        if (user.getCreditosImpulsionamento() <= 0) {
-            throw new IllegalStateException("Você não possui créditos de impulsionamento disponíveis.");
-        }
-
-        user.setCreditosImpulsionamento(user.getCreditosImpulsionamento() - 1);
-        userRepository.save(user);
-    }
-
-    public void renovarCreditosMensais() {
-        userRepository.findByPlano(UserModel.Plano.OURO).forEach(user -> {
-            user.setCreditosImpulsionamento(30);
-            user.setUpdatedAt(LocalDateTime.now());
-            userRepository.save(user);
-        });
-
-        userRepository.findByPlano(UserModel.Plano.PRATA).forEach(user -> {
-            user.setCreditosImpulsionamento(5);
-            user.setUpdatedAt(LocalDateTime.now());
-            userRepository.save(user);
-        });
-
-        System.out.println("🚀 [Scheduler] Créditos de impulsionamento renovados para usuários Prata e Ouro!");
-    }
-
 
 }

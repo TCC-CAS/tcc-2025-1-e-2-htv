@@ -125,7 +125,7 @@ public class ToolController {
     }
 
     @PatchMapping("/{toolId}/owner/{ownerId}/block")
-    public ResponseEntity<?> blockTool(
+    public ResponseEntity<?> blockTool( 
                                         @PathVariable Long toolId,
                                         @PathVariable Long ownerId,
                                         @RequestBody BlockToolDto dto
@@ -135,23 +135,6 @@ public class ToolController {
             return ResponseEntity.ok(tool);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/{toolId}/owner/{ownerId}/boost")
-    public ResponseEntity<?> boostTool(
-            @PathVariable Long toolId,
-            @PathVariable Long ownerId
-    ) {
-        try {
-            ToolModel tool = toolUsecases.impulsionarFerramenta(toolId, ownerId);
-            return ResponseEntity.ok(tool);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro inesperado ao impulsionar ferramenta: " + e.getMessage());
         }
     }
 

@@ -61,11 +61,5 @@ public class UserModel {
         this.plano = Plano.FREE;
     }
 
-    @Column(name = "creditos_impulsionamento")
-    private int creditosImpulsionamento = 0;
-
-    @Column(name = "impulsionada")
-    private boolean impulsionada = false;
-
 
 }
