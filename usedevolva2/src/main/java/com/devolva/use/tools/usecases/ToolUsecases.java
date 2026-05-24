@@ -1,13 +1,10 @@
 package com.devolva.use.tools.usecases;
 
-import com.devolva.use.tools.dtos.ToolFilterDto;
+import com.devolva.use.tools.dtos.*;
 import com.devolva.use.rentals.domain.RentalModel;
 import com.devolva.use.rentals.domain.RentalStatus;
 import com.devolva.use.rentals.repository.RentalRepository;
 import com.devolva.use.tools.domain.ToolModel;
-import com.devolva.use.tools.dtos.BlockToolDto;
-import com.devolva.use.tools.dtos.CreateToolDto;
-import com.devolva.use.tools.dtos.UpdateToolDto;
 import com.devolva.use.tools.repository.ToolImageRepository;
 import com.devolva.use.tools.repository.ToolRepository;
 import com.devolva.use.users.domain.UserModel;
@@ -410,30 +407,26 @@ public class ToolUsecases {
     }
 
     @Transactional(readOnly = true)
-    public List<ToolModel> listAvailableTools() {
+    public List<ToolResponseDto> listAvailableTools() {
         List<ToolModel> tools = toolRepository.findByAtivoTrueAndDisponivelTrue();
-        List<ToolModel> filteredTools = new java.util.ArrayList<>();
+        List<ToolResponseDto> filteredTools = new java.util.ArrayList<>();
 
-        java.util.Map<Long, Boolean> ownerStatusCache = new java.util.HashMap<>();
+        java.util.Map<Long, UserModel> ownerCache = new java.util.HashMap<>();
 
         for (ToolModel tool : tools) {
             Long ownerId = tool.getOwnerId();
 
-            boolean isValid = ownerStatusCache.computeIfAbsent(ownerId, id -> {
-                try {
-                    return userRepository.findById(id).map(owner -> {
-                        long activeTools = toolRepository.countActiveToolsByOwnerId(id);
-                        int limit = getToolLimitByPlan(owner.getPlano());
-                        return activeTools <= limit;
-                    }).orElse(false);
-                } catch (Exception e) {
-                    System.err.println("Erro ao validar limite do plano para o usuário " + id + ": " + e.getMessage());
-                    return false;
-                }
-            });
+            UserModel owner = ownerCache.computeIfAbsent(ownerId, id ->
+                    userRepository.findById(id).orElse(null)
+            );
 
-            if (isValid) {
-                filteredTools.add(tool);
+            if (owner != null) {
+                long activeTools = toolRepository.countActiveToolsByOwnerId(ownerId);
+                int limit = getToolLimitByPlan(owner.getPlano());
+
+                if (activeTools <= limit) {
+                    filteredTools.add(mapToResponseDto(tool, owner));
+                }
             }
         }
         return filteredTools;
@@ -454,6 +447,14 @@ public class ToolUsecases {
         return toolRepository.findById(toolId)
                 .orElseThrow(() -> new IllegalArgumentException("Ferramenta não encontrada"));
     }
+
+    @Transactional(readOnly = true)
+    public ToolResponseDto findToolDetailsById(Long toolId) {
+        ToolModel tool = findById(toolId);
+        UserModel owner = userRepository.findById(tool.getOwnerId()).orElse(null);
+        return mapToResponseDto(tool, owner);
+    }
+
 
     public ToolModel blockTool(Long toolId, Long ownerId, BlockToolDto dto) {
         ToolModel tool = findOwnedTool(toolId, ownerId);
@@ -493,7 +494,7 @@ public class ToolUsecases {
     }
 
     @Transactional(readOnly = true)
-    public List<ToolModel> searchTools(ToolFilterDto filter) {
+    public List<ToolResponseDto> searchTools(ToolFilterDto filter) {
         String busca = normalize(filter.busca());
         String categoria = normalize(filter.categoria());
         String estadoConservacao = normalize(filter.estadoConservacao());
@@ -507,26 +508,23 @@ public class ToolUsecases {
                 filter.disponivel()
         );
 
-        List<ToolModel> filteredTools = new java.util.ArrayList<>();
-        java.util.Map<Long, Boolean> ownerStatusCache = new java.util.HashMap<>();
+        List<ToolResponseDto> filteredTools = new java.util.ArrayList<>();
+        java.util.Map<Long, UserModel> ownerCache = new java.util.HashMap<>();
 
         for (ToolModel tool : tools) {
             Long ownerId = tool.getOwnerId();
 
-            boolean isValid = ownerStatusCache.computeIfAbsent(ownerId, id -> {
-                try {
-                    return userRepository.findById(id).map(owner -> {
-                        long activeTools = toolRepository.countActiveToolsByOwnerId(id);
-                        int limit = getToolLimitByPlan(owner.getPlano());
-                        return activeTools <= limit;
-                    }).orElse(false);
-                } catch (Exception e) {
-                    return false;
-                }
-            });
+            UserModel owner = ownerCache.computeIfAbsent(ownerId, id ->
+                    userRepository.findById(id).orElse(null)
+            );
 
-            if (isValid) {
-                filteredTools.add(tool);
+            if (owner != null) {
+                long activeTools = toolRepository.countActiveToolsByOwnerId(ownerId);
+                int limit = getToolLimitByPlan(owner.getPlano());
+
+                if (activeTools <= limit) {
+                    filteredTools.add(mapToResponseDto(tool, owner));
+                }
             }
         }
         return filteredTools;
@@ -547,5 +545,27 @@ public class ToolUsecases {
             return activeTools <= limit; // Retorna true se estiver dentro ou igual ao limite
         }).orElse(false);
     }
+
+    private ToolResponseDto mapToResponseDto(ToolModel tool, UserModel owner) {
+        String ownerNome = (owner != null) ? owner.getNomeCompleto() : "Desconhecido";
+        String ownerPlano = (owner != null && owner.getPlano() != null) ? owner.getPlano().name() : "FREE";
+
+        return new ToolResponseDto(
+                tool.getId(),
+                tool.getNome(),
+                tool.getDescricao(),
+                tool.getCategoria(),
+                tool.getEstadoConservacao(),
+                tool.getValorDiaria(),
+                tool.getOwnerId(),
+                ownerNome,
+                ownerPlano,
+                tool.isDisponivel(),
+                tool.getCidade(),
+                tool.getEstado()
+        );
+    }
+
+
 
 }

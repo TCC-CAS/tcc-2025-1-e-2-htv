@@ -2,10 +2,7 @@ package com.devolva.use.tools;
 
 import com.devolva.use.tools.domain.ToolImageModel;
 import com.devolva.use.tools.domain.ToolModel;
-import com.devolva.use.tools.dtos.BlockToolDto;
-import com.devolva.use.tools.dtos.CreateToolDto;
-import com.devolva.use.tools.dtos.ToolFilterDto;
-import com.devolva.use.tools.dtos.UpdateToolDto;
+import com.devolva.use.tools.dtos.*;
 import com.devolva.use.tools.usecases.ToolUsecases;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,8 +59,9 @@ public class ToolController {
     public ResponseEntity<List<ToolModel>> listOwnerTools(@PathVariable Long ownerId) {
         return ResponseEntity.ok(toolUsecases.listOwnerTools(ownerId));
     }
+
     @GetMapping("/search")
-    public ResponseEntity<List<ToolModel>> searchTools(
+    public ResponseEntity<List<ToolResponseDto>> searchTools(
             @RequestParam(required = false) String busca,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String estadoConservacao,
@@ -83,9 +81,10 @@ public class ToolController {
         return ResponseEntity.ok(toolUsecases.searchTools(filter));
     }
 
+
     @GetMapping("/{toolId}")
-    public ResponseEntity<ToolModel> findById(@PathVariable Long toolId) {
-        return ResponseEntity.ok(toolUsecases.findById(toolId));
+    public ResponseEntity<ToolResponseDto> findById(@PathVariable Long toolId) {
+        return ResponseEntity.ok(toolUsecases.findToolDetailsById(toolId));
     }
 
     @PostMapping("/{toolId}/owner/{ownerId}/images")
@@ -119,8 +118,9 @@ public class ToolController {
         toolUsecases.setMainImage(imageId, ownerId);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping
-    public ResponseEntity<List<ToolModel>> listAvailableTools() {
+    public ResponseEntity<List<ToolResponseDto>> listAvailableTools() {
         return ResponseEntity.ok(toolUsecases.listAvailableTools());
     }
 

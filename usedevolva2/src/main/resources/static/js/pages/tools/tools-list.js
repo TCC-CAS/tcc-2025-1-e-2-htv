@@ -12,6 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const headerSearchForm = document.getElementById("headerSearchForm");
     const headerSearchInput = document.getElementById("headerSearchInput");
+
+    const ordenacaoSelect = document.getElementById("ordenacao");
+    const estadoFiltroInput = document.getElementById("estadoFiltro");
+    const cidadeFiltroInput = document.getElementById("cidadeFiltro");
+
+
     let userFavoriteIds = [];
     let allTools = [];
     let currentSearchTerm = "";
@@ -29,24 +35,34 @@ document.addEventListener("DOMContentLoaded", () => {
             applyFilters();
         });
     }
+        if (ordenacaoSelect) {
+            ordenacaoSelect.addEventListener("change", () => {
+                applyFilters();
+            });
+        }
 
-    if (clearFiltersBtn) {
-        clearFiltersBtn.addEventListener("click", () => {
-            currentSearchTerm = "";
 
-            categoriaSelect.value = "";
-            estadoConservacaoSelect.value = "";
-            valorMinimoInput.value = "";
-            valorMaximoInput.value = "";
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener("click", () => {
+                currentSearchTerm = "";
 
-            if (headerSearchInput) {
-                headerSearchInput.value = "";
-            }
+                categoriaSelect.value = "";
+                estadoConservacaoSelect.value = "";
+                valorMinimoInput.value = "";
+                valorMaximoInput.value = "";
 
-            window.history.pushState({}, "", "/tools/tools-list");
-            applyFilters();
-        });
-    }
+                estadoFiltroInput.value = "";
+                cidadeFiltroInput.value = "";
+                ordenacaoSelect.value = "destaque";
+
+                if (headerSearchInput) {
+                    headerSearchInput.value = "";
+                }
+
+                window.history.pushState({}, "", "/tools/tools-list");
+                applyFilters();
+            });
+        }
 
     if (headerSearchForm && headerSearchInput) {
         headerSearchForm.addEventListener("submit", (event) => {
@@ -88,142 +104,152 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function applyFilters() {
-        const busca = normalizeText(currentSearchTerm);
-        const categoria = normalizeText(categoriaSelect.value);
-        const estadoConservacao = normalizeText(estadoConservacaoSelect.value);
+        function applyFilters() {
+            const busca = normalizeText(currentSearchTerm);
+            const categoria = normalizeText(categoriaSelect.value);
+            const estadoConservacao = normalizeText(estadoConservacaoSelect.value);
+            const estadoFiltro = normalizeText(estadoFiltroInput.value);
+            const cidadeFiltro = normalizeText(cidadeFiltroInput.value);
 
-        const valorMinimo = valorMinimoInput.value ? Number(valorMinimoInput.value) : null;
-        const valorMaximo = valorMaximoInput.value ? Number(valorMaximoInput.value) : null;
+            const valorMinimo = valorMinimoInput.value ? Number(valorMinimoInput.value) : null;
+            const valorMaximo = valorMaximoInput.value ? Number(valorMaximoInput.value) : null;
 
-        const filteredTools = allTools.filter((tool) => {
-            const nome = normalizeText(tool.nome);
-            const descricao = normalizeText(tool.descricao);
-            const toolCategoria = normalizeText(tool.categoria);
-            const toolEstado = normalizeText(tool.estadoConservacao);
-            const valorDiaria = Number(tool.valorDiaria || 0);
+            let filteredTools = allTools.filter((tool) => {
+                const nome = normalizeText(tool.nome);
+                const descricao = normalizeText(tool.descricao);
+                const toolCategoria = normalizeText(tool.categoria);
+                const toolEstadoConservacao = normalizeText(tool.estadoConservacao);
+                const toolEstado = normalizeText(tool.estado);
+                const toolCidade = normalizeText(tool.cidade);
+                const valorDiaria = Number(tool.valorDiaria || 0);
 
-            const matchBusca =
-                !busca ||
-                nome.includes(busca) ||
-                descricao.includes(busca);
+                const matchBusca = !busca || nome.includes(busca) || descricao.includes(busca);
+                const matchCategoria = !categoria || toolCategoria === categoria;
+                const matchEstadoConservacao = !estadoConservacao || toolEstadoConservacao === estadoConservacao;
+                const matchEstado = !estadoFiltro || toolEstado.includes(estadoFiltro);
+                const matchCidade = !cidadeFiltro || toolCidade.includes(cidadeFiltro);
+                const matchValorMinimo = valorMinimo === null || valorDiaria >= valorMinimo;
+                const matchValorMaximo = valorMaximo === null || valorDiaria <= valorMaximo;
 
-            const matchCategoria =
-                !categoria ||
-                toolCategoria === categoria;
-
-            const matchEstado =
-                !estadoConservacao ||
-                toolEstado === estadoConservacao;
-
-            const matchValorMinimo =
-                valorMinimo === null ||
-                valorDiaria >= valorMinimo;
-
-            const matchValorMaximo =
-                valorMaximo === null ||
-                valorDiaria <= valorMaximo;
-
-            return (
-                matchBusca &&
-                matchCategoria &&
-                matchEstado &&
-                matchValorMinimo &&
-                matchValorMaximo
-            );
-        });
-
-        renderTools(filteredTools);
-        updateSummary(filteredTools.length);
-    }
-
-    async function renderTools(tools) {
-        resultsGrid.innerHTML = "";
-
-        if (!tools || tools.length === 0) {
-            resultsGrid.innerHTML = `
-            <div class="empty-results">
-                <h2>Nenhuma ferramenta encontrada</h2>
-                <p>Tente alterar os filtros ou buscar por outro termo.</p>
-            </div>
-        `;
-            return;
-        }
-
-        for (const tool of tools) {
-            const imageUrl = await getMainImage(tool.id);
-            const isFavorited = userFavoriteIds.includes(tool.id);
-
-            const card = document.createElement("article");
-            card.className = "tool-card";
-            card.setAttribute("role", "link");
-            card.setAttribute("tabindex", "0");
-            card.setAttribute("aria-label", `Ver detalhes de ${tool.nome || "ferramenta"}`);
-
-            card.addEventListener("click", () => {
-                window.location.href = `/tools/page/${tool.id}`;
+                return matchBusca && matchCategoria && matchEstadoConservacao && matchEstado && matchCidade && matchValorMinimo && matchValorMaximo;
             });
 
-            card.addEventListener("keydown", (event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    window.location.href = `/tools/page/${tool.id}`;
+            filteredTools.sort((a, b) => {
+                const aIsOuro = a.ownerPlano === "OURO" ? 1 : 0;
+                const bIsOuro = b.ownerPlano === "OURO" ? 1 : 0;
+
+                if (aIsOuro !== bIsOuro) {
+                    return bIsOuro - aIsOuro;
                 }
+
+                const ordemTipo = ordenacaoSelect.value;
+                if (ordemTipo === "precoAsc") {
+                    return Number(a.valorDiaria) - Number(b.valorDiaria);
+                } else if (ordemTipo === "precoDesc") {
+                    return Number(b.valorDiaria) - Number(a.valorDiaria);
+                }
+
+                return 0;
             });
 
-            card.innerHTML = `
-            <div class="tool-image-wrapper" style="position: relative;">
-                <img 
-                    src="${imageUrl}" 
-                    alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" 
-                    class="tool-image"
-                >
-                <button 
-                    type="button" 
-                    class="btn-card-favorite ${isFavorited ? 'active' : ''}" 
-                    data-tool-id="${tool.id}"
-                    aria-label="${isFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"
-                    style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: transform 0.2s;"
-                >
-                    <svg width="20" height="20" fill="${isFavorited ? '#e02424' : 'none'}" stroke="${isFavorited ? '#e02424' : 'currentColor'}" viewBox="0 0 24 24" stroke-width="2">
-                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="tool-info">
-                <span class="tool-category">
-                    ${escapeHtml(formatCategory(tool.categoria))}
-                </span>
-
-                <a href="/tools/page/${tool.id}" class="tool-name">
-                    ${escapeHtml(tool.nome || "Ferramenta sem nome")}
-                </a>
-
-                <p class="tool-description">
-                    ${escapeHtml(limitText(tool.descricao || "Sem descrição disponível.", 90))}
-                </p>
-
-                <div class="tool-price">
-                    ${formatCurrency(tool.valorDiaria)} <span>/dia</span>
-                </div>
-
-                <div class="tool-meta">
-                    <span>📍 ${escapeHtml(tool.localizacao || "Localização não informada")}</span>
-                    <span class="status-available">Disponível</span>
-                </div>
-            </div>
-        `;
-
-            const favBtn = card.querySelector(".btn-card-favorite");
-            favBtn.addEventListener("click", async (e) => {
-                e.stopPropagation();
-                await toggleFavoriteListCard(favBtn, tool.id);
-            });
-
-            resultsGrid.appendChild(card);
+            renderTools(filteredTools);
+            updateSummary(filteredTools.length);
         }
-    }
+
+        async function renderTools(tools) {
+            resultsGrid.innerHTML = "";
+
+            if (!tools || tools.length === 0) {
+                resultsGrid.innerHTML = `
+        <div class="empty-results">
+            <h2>Nenhuma ferramenta encontrada</h2>
+            <p>Tente alterar os filtros ou buscar por outro termo.</p>
+        </div>
+    `;
+                return;
+            }
+
+            for (const tool of tools) {
+                const imageUrl = await getMainImage(tool.id);
+                const isFavorited = userFavoriteIds.includes(tool.id);
+
+                const card = document.createElement("article");
+                card.className = "tool-card";
+                card.setAttribute("role", "link");
+                card.setAttribute("tabindex", "0");
+                card.setAttribute("aria-label", `Ver detalhes de ${tool.nome || "ferramenta"}`);
+
+                card.addEventListener("click", () => {
+                    window.location.href = `/tools/page/${tool.id}`;
+                });
+
+                card.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        window.location.href = `/tools/page/${tool.id}`;
+                    }
+                });
+
+                card.innerHTML = `
+        <div class="tool-image-wrapper" style="position: relative;">
+            <img 
+                src="${imageUrl}" 
+                alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" 
+                class="tool-image"
+            >
+            
+            ${tool.ownerPlano === 'OURO' ? `
+                <span class="badge-ouro" style="position: absolute; top: 10px; left: 10px; background: #fbbf24; color: #000; font-weight: bold; font-size: 11px; padding: 4px 8px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; gap: 4px;">
+                    ⭐ Destaque
+                </span>
+            ` : ''}
+
+            <button 
+                type="button" 
+                class="btn-card-favorite ${isFavorited ? 'active' : ''}" 
+                data-tool-id="${tool.id}"
+                aria-label="${isFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"
+                style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: transform 0.2s;"
+            >
+                <svg width="20" height="20" fill="${isFavorited ? '#e02424' : 'none'}" stroke="${isFavorited ? '#e02424' : 'currentColor'}" viewBox="0 0 24 24" stroke-width="2">
+                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="tool-info">
+            <span class="tool-category">
+                ${escapeHtml(formatCategory(tool.categoria))}
+            </span>
+
+            <a href="/tools/page/${tool.id}" class="tool-name">
+                ${escapeHtml(tool.nome || "Ferramenta sem nome")}
+            </a>
+
+            <p class="tool-description">
+                ${escapeHtml(limitText(tool.descricao || "Sem descrição disponível.", 90))}
+            </p>
+
+            <div class="tool-price">
+                ${formatCurrency(tool.valorDiaria)} <span>/dia</span>
+            </div>
+
+            <div class="tool-meta">
+                <span>📍 ${escapeHtml(tool.localizacao || "Localização não informada")}</span>
+                <span class="status-available">Disponível</span>
+            </div>
+        </div>
+    `;
+
+                const favBtn = card.querySelector(".btn-card-favorite");
+                favBtn.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    await toggleFavoriteListCard(favBtn, tool.id);
+                });
+
+                resultsGrid.appendChild(card);
+            }
+        }
 
     async function getMainImage(toolId) {
         try {
@@ -292,52 +318,64 @@ document.addEventListener("DOMContentLoaded", () => {
         searchSummary.textContent = "Erro ao carregar resultados.";
     }
 
-    function updateUrlFromFilters() {
-        const params = new URLSearchParams();
+        function updateUrlFromFilters() {
+            const params = new URLSearchParams();
 
-        const busca = currentSearchTerm.trim();
-        const categoria = categoriaSelect.value;
-        const estadoConservacao = estadoConservacaoSelect.value;
-        const valorMinimo = valorMinimoInput.value;
-        const valorMaximo = valorMaximoInput.value;
+            const busca = currentSearchTerm.trim();
+            const categoria = categoriaSelect.value;
+            const estadoConservacao = estadoConservacaoSelect.value;
+            const valorMinimo = valorMinimoInput.value;
+            const valorMaximo = valorMaximoInput.value;
 
-        if (busca) params.append("busca", busca);
-        if (categoria) params.append("categoria", categoria);
-        if (estadoConservacao) params.append("estadoConservacao", estadoConservacao);
-        if (valorMinimo) params.append("valorMinimo", valorMinimo);
-        if (valorMaximo) params.append("valorMaximo", valorMaximo);
+            const estado = estadoFiltroInput.value.trim();
+            const cidade = cidadeFiltroInput.value.trim();
+            const ordenacao = ordenacaoSelect.value;
 
-        const queryString = params.toString();
+            if (busca) params.append("busca", busca);
+            if (categoria) params.append("categoria", categoria);
+            if (estadoConservacao) params.append("estadoConservacao", estadoConservacao);
+            if (valorMinimo) params.append("valorMinimo", valorMinimo);
+            if (valorMaximo) params.append("valorMaximo", valorMaximo);
+            if (estado) params.append("estado", estado);
+            if (cidade) params.append("cidade", cidade);
+            if (ordenacao) params.append("ordenacao", ordenacao);
 
-        window.history.pushState(
-            {},
-            "",
-            queryString ? `/tools/tools-list?${queryString}` : "/tools/tools-list"
-        );
-    }
+            const queryString = params.toString();
 
-    function loadParamsFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-
-        const busca = params.get("busca");
-        const categoria = params.get("categoria");
-        const estadoConservacao = params.get("estadoConservacao");
-        const valorMinimo = params.get("valorMinimo");
-        const valorMaximo = params.get("valorMaximo");
-
-        if (busca) {
-            currentSearchTerm = busca;
-
-            if (headerSearchInput) {
-                headerSearchInput.value = busca;
-            }
+            window.history.pushState(
+                {},
+                "",
+                queryString ? `/tools/tools-list?${queryString}` : "/tools/tools-list"
+            );
         }
 
-        if (categoria) categoriaSelect.value = categoria;
-        if (estadoConservacao) estadoConservacaoSelect.value = estadoConservacao;
-        if (valorMinimo) valorMinimoInput.value = valorMinimo;
-        if (valorMaximo) valorMaximoInput.value = valorMaximo;
-    }
+        function loadParamsFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+
+            const busca = params.get("busca");
+            const categoria = params.get("categoria");
+            const estadoConservacao = params.get("estadoConservacao");
+            const valorMinimo = params.get("valorMinimo");
+            const valorMaximo = params.get("valorMaximo");
+
+            const estado = params.get("estado");
+            const cidade = params.get("cidade");
+            const ordenacao = params.get("ordenacao");
+
+            if (busca) {
+                currentSearchTerm = busca;
+                if (headerSearchInput) headerSearchInput.value = busca;
+            }
+
+            if (categoria) categoriaSelect.value = categoria;
+            if (estadoConservacao) estadoConservacaoSelect.value = estadoConservacao;
+            if (valorMinimo) valorMinimoInput.value = valorMinimo;
+            if (valorMaximo) valorMaximoInput.value = valorMaximo;
+
+            if (estado) estadoFiltroInput.value = estado;
+            if (cidade) cidadeFiltroInput.value = cidade;
+            if (ordenacao) ordenacaoSelect.value = ordenacao;
+        }
 
     function normalizeText(value) {
         if (!value) return "";
