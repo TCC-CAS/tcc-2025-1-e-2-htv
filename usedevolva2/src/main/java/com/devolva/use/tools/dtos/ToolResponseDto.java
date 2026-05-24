@@ -14,5 +14,7 @@ public record ToolResponseDto(
         String ownerPlano,
         boolean disponivel,
         String cidade,
-        String estado
+        String estado,
+        String localizacao
+
 ) {}
