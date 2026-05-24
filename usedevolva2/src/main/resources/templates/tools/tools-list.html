@@ -43,22 +43,11 @@
         <div class="filter-group">
             <label for="ordenacao">Ordenar por</label>
             <select id="ordenacao">
-                <option value="destaque">Destaques (Plano Ouro primeiro)</option>
+                <option value="recente">Mais Recentes</option>
                 <option value="precoAsc">Menor Preço</option>
                 <option value="precoDesc">Maior Preço</option>
             </select>
         </div>
-
-        <div class="filter-group">
-            <label for="estadoFiltro">Estado (UF)</label>
-            <input type="text" id="estadoFiltro" placeholder="Ex: SP" maxlength="2">
-        </div>
-
-        <div class="filter-group">
-            <label for="cidadeFiltro">Cidade</label>
-            <input type="text" id="cidadeFiltro" placeholder="Ex: São Paulo">
-        </div>
-
 
         <div class="filter-group">
             <label for="estadoConservacao">Estado de conservação</label>
@@ -85,7 +74,6 @@
             <button id="applyFiltersBtn" type="button">Aplicar filtros</button>
             <button id="clearFiltersBtn" type="button">Limpar</button>
         </div>
-
     </aside>
 
     <main class="results-grid" id="resultsGrid">
