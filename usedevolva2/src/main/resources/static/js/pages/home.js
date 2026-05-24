@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupNearbyMapButton();
 });
 
-// Substitua a função original no seu home.js por esta:
 async function loadFeaturedTools() {
     const container = document.getElementById("featuredToolsContainer");
     if (!container) return;
@@ -12,12 +11,11 @@ async function loadFeaturedTools() {
         const user = JSON.parse(localStorage.getItem("user"));
         let favoriteIds = [];
 
-        // 1. Busca os favoritos do usuário logado uma única vez
         if (user && user.id) {
             try {
                 const favResponse = await fetch(`/favorites/user/${user.id}`);
                 if (favResponse.ok) {
-                    const favs = await favResponse.ok ? await favResponse.json() : [];
+                    const favs = await favResponse.json();
                     favoriteIds = favs.map(f => f.id);
                 }
             } catch (err) {
@@ -28,11 +26,17 @@ async function loadFeaturedTools() {
         const response = await fetch("/tools");
         if (!response.ok) throw new Error("Erro ao buscar ferramentas.");
 
-        const tools = await response.json();
+        let tools = await response.json();
         if (!tools || tools.length === 0) {
             container.innerHTML = "<p>Nenhuma ferramenta disponível no momento.</p>";
             return;
         }
+
+        tools.sort((a, b) => {
+            const aIsOuro = a.ownerPlano === "OURO" ? 1 : 0;
+            const bIsOuro = b.ownerPlano === "OURO" ? 1 : 0;
+            return bIsOuro - aIsOuro; // Ouro primeiro
+        });
 
         container.innerHTML = "";
         const featuredTools = tools.slice(0, 15);
@@ -40,6 +44,10 @@ async function loadFeaturedTools() {
         for (const tool of featuredTools) {
             const imageUrl = await getMainImage(tool.id);
             const isFavorited = favoriteIds.includes(tool.id);
+
+            const localizacaoFormatada = (tool.cidade && tool.estado)
+                ? `${tool.cidade} - ${tool.estado.toUpperCase()}`
+                : "Localização não informada";
 
             const card = document.createElement("article");
             card.className = "tool-card";
@@ -65,12 +73,19 @@ async function loadFeaturedTools() {
                         alt="${tool.nome || "Imagem da ferramenta"}" 
                         class="tool-image"
                     >
+                    
+                    ${tool.ownerPlano === 'OURO' ? `
+                        <span class="badge-ouro" style="position: absolute; top: 10px; left: 10px; background: #fbbf24; color: #000; font-weight: bold; font-size: 11px; padding: 4px 8px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; gap: 4px;">
+                            ⭐ Destaque
+                        </span>
+                    ` : ''}
+
                     <button 
                         type="button" 
                         class="btn-card-favorite ${isFavorited ? 'active' : ''}" 
                         data-tool-id="${tool.id}"
                         aria-label="${isFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}"
-                        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.85); border: none; borderRadius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: transform 0.2s;"
+                        style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: transform 0.2s;"
                     >
                         <svg width="20" height="20" fill="${isFavorited ? '#e02424' : 'none'}" stroke="${isFavorited ? '#e02424' : 'currentColor'}" viewBox="0 0 24 24" stroke-width="2">
                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -82,9 +97,7 @@ async function loadFeaturedTools() {
                     <h3>${tool.nome || "Ferramenta"}</h3>
                     <p>Categoria: ${formatCategory(tool.categoria)}</p>
                     <p><strong>${formatCurrency(tool.valorDiaria)}</strong> / dia</p>
-                    <p>📍 ${tool.localizacao || "Localização não informada"}</p>
-
-                    <a 
+                    <p>📍 ${localizacaoFormatada}</p> <a 
                         href="/tools/page/${tool.id}" 
                         class="btn-details" 
                         aria-label="Ver detalhes de ${tool.nome || "ferramenta"}"
@@ -96,7 +109,7 @@ async function loadFeaturedTools() {
 
             const favBtn = card.querySelector(".btn-card-favorite");
             favBtn.addEventListener("click", async (e) => {
-                e.stopPropagation(); // Evita clicar no card pai
+                e.stopPropagation();
                 await toggleFavoriteFromCard(favBtn, tool.id);
             });
 
