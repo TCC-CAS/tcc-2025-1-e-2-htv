@@ -117,10 +117,14 @@ async function loadTool() {
 
         applyOwnerToolRestrictions();
 
+        const localizacaoFormatada = (tool.cidade && tool.estado)
+            ? `${tool.cidade} - ${tool.estado.toUpperCase()}`
+            : (tool.localizacao || "localização não informada");
+
         document.getElementById("breadcrumbToolName").textContent = tool.nome || "Ferramenta";
         document.getElementById("toolName").textContent = tool.nome || "Ferramenta";
         document.getElementById("toolCategory").textContent = (tool.categoria || "Categoria").toUpperCase();
-        document.getElementById("toolLocation").textContent = `Disponível em ${tool.localizacao || "localização não informada"}`;
+        document.getElementById("toolLocation").textContent = `Disponível em ${localizacaoFormatada}`;
         document.getElementById("toolDescription").textContent = tool.descricao || "Descrição não informada.";
         document.getElementById("toolCondition").textContent = tool.estadoConservacao || "Estado não informado.";
         document.getElementById("toolObservations").textContent = tool.observacoes || "Nenhuma observação informada.";
@@ -244,6 +248,11 @@ async function loadOwner(ownerId) {
 
         const owner = await response.json();
         ownerPlano = owner.plano;
+
+        const goldBadge = document.getElementById("goldPlanDiscountBadge");
+        if (goldBadge && ownerPlano === "OURO") {
+            goldBadge.classList.remove("hidden");
+        }
 
         const ownerName =
             owner.nomeCompleto ||
