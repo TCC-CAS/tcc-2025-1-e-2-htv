@@ -527,4 +527,17 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
+.search-filters .filter-group select,
+.search-filters .filter-group input {
+    width: 100%;
+}
 
+#filtroEstadoGrupo,
+#filtroCidadeGrupo {
+    transition: all 0.2s ease;
+}
+
+#localizacaoModo {
+    border-color: var(--color-primary, #5b4bb7);
+    font-weight: 600;
+}

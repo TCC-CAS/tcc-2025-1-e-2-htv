@@ -7,6 +7,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const valorMinimoInput = document.getElementById("valorMinimo");
     const valorMaximoInput = document.getElementById("valorMaximo");
 
+    const localizacaoModoSelect = document.getElementById("localizacaoModo");
+    const filtroEstadoSelect = document.getElementById("filtroEstado");
+    const filtroCidadeInput = document.getElementById("filtroCidade");
+    const filtroEstadoGrupo = document.getElementById("filtroEstadoGrupo");
+    const filtroCidadeGrupo = document.getElementById("filtroCidadeGrupo");
+
     const applyFiltersBtn = document.getElementById("applyFiltersBtn");
     const clearFiltersBtn = document.getElementById("clearFiltersBtn");
 
@@ -21,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!resultsGrid || !searchSummary) return;
 
     loadParamsFromUrl();
+    setupLocationFilters();
     loadTools();
 
     if (applyFiltersBtn) {
@@ -43,12 +50,23 @@ document.addEventListener("DOMContentLoaded", () => {
             estadoConservacaoSelect.value = "";
             valorMinimoInput.value = "";
             valorMaximoInput.value = "";
+            if (localizacaoModoSelect) localizacaoModoSelect.value = "brasil";
+            if (filtroEstadoSelect) filtroEstadoSelect.value = "";
+            if (filtroCidadeInput) filtroCidadeInput.value = "";
+            setupLocationFilters();
+
             ordenacaoSelect.value = "recente";
 
             if (headerSearchInput) headerSearchInput.value = "";
 
             window.history.pushState({}, "", "/tools/tools-list");
             applyFilters();
+        });
+    }
+
+    if (localizacaoModoSelect) {
+        localizacaoModoSelect.addEventListener("change", () => {
+            setupLocationFilters();
         });
     }
 
@@ -92,6 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const busca = normalizeText(currentSearchTerm);
         const categoria = normalizeText(categoriaSelect.value);
         const estadoConservacao = normalizeText(estadoConservacaoSelect.value);
+        const localizacaoModo = localizacaoModoSelect?.value || "brasil";
+        const estadoFiltro = normalizeText(filtroEstadoSelect?.value || "");
+        const cidadeFiltro = normalizeText(filtroCidadeInput?.value || "");
         const valorMinimo = valorMinimoInput.value ? Number(valorMinimoInput.value) : null;
         const valorMaximo = valorMaximoInput.value ? Number(valorMaximoInput.value) : null;
 
@@ -101,6 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const toolCategoria = normalizeText(tool.categoria);
             const toolEstadoConservacao = normalizeText(tool.estadoConservacao);
             const valorDiaria = Number(tool.valorDiaria || 0);
+            const toolCidade = normalizeText(tool.cidade);
+            const toolUf = normalizeText(tool.estado);
+            const toolLocalizacao = normalizeText(tool.localizacao);
 
             const matchBusca = !busca || nome.includes(busca) || descricao.includes(busca);
             const matchCategoria = !categoria || toolCategoria === categoria;
@@ -108,7 +132,30 @@ document.addEventListener("DOMContentLoaded", () => {
             const matchValorMinimo = valorMinimo === null || valorDiaria >= valorMinimo;
             const matchValorMaximo = valorMaximo === null || valorDiaria <= valorMaximo;
 
-            return matchBusca && matchCategoria && matchEstadoConservacao && matchValorMinimo && matchValorMaximo;
+            let matchLocalizacao = true;
+
+            if (localizacaoModo === "estado") {
+                matchLocalizacao =
+                    !estadoFiltro ||
+                    toolUf === estadoFiltro ||
+                    toolLocalizacao.includes(estadoFiltro);
+            }
+
+            if (localizacaoModo === "cidade") {
+                const matchEstadoCidade =
+                    !estadoFiltro ||
+                    toolUf === estadoFiltro ||
+                    toolLocalizacao.includes(estadoFiltro);
+
+                const matchCidade =
+                    !cidadeFiltro ||
+                    toolCidade.includes(cidadeFiltro) ||
+                    toolLocalizacao.includes(cidadeFiltro);
+
+                matchLocalizacao = matchEstadoCidade && matchCidade;
+            }
+
+            return matchBusca && matchCategoria && matchEstadoConservacao && matchValorMinimo && matchValorMaximo && matchLocalizacao;
         });
 
         // ORDENAÇÃO: Usuários Ouro sempre no topo independentemente do filtro selecionado
@@ -270,6 +317,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const estadoConservacao = estadoConservacaoSelect.value;
         const valorMinimo = valorMinimoInput.value;
         const valorMaximo = valorMaximoInput.value;
+        const localizacaoModo = localizacaoModoSelect?.value || "brasil";
+        const estado = filtroEstadoSelect?.value || "";
+        const cidade = filtroCidadeInput?.value.trim() || "";
         const ordenacao = ordenacaoSelect.value;
 
         if (busca) params.append("busca", busca);
@@ -277,6 +327,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (estadoConservacao) params.append("estadoConservacao", estadoConservacao);
         if (valorMinimo) params.append("valorMinimo", valorMinimo);
         if (valorMaximo) params.append("valorMaximo", valorMaximo);
+        if (localizacaoModo && localizacaoModo !== "brasil") {
+            params.append("localizacaoModo", localizacaoModo);
+        }
+
+        if (localizacaoModo === "estado" && estado) {
+            params.append("estado", estado);
+        }
+
+        if (localizacaoModo === "cidade") {
+            if (estado) params.append("estado", estado);
+            if (cidade) params.append("cidade", cidade);
+        }
         if (ordenacao) params.append("ordenacao", ordenacao);
 
         const queryString = params.toString();
@@ -290,6 +352,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const estadoConservacao = params.get("estadoConservacao");
         const valorMinimo = params.get("valorMinimo");
         const valorMaximo = params.get("valorMaximo");
+        const localizacaoModo = params.get("localizacaoModo");
+        const estado = params.get("estado");
+        const cidade = params.get("cidade");
         const ordenacao = params.get("ordenacao");
 
         if (busca) {
@@ -300,7 +365,46 @@ document.addEventListener("DOMContentLoaded", () => {
         if (estadoConservacao) estadoConservacaoSelect.value = estadoConservacao;
         if (valorMinimo) valorMinimoInput.value = valorMinimo;
         if (valorMaximo) valorMaximoInput.value = valorMaximo;
+        if (localizacaoModo && localizacaoModoSelect) {
+            localizacaoModoSelect.value = localizacaoModo;
+        }
+
+        if (estado && filtroEstadoSelect) {
+            filtroEstadoSelect.value = estado;
+        }
+
+        if (cidade && filtroCidadeInput) {
+            filtroCidadeInput.value = cidade;
+        }
         if (ordenacao) ordenacaoSelect.value = ordenacao;
+    }
+
+    function setupLocationFilters() {
+        if (!localizacaoModoSelect || !filtroEstadoGrupo || !filtroCidadeGrupo) {
+            return;
+        }
+
+        const mode = localizacaoModoSelect.value;
+
+        if (mode === "brasil") {
+            filtroEstadoGrupo.style.display = "none";
+            filtroCidadeGrupo.style.display = "none";
+
+            if (filtroEstadoSelect) filtroEstadoSelect.value = "";
+            if (filtroCidadeInput) filtroCidadeInput.value = "";
+        }
+
+        if (mode === "estado") {
+            filtroEstadoGrupo.style.display = "block";
+            filtroCidadeGrupo.style.display = "none";
+
+            if (filtroCidadeInput) filtroCidadeInput.value = "";
+        }
+
+        if (mode === "cidade") {
+            filtroEstadoGrupo.style.display = "block";
+            filtroCidadeGrupo.style.display = "block";
+        }
     }
 
     function normalizeText(value) {
