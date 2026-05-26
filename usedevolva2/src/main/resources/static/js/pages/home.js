@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    setupHomeLocationFilters();
+
+    await applyInitialHomeLocationWithFallback();
+
     await loadFeaturedTools();
+
     setupNearbyMapButton();
 });
 
@@ -27,8 +32,11 @@ async function loadFeaturedTools() {
         if (!response.ok) throw new Error("Erro ao buscar ferramentas.");
 
         let tools = await response.json();
+
+        tools = filterToolsByHomeLocation(tools);
+
         if (!tools || tools.length === 0) {
-            container.innerHTML = "<p>Nenhuma ferramenta disponível no momento.</p>";
+            container.innerHTML = "<p>Nenhuma ferramenta disponível para a localização selecionada.</p>";
             return;
         }
 
@@ -693,5 +701,399 @@ function getBrowserLocation() {
                 maximumAge: 60000
             }
         );
+    });
+}
+
+function setupHomeLocationFilters() {
+    const modeSelect = document.getElementById("homeLocalizacaoModo");
+    const estadoSelect = document.getElementById("homeFiltroEstado");
+    const cidadeInput = document.getElementById("homeFiltroCidade");
+    const applyBtn = document.getElementById("homeApplyLocationBtn");
+
+    if (!modeSelect) return;
+
+    function updateVisibility() {
+        const mode = modeSelect.value;
+
+        if (estadoSelect) {
+            estadoSelect.style.display = mode === "brasil" ? "none" : "block";
+        }
+
+        if (cidadeInput) {
+            cidadeInput.style.display = mode === "cidade" ? "block" : "none";
+        }
+
+        if (mode === "brasil") {
+            if (estadoSelect) estadoSelect.value = "";
+            if (cidadeInput) cidadeInput.value = "";
+        }
+
+        if (mode === "estado") {
+            if (cidadeInput) cidadeInput.value = "";
+        }
+
+        updateHomeLocationText();
+    }
+
+    modeSelect.addEventListener("change", async () => {
+        updateVisibility();
+        saveCurrentHomeLocation();
+        await loadFeaturedTools();
+    });
+
+    if (estadoSelect) {
+        estadoSelect.addEventListener("change", async () => {
+            updateHomeLocationText();
+            saveCurrentHomeLocation();
+
+            if (modeSelect.value === "estado") {
+                await loadFeaturedTools();
+            }
+        });
+    }
+
+    if (applyBtn) {
+        applyBtn.addEventListener("click", async () => {
+            updateHomeLocationText();
+            saveCurrentHomeLocation();
+            await loadFeaturedTools();
+        });
+    }
+
+    updateVisibility();
+}
+
+function filterToolsByHomeLocation(tools) {
+    const mode = document.getElementById("homeLocalizacaoModo")?.value || "brasil";
+    const estadoFiltro = normalizeHomeText(document.getElementById("homeFiltroEstado")?.value || "");
+    const cidadeFiltro = normalizeHomeText(document.getElementById("homeFiltroCidade")?.value || "");
+
+    if (mode === "brasil") {
+        return tools;
+    }
+
+    return tools.filter((tool) => {
+        const toolEstado = normalizeHomeText(tool.estado);
+        const toolCidade = normalizeHomeText(tool.cidade);
+        const toolLocalizacao = normalizeHomeText(tool.localizacao);
+
+        if (mode === "estado") {
+            return (
+                !estadoFiltro ||
+                toolEstado === estadoFiltro ||
+                toolLocalizacao.includes(estadoFiltro)
+            );
+        }
+
+        if (mode === "cidade") {
+            const matchEstado =
+                !estadoFiltro ||
+                toolEstado === estadoFiltro ||
+                toolLocalizacao.includes(estadoFiltro);
+
+            const matchCidade =
+                !cidadeFiltro ||
+                toolCidade.includes(cidadeFiltro) ||
+                toolLocalizacao.includes(cidadeFiltro);
+
+            return matchEstado && matchCidade;
+        }
+
+        return true;
+    });
+}
+
+async function applyInitialHomeLocationWithFallback() {
+    const savedLocation = getSavedHomeLocation();
+
+    if (savedLocation && savedLocation.source === "manual") {
+        applySavedHomeLocation(savedLocation);
+        return;
+    }
+
+    if (savedLocation && savedLocation.source === "address") {
+        applySavedHomeLocation(savedLocation);
+        return;
+    }
+
+    const ipLocation = await getHomeLocationByIp();
+
+    if (ipLocation && isBrazilHomeLocation(ipLocation)) {
+        const location = {
+            mode: "cidade",
+            cidade: ipLocation.cidade,
+            estado: ipLocation.estado,
+            source: "ip"
+        };
+
+        applyHomeLocationToFilters(location);
+        saveHomeLocation(location);
+
+        return;
+    }
+
+    const mainAddress = await getHomeMainBrazilianAddress();
+
+    if (mainAddress) {
+        const location = {
+            mode: "cidade",
+            cidade: mainAddress.cidade,
+            estado: mainAddress.estado,
+            source: "address"
+        };
+
+        applyHomeLocationToFilters(location);
+        saveHomeLocation(location);
+
+        return;
+    }
+
+    const brazilLocation = {
+        mode: "brasil",
+        cidade: "",
+        estado: "",
+        source: "brasil"
+    };
+
+    applyHomeBrazilWideFilter();
+    saveHomeLocation(brazilLocation);
+}
+
+async function getHomeLocationByIp() {
+    try {
+        const response = await fetch("https://ipapi.co/json/");
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+
+        return {
+            pais: data.country_code,
+            cidade: data.city,
+            estado: data.region_code
+        };
+
+    } catch (error) {
+        console.warn("Não foi possível obter localização por IP:", error);
+        return null;
+    }
+}
+
+function isBrazilHomeLocation(location) {
+    if (!location) return false;
+
+    const pais = String(location.pais || "").toUpperCase();
+    const cidade = String(location.cidade || "").trim();
+    const estado = String(location.estado || "").trim().toUpperCase();
+
+    return pais === "BR" && cidade.length > 0 && estado.length === 2;
+}
+
+async function getHomeMainBrazilianAddress() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(`/users/${user.id}/addresses`);
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const addresses = await response.json();
+
+        if (!addresses || addresses.length === 0) {
+            return null;
+        }
+
+        const mainAddress =
+            addresses.find(address => address.principal) ||
+            addresses[0];
+
+        if (!mainAddress) {
+            return null;
+        }
+
+        const estado = String(mainAddress.estado || "").trim().toUpperCase();
+        const cidade = String(mainAddress.cidade || "").trim();
+
+        if (!cidade || estado.length !== 2) {
+            return null;
+        }
+
+        return {
+            cidade,
+            estado
+        };
+
+    } catch (error) {
+        console.warn("Não foi possível carregar endereço principal:", error);
+        return null;
+    }
+}
+
+function applyHomeLocationToFilters(location) {
+    const modeSelect = document.getElementById("homeLocalizacaoModo");
+    const estadoSelect = document.getElementById("homeFiltroEstado");
+    const cidadeInput = document.getElementById("homeFiltroCidade");
+
+    if (!location) {
+        applyHomeBrazilWideFilter();
+        return;
+    }
+
+    const mode = location.mode || "cidade";
+
+    if (modeSelect) {
+        modeSelect.value = mode;
+    }
+
+    if (estadoSelect) {
+        estadoSelect.value = location.estado ? String(location.estado).toUpperCase() : "";
+    }
+
+    if (cidadeInput) {
+        cidadeInput.value = location.cidade || "";
+    }
+
+    setupHomeLocationFilters();
+    updateHomeLocationText();
+}
+
+function applyHomeBrazilWideFilter() {
+    const modeSelect = document.getElementById("homeLocalizacaoModo");
+    const estadoSelect = document.getElementById("homeFiltroEstado");
+    const cidadeInput = document.getElementById("homeFiltroCidade");
+
+    if (modeSelect) {
+        modeSelect.value = "brasil";
+    }
+
+    if (estadoSelect) {
+        estadoSelect.value = "";
+    }
+
+    if (cidadeInput) {
+        cidadeInput.value = "";
+    }
+
+    setupHomeLocationFilters();
+    updateHomeLocationText();
+}
+
+function updateHomeLocationText() {
+    const text = document.getElementById("homeLocalizacaoDetectadaTexto");
+    const subtitle = document.getElementById("featuredToolsSubtitle");
+
+    const mode = document.getElementById("homeLocalizacaoModo")?.value || "brasil";
+    const estado = document.getElementById("homeFiltroEstado")?.value || "";
+    const cidade = document.getElementById("homeFiltroCidade")?.value.trim() || "";
+
+    if (!text) return;
+
+    if (mode === "brasil") {
+        text.textContent = "Mostrando ferramentas em todo o Brasil.";
+
+        if (subtitle) {
+            subtitle.textContent = "As ferramentas mais procuradas no país.";
+        }
+
+        return;
+    }
+
+    if (mode === "estado") {
+        text.textContent = estado
+            ? `Mostrando ferramentas em ${estado}.`
+            : "Selecione um estado.";
+
+        if (subtitle) {
+            subtitle.textContent = "As ferramentas mais procuradas no estado selecionado.";
+        }
+
+        return;
+    }
+
+    if (mode === "cidade") {
+        if (cidade && estado) {
+            text.textContent = `Mostrando ferramentas em ${cidade} - ${estado}.`;
+        } else if (estado) {
+            text.textContent = `Mostrando ferramentas no estado ${estado}.`;
+        } else {
+            text.textContent = "Informe uma cidade e/ou estado.";
+        }
+
+        if (subtitle) {
+            subtitle.textContent = "As ferramentas mais procuradas na região selecionada.";
+        }
+    }
+}
+
+function normalizeHomeText(value) {
+    if (!value) return "";
+
+    return String(value)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
+
+function saveHomeLocation(location) {
+    if (!location) return;
+
+    localStorage.setItem("homeSelectedLocation", JSON.stringify({
+        mode: location.mode || "brasil",
+        estado: location.estado || "",
+        cidade: location.cidade || "",
+        source: location.source || "manual"
+    }));
+}
+
+function getSavedHomeLocation() {
+    try {
+        const raw = localStorage.getItem("homeSelectedLocation");
+
+        if (!raw) {
+            return null;
+        }
+
+        const location = JSON.parse(raw);
+
+        if (!location || !location.mode) {
+            return null;
+        }
+
+        return location;
+
+    } catch (error) {
+        console.warn("Erro ao ler localização salva da home:", error);
+        return null;
+    }
+}
+
+function applySavedHomeLocation(location) {
+    if (!location || location.mode === "brasil") {
+        applyHomeBrazilWideFilter();
+        return;
+    }
+
+    applyHomeLocationToFilters(location);
+}
+
+function saveCurrentHomeLocation() {
+    const mode = document.getElementById("homeLocalizacaoModo")?.value || "brasil";
+    const estado = document.getElementById("homeFiltroEstado")?.value || "";
+    const cidade = document.getElementById("homeFiltroCidade")?.value.trim() || "";
+
+    saveHomeLocation({
+        mode,
+        estado,
+        cidade,
+        source: "manual"
     });
 }

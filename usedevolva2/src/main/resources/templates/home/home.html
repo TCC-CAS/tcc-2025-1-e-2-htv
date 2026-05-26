@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="/css/fragments/footer.css">
     <link rel="stylesheet" href="/css/pages/home.css">
     <link rel="stylesheet" href="/css/root.css">
-    <script src="/js/main.js" defer></script>
+    <script src="/js/core/main.js" defer></script>
 
     <link
             rel="stylesheet"
@@ -93,9 +93,65 @@
             <div id="nearbyToolsList" class="nearby-tools-list"></div>
         </section>
 
-        <section aria-labelledby="featuredToolsTitle">
-            <h2 id="featuredToolsTitle">Ferramentas em destaque</h2>
-            <p>As ferramentas mais procuradas na sua região.</p>
+        <section aria-labelledby="featuredToolsTitle" class="featured-tools-section">
+            <div class="featured-tools-header">
+                <div>
+                    <h2 id="featuredToolsTitle">Ferramentas em destaque</h2>
+                    <p id="featuredToolsSubtitle">As ferramentas mais procuradas na sua região.</p>
+                    <small id="homeLocalizacaoDetectadaTexto" class="home-location-detected-text">
+                        Detectando localização...
+                    </small>
+                </div>
+
+                <div class="home-location-filter">
+                    <label for="homeLocalizacaoModo">Localização</label>
+
+                    <div class="home-location-row">
+                        <select id="homeLocalizacaoModo">
+                            <option value="brasil">Todo o Brasil</option>
+                            <option value="estado">Por estado</option>
+                            <option value="cidade">Por cidade</option>
+                        </select>
+
+                        <select id="homeFiltroEstado">
+                            <option value="">UF</option>
+                            <option value="AC">AC</option>
+                            <option value="AL">AL</option>
+                            <option value="AP">AP</option>
+                            <option value="AM">AM</option>
+                            <option value="BA">BA</option>
+                            <option value="CE">CE</option>
+                            <option value="DF">DF</option>
+                            <option value="ES">ES</option>
+                            <option value="GO">GO</option>
+                            <option value="MA">MA</option>
+                            <option value="MT">MT</option>
+                            <option value="MS">MS</option>
+                            <option value="MG">MG</option>
+                            <option value="PA">PA</option>
+                            <option value="PB">PB</option>
+                            <option value="PR">PR</option>
+                            <option value="PE">PE</option>
+                            <option value="PI">PI</option>
+                            <option value="RJ">RJ</option>
+                            <option value="RN">RN</option>
+                            <option value="RS">RS</option>
+                            <option value="RO">RO</option>
+                            <option value="RR">RR</option>
+                            <option value="SC">SC</option>
+                            <option value="SP">SP</option>
+                            <option value="SE">SE</option>
+                            <option value="TO">TO</option>
+                        </select>
+
+                        <input type="text" id="homeFiltroCidade" placeholder="Cidade">
+
+                        <button type="button" id="homeApplyLocationBtn">
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <div class="tools-grid" id="featuredToolsContainer">
                 <p>Carregando ferramentas...</p>
