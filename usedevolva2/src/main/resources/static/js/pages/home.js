@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadFeaturedTools();
 
     setupNearbyMapButton();
+    setupToolsMapModal();
 });
 
 async function loadFeaturedTools() {
@@ -1096,4 +1097,441 @@ function saveCurrentHomeLocation() {
         cidade,
         source: "manual"
     });
+}
+
+let toolsMapInstance = null;
+let toolsMapMarkersLayer = null;
+let toolsMapLoaded = false;
+let toolsMapGroups = [];
+
+function setupToolsMapModal() {
+    const openBtn = document.getElementById("openToolsMapBtn");
+    const closeBtn = document.getElementById("closeToolsMapBtn");
+    const modal = document.getElementById("toolsMapModal");
+
+    if (!openBtn || !closeBtn || !modal) {
+        return;
+    }
+
+    openBtn.addEventListener("click", async () => {
+        openToolsMapModal();
+        await loadToolsMap();
+    });
+
+    closeBtn.addEventListener("click", closeToolsMapModal);
+
+    modal.addEventListener("click", (event) => {
+        if (event.target.id === "toolsMapModal") {
+            closeToolsMapModal();
+        }
+    });
+}
+
+function openToolsMapModal() {
+    const modal = document.getElementById("toolsMapModal");
+
+    if (!modal) return;
+
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+
+    setTimeout(() => {
+        if (toolsMapInstance) {
+            toolsMapInstance.invalidateSize();
+        }
+    }, 150);
+}
+
+function closeToolsMapModal() {
+    const modal = document.getElementById("toolsMapModal");
+
+    if (!modal) return;
+
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+}
+
+async function loadToolsMap() {
+    const sideTitle = document.getElementById("toolsMapSideTitle");
+    const sideList = document.getElementById("toolsMapSideList");
+
+    if (sideTitle) {
+        sideTitle.textContent = "Carregando ferramentas...";
+    }
+
+    if (sideList) {
+        sideList.innerHTML = `<p class="tools-map-empty">Montando mapa...</p>`;
+    }
+
+    initToolsMap();
+
+    if (toolsMapLoaded) {
+        renderToolsMapGroups(toolsMapGroups);
+        return;
+    }
+
+    try {
+        const response = await fetch("/tools");
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar ferramentas.");
+        }
+
+        const tools = await response.json();
+
+        const availableTools = (tools || []).filter(tool => {
+            return tool && tool.disponivel !== false && tool.ativo !== false;
+        });
+
+        const groups = groupToolsByLocation(availableTools);
+
+        toolsMapGroups = await geocodeToolGroups(groups);
+        toolsMapLoaded = true;
+
+        renderToolsMapGroups(toolsMapGroups);
+
+    } catch (error) {
+        console.error(error);
+
+        if (sideTitle) {
+            sideTitle.textContent = "Erro ao carregar mapa";
+        }
+
+        if (sideList) {
+            sideList.innerHTML = `
+                <p class="tools-map-empty">
+                    Não foi possível carregar as ferramentas no mapa.
+                </p>
+            `;
+        }
+    }
+}
+
+function initToolsMap() {
+    if (toolsMapInstance) {
+        return;
+    }
+
+    toolsMapInstance = L.map("toolsMap", {
+        scrollWheelZoom: true
+    }).setView([-14.235, -51.9253], 4);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+    }).addTo(toolsMapInstance);
+
+    toolsMapMarkersLayer = L.layerGroup().addTo(toolsMapInstance);
+}
+
+function groupToolsByLocation(tools) {
+    const map = new Map();
+
+    tools.forEach(tool => {
+        const key = buildToolLocationKey(tool);
+
+        if (!key) return;
+
+        if (!map.has(key)) {
+            map.set(key, {
+                key,
+                label: buildToolLocationLabel(tool),
+                query: buildToolGeocodeQuery(tool),
+                tools: []
+            });
+        }
+
+        map.get(key).tools.push(tool);
+    });
+
+    return Array.from(map.values());
+}
+
+function buildToolLocationKey(tool) {
+    const estado = normalizeHomeText(tool.estado);
+    const cidade = normalizeHomeText(tool.cidade);
+    const bairro = normalizeHomeText(tool.bairro);
+    const logradouro = normalizeHomeText(tool.logradouro);
+    const numero = normalizeHomeText(tool.numero);
+
+    if (logradouro || cidade || estado) {
+        return [
+            logradouro,
+            numero,
+            bairro,
+            cidade,
+            estado
+        ].filter(Boolean).join("|");
+    }
+
+    const localizacao = normalizeHomeText(tool.localizacao);
+
+    if (localizacao) {
+        return localizacao;
+    }
+
+    return "";
+}
+
+function buildToolLocationLabel(tool) {
+    const parts = [];
+
+    if (tool.logradouro) {
+        parts.push(`${tool.logradouro}${tool.numero ? `, ${tool.numero}` : ""}`);
+    }
+
+    if (tool.bairro) {
+        parts.push(tool.bairro);
+    }
+
+    if (tool.cidade || tool.estado) {
+        parts.push(`${tool.cidade || ""}${tool.estado ? ` - ${tool.estado}` : ""}`.trim());
+    }
+
+    if (parts.length > 0) {
+        return parts.join(" • ");
+    }
+
+    return tool.localizacao || "Localização não informada";
+}
+
+function buildToolGeocodeQuery(tool) {
+    const parts = [];
+
+    if (tool.logradouro) {
+        parts.push(`${tool.logradouro}${tool.numero ? `, ${tool.numero}` : ""}`);
+    }
+
+    if (tool.bairro) {
+        parts.push(tool.bairro);
+    }
+
+    if (tool.cidade) {
+        parts.push(tool.cidade);
+    }
+
+    if (tool.estado) {
+        parts.push(tool.estado);
+    }
+
+    parts.push("Brasil");
+
+    if (parts.length > 1) {
+        return parts.join(", ");
+    }
+
+    if (tool.localizacao) {
+        return `${tool.localizacao}, Brasil`;
+    }
+
+    return "";
+}
+
+async function geocodeToolGroups(groups) {
+    const result = [];
+
+    for (const group of groups) {
+        const coordinates = await getCoordinatesForLocation(group.query);
+
+        if (coordinates) {
+            result.push({
+                ...group,
+                lat: coordinates.lat,
+                lon: coordinates.lon
+            });
+        }
+
+        await wait(250);
+    }
+
+    return result;
+}
+
+async function getCoordinatesForLocation(query) {
+    if (!query) {
+        return null;
+    }
+
+    const cacheKey = `mapGeocode:${normalizeHomeText(query)}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+        try {
+            return JSON.parse(cached);
+        } catch (error) {
+            localStorage.removeItem(cacheKey);
+        }
+    }
+
+    try {
+        const url =
+            "https://nominatim.openstreetmap.org/search" +
+            `?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(query)}`;
+
+        const response = await fetch(url, {
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const data = await response.json();
+
+        if (!data || data.length === 0) {
+            return null;
+        }
+
+        const coordinates = {
+            lat: Number(data[0].lat),
+            lon: Number(data[0].lon)
+        };
+
+        localStorage.setItem(cacheKey, JSON.stringify(coordinates));
+
+        return coordinates;
+
+    } catch (error) {
+        console.warn("Erro ao geocodificar localização:", query, error);
+        return null;
+    }
+}
+
+function renderToolsMapGroups(groups) {
+    const sideTitle = document.getElementById("toolsMapSideTitle");
+    const sideList = document.getElementById("toolsMapSideList");
+
+    if (!toolsMapInstance || !toolsMapMarkersLayer) {
+        return;
+    }
+
+    toolsMapMarkersLayer.clearLayers();
+
+    if (!groups || groups.length === 0) {
+        if (sideTitle) {
+            sideTitle.textContent = "Nenhuma ferramenta localizada";
+        }
+
+        if (sideList) {
+            sideList.innerHTML = `
+                <p class="tools-map-empty">
+                    Não encontramos ferramentas com endereço suficiente para aparecer no mapa.
+                </p>
+            `;
+        }
+
+        toolsMapInstance.setView([-14.235, -51.9253], 4);
+        return;
+    }
+
+    const bounds = [];
+
+    groups.forEach(group => {
+        const marker = L.marker([group.lat, group.lon], {
+            icon: createToolsMapIcon(group.tools.length)
+        });
+
+        marker.on("click", () => {
+            showToolsMapSideList(group);
+        });
+
+        marker.addTo(toolsMapMarkersLayer);
+        bounds.push([group.lat, group.lon]);
+    });
+
+    if (bounds.length > 0) {
+        toolsMapInstance.fitBounds(bounds, {
+            padding: [40, 40],
+            maxZoom: 13
+        });
+    }
+
+    if (sideTitle) {
+        sideTitle.textContent = "Selecione um ponto no mapa";
+    }
+
+    if (sideList) {
+        sideList.innerHTML = `
+            <p class="tools-map-empty">
+                ${groups.length} local(is) encontrado(s). Clique em um ponto no mapa.
+            </p>
+        `;
+    }
+}
+
+function createToolsMapIcon(count) {
+    const isMultiple = count > 1;
+
+    return L.divIcon({
+        className: "",
+        html: `
+            <div class="tools-map-marker-clean ${isMultiple ? "multiple" : "single"}">
+                ${isMultiple ? count : "📍"}
+            </div>
+        `,
+        iconSize: [42, 42],
+        iconAnchor: [21, 42],
+        popupAnchor: [0, -42]
+    });
+}
+
+async function showToolsMapSideList(group) {
+    const sideTitle = document.getElementById("toolsMapSideTitle");
+    const sideList = document.getElementById("toolsMapSideList");
+
+    if (!sideTitle || !sideList) {
+        return;
+    }
+
+    sideTitle.textContent =
+        group.tools.length === 1
+            ? "1 ferramenta neste local"
+            : `${group.tools.length} ferramentas neste local`;
+
+    const toolsWithImages = await Promise.all(
+        group.tools.map(async tool => {
+            const imageUrl = await getMainImage(tool.id);
+            return {
+                ...tool,
+                imageUrl
+            };
+        })
+    );
+
+    sideList.innerHTML = `
+        <p class="tools-map-location">${escapeHomeHtml(group.label)}</p>
+
+        ${toolsWithImages.map(tool => `
+            <button type="button" class="tools-map-tool" data-tool-id="${tool.id}">
+                <img src="${tool.imageUrl}" alt="${escapeHomeHtml(tool.nome || "Ferramenta")}">
+
+                <span>
+                    <strong>${escapeHomeHtml(tool.nome || "Ferramenta")}</strong>
+                    <small>${formatCategory(tool.categoria)} • ${formatCurrency(tool.valorDiaria)} / dia</small>
+                </span>
+            </button>
+        `).join("")}
+    `;
+
+    sideList.querySelectorAll(".tools-map-tool").forEach(button => {
+        button.addEventListener("click", () => {
+            const toolId = button.dataset.toolId;
+            window.location.href = `/tools/page/${toolId}`;
+        });
+    });
+}
+
+function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function escapeHomeHtml(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }

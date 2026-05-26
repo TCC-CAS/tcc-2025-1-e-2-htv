@@ -17,12 +17,13 @@
     <link rel="stylesheet" href="/css/fragments/footer.css">
     <link rel="stylesheet" href="/css/pages/home.css">
     <link rel="stylesheet" href="/css/root.css">
-    <script src="/js/core/main.js" defer></script>
 
     <link
             rel="stylesheet"
             href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
+
+    <script src="/js/core/main.js" defer></script>
 </head>
 
 
@@ -44,7 +45,7 @@
                     Use a busca por localização para encontrar ferramentas disponíveis perto de você
                     ou em uma região escolhida no mapa.
                 </p>
-                <button type="button" class="btn-action" id="openNearbyMapBtn">
+                <button type="button" class="btn-action" id="openToolsMapBtn">
                     📍 Abrir mapa interativo
                 </button>
             </div>
@@ -168,13 +169,44 @@
         
     </main>
 
+<div id="toolsMapModal" class="tools-map-modal" aria-hidden="true">
+    <div class="tools-map-dialog">
+        <div class="tools-map-header">
+            <div>
+                <h2>Ferramentas no mapa</h2>
+                <p>Clique em um ponto para ver as ferramentas disponíveis naquele local.</p>
+            </div>
+
+            <button type="button" id="closeToolsMapBtn" class="tools-map-close">
+                ×
+            </button>
+        </div>
+
+        <div class="tools-map-body">
+            <div id="toolsMap" class="tools-map"></div>
+
+            <aside class="tools-map-side">
+                <h3 id="toolsMapSideTitle">Selecione um ponto no mapa</h3>
+
+                <div id="toolsMapSideList" class="tools-map-side-list">
+                    <p class="tools-map-empty">
+                        Os locais com ferramentas aparecerão no mapa.
+                    </p>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
 <div th:replace="fragments/footer :: footer"></div>
 
 <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         defer
 ></script>
+
 <script src="/js/pages/home.js" defer></script>
+
 </body>
 
 </html>
