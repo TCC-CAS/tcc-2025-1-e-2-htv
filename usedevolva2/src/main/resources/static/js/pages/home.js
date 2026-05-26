@@ -1398,29 +1398,19 @@ async function getMainAddressLocationForToolsMap() {
 }
 
 function buildAddressTextFromSavedAddress(address) {
-    const cep = formatCepForMap(address.cep);
+    const bairro = String(address.bairro || "").trim();
+    const cidade = String(address.cidade || "").trim();
+    const estado = String(address.estado || "").trim();
 
-    const fullAddress = [
-        address.logradouro,
-        address.numero,
-        address.bairro,
-        address.cidade,
-        address.estado,
-        cep,
-        "Brasil"
-    ]
-        .filter(Boolean)
-        .join(", ");
+    if (bairro && cidade && estado) {
+        return `${bairro}, ${cidade}, ${estado}, Brasil`;
+    }
 
-    const cityState = [
-        address.cidade,
-        address.estado,
-        "Brasil"
-    ]
-        .filter(Boolean)
-        .join(", ");
+    if (cidade && estado) {
+        return `${cidade}, ${estado}, Brasil`;
+    }
 
-    return fullAddress || cityState || "";
+    return "";
 }
 
 function buildToolsMapLocationStatusText(location) {
@@ -1493,34 +1483,20 @@ function buildToolLocationKey(tool) {
     const estado = normalizeHomeText(tool.estado);
     const cidade = normalizeHomeText(tool.cidade);
     const bairro = normalizeHomeText(tool.bairro);
-    const logradouro = normalizeHomeText(tool.logradouro);
-    const numero = normalizeHomeText(tool.numero);
 
-    if (logradouro || cidade || estado) {
-        return [
-            logradouro,
-            numero,
-            bairro,
-            cidade,
-            estado
-        ].filter(Boolean).join("|");
+    if (!bairro || !cidade || !estado) {
+        return "";
     }
 
-    const localizacao = normalizeHomeText(tool.localizacao);
-
-    if (localizacao) {
-        return localizacao;
-    }
-
-    return "";
+    return [
+        bairro,
+        cidade,
+        estado
+    ].join("|");
 }
 
 function buildToolLocationLabel(tool) {
     const parts = [];
-
-    if (tool.logradouro) {
-        parts.push(`${tool.logradouro}${tool.numero ? `, ${tool.numero}` : ""}`);
-    }
 
     if (tool.bairro) {
         parts.push(tool.bairro);
@@ -1534,36 +1510,21 @@ function buildToolLocationLabel(tool) {
         return parts.join(" • ");
     }
 
-    return tool.localizacao || "Localização não informada";
+    return "Localização aproximada";
 }
 
 function buildToolGeocodeQuery(tool) {
-    const parts = [];
+    const bairro = String(tool.bairro || "").trim();
+    const cidade = String(tool.cidade || "").trim();
+    const estado = String(tool.estado || "").trim();
+    const cep = String(tool.cep || "").replace(/\D/g, "");
 
-    if (tool.logradouro) {
-        parts.push(`${tool.logradouro}${tool.numero ? `, ${tool.numero}` : ""}`);
+    if (bairro && cidade && estado) {
+        return `${bairro}, ${cidade}, ${estado}, Brasil`;
     }
 
-    if (tool.bairro) {
-        parts.push(tool.bairro);
-    }
-
-    if (tool.cidade) {
-        parts.push(tool.cidade);
-    }
-
-    if (tool.estado) {
-        parts.push(tool.estado);
-    }
-
-    parts.push("Brasil");
-
-    if (parts.length > 1) {
-        return parts.join(", ");
-    }
-
-    if (tool.localizacao) {
-        return `${tool.localizacao}, Brasil`;
+    if (cep.length === 8) {
+        return `${cep}, Brasil`;
     }
 
     return "";
@@ -1605,40 +1566,94 @@ async function getCoordinatesForLocation(query) {
         }
     }
 
-    try {
-        const url =
-            "https://nominatim.openstreetmap.org/search" +
-            `?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(query)}`;
+    const queriesToTry = buildGeocodeAttempts(query);
 
-        const response = await fetch(url, {
-            headers: {
-                "Accept": "application/json"
+    for (const currentQuery of queriesToTry) {
+        try {
+            const url =
+                "https://nominatim.openstreetmap.org/search" +
+                `?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(currentQuery)}`;
+
+            const response = await fetch(url, {
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                continue;
             }
-        });
 
-        if (!response.ok) {
-            return null;
+            const data = await response.json();
+
+            if (!data || data.length === 0) {
+                continue;
+            }
+
+            const coordinates = {
+                lat: Number(data[0].lat),
+                lon: Number(data[0].lon)
+            };
+
+            localStorage.setItem(cacheKey, JSON.stringify(coordinates));
+
+            return coordinates;
+
+        } catch (error) {
+            console.warn("Erro ao geocodificar localização:", currentQuery, error);
         }
 
-        const data = await response.json();
-
-        if (!data || data.length === 0) {
-            return null;
-        }
-
-        const coordinates = {
-            lat: Number(data[0].lat),
-            lon: Number(data[0].lon)
-        };
-
-        localStorage.setItem(cacheKey, JSON.stringify(coordinates));
-
-        return coordinates;
-
-    } catch (error) {
-        console.warn("Erro ao geocodificar localização:", query, error);
-        return null;
+        await wait(250);
     }
+
+    return null;
+}
+
+function buildGeocodeAttempts(query) {
+    const cleanQuery = String(query || "").trim();
+
+    if (!cleanQuery) {
+        return [];
+    }
+
+    const attempts = [cleanQuery];
+
+    const onlyNumbers = cleanQuery.replace(/\D/g, "");
+
+    if (onlyNumbers.length === 8) {
+        attempts.push(`${onlyNumbers.substring(0, 5)}-${onlyNumbers.substring(5)}, Brasil`);
+        return [...new Set(attempts)];
+    }
+
+    const parts = cleanQuery
+        .split(",")
+        .map(part => part.trim())
+        .filter(Boolean);
+
+    const bairro = parts[0];
+    const cidade = parts[1];
+    const estado = parts[2];
+
+    if (bairro && cidade && estado) {
+        attempts.push(`${bairro}, ${cidade} - ${estado}, Brasil`);
+        attempts.push(`${bairro}, ${cidade}, Brasil`);
+        attempts.push(`${bairro}, ${estado}, Brasil`);
+
+        attempts.push(`Bairro ${bairro}, ${cidade}, ${estado}, Brasil`);
+
+        const simplifiedBairro = bairro
+            .replace(/^vila\s+/i, "")
+            .replace(/^jardim\s+/i, "")
+            .replace(/^jd\.?\s+/i, "")
+            .trim();
+
+        if (simplifiedBairro && simplifiedBairro !== bairro) {
+            attempts.push(`${simplifiedBairro}, ${cidade}, ${estado}, Brasil`);
+            attempts.push(`${simplifiedBairro}, ${cidade}, Brasil`);
+        }
+    }
+
+    return [...new Set(attempts)];
 }
 
 function renderToolsMapGroups(groups) {

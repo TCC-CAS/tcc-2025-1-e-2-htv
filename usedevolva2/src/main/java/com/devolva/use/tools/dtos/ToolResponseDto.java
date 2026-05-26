@@ -13,8 +13,9 @@ public record ToolResponseDto(
         String ownerNome,
         String ownerPlano,
         boolean disponivel,
+        String cep,
+        String bairro,
         String cidade,
         String estado,
         String localizacao
-
 ) {}

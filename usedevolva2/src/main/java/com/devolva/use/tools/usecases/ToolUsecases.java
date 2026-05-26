@@ -561,6 +561,8 @@ public class ToolUsecases {
                 ownerNome,
                 ownerPlano,
                 tool.isDisponivel(),
+                tool.getCep(),
+                tool.getBairro(),
                 tool.getCidade(),
                 tool.getEstado(),
                 tool.getLocalizacao()
