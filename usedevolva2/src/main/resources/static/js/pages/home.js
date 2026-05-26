@@ -1102,12 +1102,21 @@ function saveCurrentHomeLocation() {
 let toolsMapInstance = null;
 let toolsMapMarkersLayer = null;
 let toolsMapLoaded = false;
-let toolsMapGroups = [];
+let toolsMapAllGroups = [];
+let toolsMapUserLocation = null;
+let toolsMapLocationSource = null;
+let toolsMapRadiusKm = 10;
+
+const TOOLS_MAP_MIN_RADIUS_KM = 5;
+const TOOLS_MAP_MAX_RADIUS_KM = 30;
+const TOOLS_MAP_RADIUS_STEP_KM = 5;
 
 function setupToolsMapModal() {
     const openBtn = document.getElementById("openToolsMapBtn");
     const closeBtn = document.getElementById("closeToolsMapBtn");
     const modal = document.getElementById("toolsMapModal");
+    const minusBtn = document.getElementById("toolsMapRadiusMinus");
+    const plusBtn = document.getElementById("toolsMapRadiusPlus");
 
     if (!openBtn || !closeBtn || !modal) {
         return;
@@ -1115,7 +1124,9 @@ function setupToolsMapModal() {
 
     openBtn.addEventListener("click", async () => {
         openToolsMapModal();
-        await loadToolsMap();
+
+        // Sempre tenta pedir localização ao abrir o mapa.
+        await loadToolsMap(true);
     });
 
     closeBtn.addEventListener("click", closeToolsMapModal);
@@ -1125,6 +1136,20 @@ function setupToolsMapModal() {
             closeToolsMapModal();
         }
     });
+
+    if (minusBtn) {
+        minusBtn.addEventListener("click", () => {
+            updateToolsMapRadius(-TOOLS_MAP_RADIUS_STEP_KM);
+        });
+    }
+
+    if (plusBtn) {
+        plusBtn.addEventListener("click", () => {
+            updateToolsMapRadius(TOOLS_MAP_RADIUS_STEP_KM);
+        });
+    }
+
+    updateToolsMapRadiusLabel();
 }
 
 function openToolsMapModal() {
@@ -1151,9 +1176,41 @@ function closeToolsMapModal() {
     modal.setAttribute("aria-hidden", "true");
 }
 
-async function loadToolsMap() {
+function updateToolsMapRadius(delta) {
+    toolsMapRadiusKm = Math.min(
+        TOOLS_MAP_MAX_RADIUS_KM,
+        Math.max(TOOLS_MAP_MIN_RADIUS_KM, toolsMapRadiusKm + delta)
+    );
+
+    updateToolsMapRadiusLabel();
+
+    if (toolsMapLoaded) {
+        renderToolsMapGroups(getToolsMapGroupsInsideRadius());
+    }
+}
+
+function updateToolsMapRadiusLabel() {
+    const label = document.getElementById("toolsMapRadiusValue");
+    const minusBtn = document.getElementById("toolsMapRadiusMinus");
+    const plusBtn = document.getElementById("toolsMapRadiusPlus");
+
+    if (label) {
+        label.textContent = `${toolsMapRadiusKm} km`;
+    }
+
+    if (minusBtn) {
+        minusBtn.disabled = toolsMapRadiusKm <= TOOLS_MAP_MIN_RADIUS_KM;
+    }
+
+    if (plusBtn) {
+        plusBtn.disabled = toolsMapRadiusKm >= TOOLS_MAP_MAX_RADIUS_KM;
+    }
+}
+
+async function loadToolsMap(forceReload = false) {
     const sideTitle = document.getElementById("toolsMapSideTitle");
     const sideList = document.getElementById("toolsMapSideList");
+    const locationStatus = document.getElementById("toolsMapLocationStatus");
 
     if (sideTitle) {
         sideTitle.textContent = "Carregando ferramentas...";
@@ -1163,14 +1220,56 @@ async function loadToolsMap() {
         sideList.innerHTML = `<p class="tools-map-empty">Montando mapa...</p>`;
     }
 
+    if (locationStatus) {
+        locationStatus.textContent = "Solicitando sua localização...";
+    }
+
     initToolsMap();
 
-    if (toolsMapLoaded) {
-        renderToolsMapGroups(toolsMapGroups);
+    if (toolsMapLoaded && !forceReload) {
+        renderToolsMapGroups(getToolsMapGroupsInsideRadius());
         return;
     }
 
     try {
+        const baseLocation = await resolveToolsMapBaseLocation();
+
+        if (!baseLocation) {
+            toolsMapUserLocation = null;
+            toolsMapLocationSource = null;
+            toolsMapLoaded = false;
+
+            if (locationStatus) {
+                locationStatus.textContent =
+                    "Não conseguimos obter sua localização nem encontrar um endereço padrão cadastrado.";
+            }
+
+            if (sideTitle) {
+                sideTitle.textContent = "Localização não encontrada";
+            }
+
+            if (sideList) {
+                sideList.innerHTML = `
+                    <p class="tools-map-empty">
+                        Permita o acesso à localização ou cadastre um endereço principal no perfil
+                        para visualizar ferramentas próximas no mapa.
+                    </p>
+                `;
+            }
+
+            toolsMapInstance.setView([-14.235, -51.9253], 4);
+            toolsMapMarkersLayer.clearLayers();
+
+            return;
+        }
+
+        toolsMapUserLocation = baseLocation;
+        toolsMapLocationSource = baseLocation.source;
+
+        if (locationStatus) {
+            locationStatus.textContent = buildToolsMapLocationStatusText(baseLocation);
+        }
+
         const response = await fetch("/tools");
 
         if (!response.ok) {
@@ -1184,14 +1283,30 @@ async function loadToolsMap() {
         });
 
         const groups = groupToolsByLocation(availableTools);
+        const geocodedGroups = await geocodeToolGroups(groups);
 
-        toolsMapGroups = await geocodeToolGroups(groups);
+        toolsMapAllGroups = geocodedGroups
+            .map(group => ({
+                ...group,
+                distanceKm: calculateDistanceKm(
+                    baseLocation.lat,
+                    baseLocation.lon,
+                    group.lat,
+                    group.lon
+                )
+            }))
+            .sort((a, b) => a.distanceKm - b.distanceKm);
+
         toolsMapLoaded = true;
 
-        renderToolsMapGroups(toolsMapGroups);
+        renderToolsMapGroups(getToolsMapGroupsInsideRadius());
 
     } catch (error) {
         console.error(error);
+
+        if (locationStatus) {
+            locationStatus.textContent = "Não foi possível carregar o mapa.";
+        }
 
         if (sideTitle) {
             sideTitle.textContent = "Erro ao carregar mapa";
@@ -1205,6 +1320,133 @@ async function loadToolsMap() {
             `;
         }
     }
+}
+
+async function resolveToolsMapBaseLocation() {
+    const browserLocation = await getBrowserLocation();
+
+    if (browserLocation) {
+        return {
+            ...browserLocation,
+            source: "browser"
+        };
+    }
+
+    const addressLocation = await getMainAddressLocationForToolsMap();
+
+    if (addressLocation) {
+        return {
+            ...addressLocation,
+            source: "address"
+        };
+    }
+
+    return null;
+}
+
+async function getMainAddressLocationForToolsMap() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(`/users/${user.id}/addresses`);
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const addresses = await response.json();
+
+        if (!addresses || addresses.length === 0) {
+            return null;
+        }
+
+        const mainAddress =
+            addresses.find(address => address.principal) ||
+            addresses[0];
+
+        if (!mainAddress) {
+            return null;
+        }
+
+        const addressText = buildAddressTextFromSavedAddress(mainAddress);
+
+        if (!addressText) {
+            return null;
+        }
+
+        const location = await geocodeAddress(addressText);
+
+        if (!location) {
+            return null;
+        }
+
+        return {
+            lat: location.lat,
+            lon: location.lon,
+            cidade: mainAddress.cidade,
+            estado: mainAddress.estado
+        };
+
+    } catch (error) {
+        console.warn("Não foi possível carregar endereço principal para o mapa:", error);
+        return null;
+    }
+}
+
+function buildAddressTextFromSavedAddress(address) {
+    const cep = formatCepForMap(address.cep);
+
+    const fullAddress = [
+        address.logradouro,
+        address.numero,
+        address.bairro,
+        address.cidade,
+        address.estado,
+        cep,
+        "Brasil"
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    const cityState = [
+        address.cidade,
+        address.estado,
+        "Brasil"
+    ]
+        .filter(Boolean)
+        .join(", ");
+
+    return fullAddress || cityState || "";
+}
+
+function buildToolsMapLocationStatusText(location) {
+    if (!location) {
+        return "Localização não encontrada.";
+    }
+
+    if (location.source === "browser") {
+        return `Usando sua localização atual. Raio de ${toolsMapRadiusKm} km.`;
+    }
+
+    if (location.source === "address") {
+        const cityState = [location.cidade, location.estado]
+            .filter(Boolean)
+            .join(" - ");
+
+        return cityState
+            ? `Usando seu endereço padrão em ${cityState}. Raio de ${toolsMapRadiusKm} km.`
+            : `Usando seu endereço padrão. Raio de ${toolsMapRadiusKm} km.`;
+    }
+
+    return `Raio de ${toolsMapRadiusKm} km.`;
+}
+
+function getToolsMapGroupsInsideRadius() {
+    return toolsMapAllGroups.filter(group => group.distanceKm <= toolsMapRadiusKm);
 }
 
 function initToolsMap() {
@@ -1402,6 +1644,7 @@ async function getCoordinatesForLocation(query) {
 function renderToolsMapGroups(groups) {
     const sideTitle = document.getElementById("toolsMapSideTitle");
     const sideList = document.getElementById("toolsMapSideList");
+    const locationStatus = document.getElementById("toolsMapLocationStatus");
 
     if (!toolsMapInstance || !toolsMapMarkersLayer) {
         return;
@@ -1409,24 +1652,57 @@ function renderToolsMapGroups(groups) {
 
     toolsMapMarkersLayer.clearLayers();
 
+    if (toolsMapUserLocation) {
+        L.marker([toolsMapUserLocation.lat, toolsMapUserLocation.lon], {
+            icon: createToolsMapUserIcon()
+        })
+            .addTo(toolsMapMarkersLayer)
+            .bindPopup(
+                toolsMapLocationSource === "address"
+                    ? "Seu endereço padrão"
+                    : "Sua localização atual"
+            );
+
+        L.circle([toolsMapUserLocation.lat, toolsMapUserLocation.lon], {
+            radius: toolsMapRadiusKm * 1000,
+            color: "#5b4bb7",
+            fillColor: "#5b4bb7",
+            fillOpacity: 0.08
+        }).addTo(toolsMapMarkersLayer);
+    }
+
+    if (locationStatus && toolsMapUserLocation) {
+        locationStatus.textContent = buildToolsMapLocationStatusText(toolsMapUserLocation);
+    }
+
     if (!groups || groups.length === 0) {
         if (sideTitle) {
-            sideTitle.textContent = "Nenhuma ferramenta localizada";
+            sideTitle.textContent = "Nenhuma ferramenta próxima";
         }
 
         if (sideList) {
             sideList.innerHTML = `
                 <p class="tools-map-empty">
-                    Não encontramos ferramentas com endereço suficiente para aparecer no mapa.
+                    Nenhuma ferramenta encontrada em um raio de ${toolsMapRadiusKm} km.
+                    Use o botão + para aumentar o raio até 30 km.
                 </p>
             `;
         }
 
-        toolsMapInstance.setView([-14.235, -51.9253], 4);
+        if (toolsMapUserLocation) {
+            toolsMapInstance.setView([toolsMapUserLocation.lat, toolsMapUserLocation.lon], 13);
+        } else {
+            toolsMapInstance.setView([-14.235, -51.9253], 4);
+        }
+
         return;
     }
 
     const bounds = [];
+
+    if (toolsMapUserLocation) {
+        bounds.push([toolsMapUserLocation.lat, toolsMapUserLocation.lon]);
+    }
 
     groups.forEach(group => {
         const marker = L.marker([group.lat, group.lon], {
@@ -1444,7 +1720,7 @@ function renderToolsMapGroups(groups) {
     if (bounds.length > 0) {
         toolsMapInstance.fitBounds(bounds, {
             padding: [40, 40],
-            maxZoom: 13
+            maxZoom: 14
         });
     }
 
@@ -1453,9 +1729,13 @@ function renderToolsMapGroups(groups) {
     }
 
     if (sideList) {
+        const totalTools = groups.reduce((sum, group) => sum + group.tools.length, 0);
+
         sideList.innerHTML = `
             <p class="tools-map-empty">
-                ${groups.length} local(is) encontrado(s). Clique em um ponto no mapa.
+                ${totalTools} ferramenta(s) em ${groups.length} local(is)
+                dentro de ${toolsMapRadiusKm} km.
+                Clique em um ponto no mapa.
             </p>
         `;
     }
@@ -1474,6 +1754,16 @@ function createToolsMapIcon(count) {
         iconSize: [42, 42],
         iconAnchor: [21, 42],
         popupAnchor: [0, -42]
+    });
+}
+
+function createToolsMapUserIcon() {
+    return L.divIcon({
+        className: "",
+        html: `<div class="tools-map-user-marker">Você</div>`,
+        iconSize: [54, 32],
+        iconAnchor: [27, 16],
+        popupAnchor: [0, -16]
     });
 }
 
@@ -1501,7 +1791,12 @@ async function showToolsMapSideList(group) {
     );
 
     sideList.innerHTML = `
-        <p class="tools-map-location">${escapeHomeHtml(group.label)}</p>
+        <p class="tools-map-location">
+            ${escapeHomeHtml(group.label)}
+            ${typeof group.distanceKm === "number"
+        ? `<br><strong>${group.distanceKm.toFixed(1)} km de distância</strong>`
+        : ""}
+        </p>
 
         ${toolsWithImages.map(tool => `
             <button type="button" class="tools-map-tool" data-tool-id="${tool.id}">

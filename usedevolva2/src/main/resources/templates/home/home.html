@@ -175,11 +175,30 @@
             <div>
                 <h2>Ferramentas no mapa</h2>
                 <p>Clique em um ponto para ver as ferramentas disponíveis naquele local.</p>
+                <small id="toolsMapLocationStatus" class="tools-map-location-status">
+                    Ao abrir, vamos solicitar sua localização.
+                </small>
             </div>
 
-            <button type="button" id="closeToolsMapBtn" class="tools-map-close">
-                ×
-            </button>
+            <div class="tools-map-header-actions">
+                <div class="tools-map-radius-control">
+                    <span>Raio</span>
+
+                    <button type="button" id="toolsMapRadiusMinus" aria-label="Diminuir raio">
+                        −
+                    </button>
+
+                    <strong id="toolsMapRadiusValue">10 km</strong>
+
+                    <button type="button" id="toolsMapRadiusPlus" aria-label="Aumentar raio">
+                        +
+                    </button>
+                </div>
+
+                <button type="button" id="closeToolsMapBtn" class="tools-map-close">
+                    ×
+                </button>
+            </div>
         </div>
 
         <div class="tools-map-body">
