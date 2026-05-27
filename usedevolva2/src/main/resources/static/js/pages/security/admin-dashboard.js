@@ -179,6 +179,7 @@ ${report.toolId ? `
         if (!panel) return;
 
         panel.style.opacity = '0';
+        panel.style.pointerEvents = 'none';
 
         let toolImageHtml = "";
         if (report.toolId) {
@@ -299,8 +300,10 @@ ${report.toolId ? `
                 }
             }
 
-            panel.style.opacity = '1';
-            const invSection = document.getElementById('investigationSection');
+        panel.style.opacity = '1';
+        panel.style.pointerEvents = 'auto';
+
+        const invSection = document.getElementById('investigationSection');
             if (invSection) {
                 invSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -345,6 +348,7 @@ ${report.toolId ? `
 
             if (panel) {
                 panel.style.opacity = '0';
+                panel.style.pointerEvents = 'none';
             }
 
             document.getElementById('invName').innerText = "Selecione um item";
