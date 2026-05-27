@@ -70,6 +70,13 @@ public class UserUsecases {
             throw new IllegalArgumentException("Senha inválida.");
         }
 
+        if (user.getStatus() == UserStatus.BLOQUEADO) {
+
+            throw new IllegalStateException(
+                    "Sua conta foi bloqueada pela moderação. Caso acredite que isso foi um erro, entre em contato pelo e-mail: usedevolva@gmail.com"
+            );
+        }
+
         if (user.getStatus() != UserStatus.ATIVO) {
             throw new IllegalStateException("Usuário não está ativo.");
         }
@@ -203,12 +210,6 @@ public class UserUsecases {
 
     private UserModel findActiveUser(Long userId) {
         UserModel user = findById(userId);
-
-        if (user.getStatus() == UserStatus.BLOQUEADO) {
-            throw new IllegalStateException(
-                    "Sua conta foi bloqueada pela moderação. Caso acredite que isso foi um erro, entre em contato pelo e-mail: usedevolva@gmail.com"
-            );
-        }
 
         if (user.getStatus() != UserStatus.ATIVO) {
             throw new IllegalStateException("Usuário não está ativo.");

@@ -30,8 +30,18 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserModel> login(@RequestBody LoginUserDto dto) {
-        return ResponseEntity.ok(userUsecases.login(dto));
+    public ResponseEntity<?> login(@RequestBody LoginUserDto dto) {
+
+        try {
+
+            return ResponseEntity.ok(userUsecases.login(dto));
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(e.getMessage());
+        }
     }
 
     @PatchMapping("/{id}/verify")
