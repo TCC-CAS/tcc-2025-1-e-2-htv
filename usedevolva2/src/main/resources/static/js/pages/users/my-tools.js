@@ -108,19 +108,69 @@ async function renderTools(tools, ownerId) {
     }
 
     for (const tool of tools) {
+
         const images = await fetchToolImages(tool.id);
         const mainImage = images.length > 0 ? images[0].filePath : null;
+
         const status = getToolStatus(tool);
 
+        const avisoModeracaoHtml = tool.moderada
+            ? `
+            <div style="
+                margin-top: 12px;
+                padding: 12px;
+                background: #FEF2F2;
+                border: 1px solid #FCA5A5;
+                border-left: 5px solid #DC2626;
+                border-radius: 8px;
+                color: #991B1B;
+            ">
+                <strong style="display:block; margin-bottom:6px;">
+                    🚫 Ferramenta desativada pela moderação
+                </strong>
+
+                <span style="font-size:0.9rem;">
+                    Motivo: ${tool.motivoModeracao || "Violação das políticas da plataforma."}
+                </span>
+
+                ${
+                tool.moderadaEm
+                    ? `
+                        <div style="margin-top:6px; font-size:0.8rem; opacity:0.8;">
+                            ${new Date(tool.moderadaEm).toLocaleString('pt-BR')}
+                        </div>
+                        `
+                    : ''
+            }
+            </div>
+            `
+            : "";
+
         const avisoExpiradoHtml = status.expirada
-            ? `<div style="margin-top: 12px; padding: 8px 12px; background-color: #FEF2F2; border: 1px solid #FEE2E2; border-radius: 6px; color: #DC2626; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 6px;">
+            ? `
+            <div style="
+                margin-top: 12px;
+                padding: 8px 12px;
+                background-color: #FEF2F2;
+                border: 1px solid #FEE2E2;
+                border-radius: 6px;
+                color: #DC2626;
+                font-size: 0.85rem;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            ">
                 ⚠️ A data de disponibilidade passou. Você precisa editar este anúncio.
-               </div>`
+            </div>
+            `
             : "";
 
         container.innerHTML += `
             <article class="tool-card" ${status.expirada ? 'style="border-color: #FCA5A5;"' : ''}>
+
                 <div class="tool-image-container">
+
                     ${
             mainImage
                 ? `<img src="${mainImage}" alt="${tool.nome}" class="tool-image">`
@@ -130,14 +180,21 @@ async function renderTools(tools, ownerId) {
                     <span class="tool-badge ${status.className}">
                         ${status.label}
                     </span>
+
                 </div>
 
                 <div class="tool-info">
-                    <div class="tool-category">${tool.categoria || "Sem categoria"}</div>
 
-                    <h3 class="tool-title">${tool.nome}</h3>
+                    <div class="tool-category">
+                        ${tool.categoria || "Sem categoria"}
+                    </div>
+
+                    <h3 class="tool-title">
+                        ${tool.nome}
+                    </h3>
 
                     <div class="tool-details">
+
                         <div class="detail-item">
                             <strong>Estado</strong>
                             <span>${tool.estadoConservacao || "Não informado"}</span>
@@ -145,34 +202,55 @@ async function renderTools(tools, ownerId) {
 
                         <div class="detail-item">
                             <strong>Disponibilidade</strong>
-                            <span ${status.expirada ? 'style="color: #DC2626; font-weight: bold;"' : ''}>${status.label}</span>
+                            <span ${status.expirada ? 'style="color: #DC2626; font-weight: bold;"' : ''}>
+                                ${status.label}
+                            </span>
                         </div>
+
                     </div>
 
-                    ${avisoExpiradoHtml} 
+                    ${avisoExpiradoHtml}
+
+                    ${avisoModeracaoHtml}
 
                     <div class="price-tag" style="margin-top: 12px;">
-                        R$ ${formatMoney(tool.valorDiaria)} <span>/ dia</span>
+                        R$ ${formatMoney(tool.valorDiaria)}
+                        <span>/ dia</span>
                     </div>
+
                 </div>
 
                 <div class="tool-actions">
-                    <button class="action-btn" title="Ver Anúncio Público" onclick="viewTool(${tool.id})">
+
+                    <button class="action-btn"
+                            title="Ver Anúncio Público"
+                            onclick="viewTool(${tool.id})">
                         Ver
                     </button>
 
-                    <button class="action-btn" title="Editar" onclick="editTool(${tool.id})" ${status.expirada ? 'style="background-color: #DC2626; color: white;"' : ''}>
+                    <button class="action-btn"
+                            title="Editar"
+                            onclick="editTool(${tool.id})"
+                            ${status.expirada ? 'style="background-color: #DC2626; color: white;"' : ''}>
                         Editar
                     </button>
 
-                    <button class="action-btn" title="Bloquear ou reativar" onclick="toggleBlockTool(${tool.id}, ${ownerId}, ${!tool.bloqueadaTemporariamente})">
+                    <button class="action-btn"
+                            title="Bloquear ou reativar"
+                            onclick="toggleBlockTool(${tool.id}, ${ownerId}, ${!tool.bloqueadaTemporariamente})"
+                            ${tool.moderada ? 'disabled' : ''}>
                         ${tool.bloqueadaTemporariamente ? "Reativar" : "Bloquear"}
                     </button>
 
-                    <button class="action-btn danger" title="Excluir" onclick="deleteTool(${tool.id}, ${ownerId})">
+                    <button class="action-btn danger"
+                            title="Excluir"
+                            onclick="deleteTool(${tool.id}, ${ownerId})"
+                            ${tool.moderada ? 'disabled' : ''}>
                         Excluir
                     </button>
+
                 </div>
+
             </article>
         `;
     }
@@ -195,6 +273,14 @@ async function fetchToolImages(toolId) {
 }
 
 function getToolStatus(tool) {
+
+    if (tool.moderada) {
+        return {
+            label: "Desativada pela Moderação",
+            className: "badge-blocked"
+        };
+    }
+
     if (tool.bloqueadaTemporariamente) {
         return {
             label: "Bloqueada",

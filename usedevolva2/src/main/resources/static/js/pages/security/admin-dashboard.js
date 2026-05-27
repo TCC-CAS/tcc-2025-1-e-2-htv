@@ -186,7 +186,6 @@ ${report.toolId ? `
             }
         }
 
-        setTimeout(() => {
             document.getElementById('invName').innerText = targetName;
             document.getElementById('invId').innerText = `Contexto Denúncia: #R-${report.id}`;
             document.getElementById('invSubtitle').innerText = `${roleTitle} • Enviado em: ${formatDateTime(report.createdAt)}`;
@@ -274,7 +273,8 @@ ${report.toolId ? `
                             .addEventListener("click", () =>
                                 handleResolveReport(report.id, "DISABLE_TOOL")
                             );
-                    }                } else {
+                    }
+                } else {
                     actionsContainer.innerHTML = `<p style="color:var(--cor-texto-medio); font-style:italic;">Esta denúncia já foi encerrada.</p>`;
                 }
             }
@@ -284,7 +284,6 @@ ${report.toolId ? `
             if (invSection) {
                 invSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }, 300);
     }
 
     async function handleResolveReport(reportId, action) {
