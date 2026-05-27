@@ -31,20 +31,48 @@
         </div>
 
         <div class="table-toolbar">
-            <div style="display: flex; gap: 1rem; align-items: center;">
-                <input type="text" placeholder="Filtrar denúncias..." style="padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); outline: none; width: 250px;">
-                <select style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <option>Todos os Tipos</option>
-                    <option>Apenas Utilizadores</option>
-                    <option>Apenas Ferramentas</option>
+
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+
+                <select id="typeFilter"
+                        style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+
+                    <option value="ALL">Todos os Tipos</option>
+                    <option value="USER">Apenas Utilizadores</option>
+                    <option value="TOOL">Apenas Ferramentas</option>
+
                 </select>
+
+                <select id="statusFilter"
+                        style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+
+                    <option value="ALL">Todos os Status</option>
+                    <option value="PENDING">Pendentes</option>
+                    <option value="RESOLVED">Finalizados</option>
+
+                </select>
+
+                <select id="priorityFilter"
+                        style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+
+                    <option value="ALL">Todas Prioridades</option>
+                    <option value="HIGH">Alta</option>
+                    <option value="MEDIUM">Média</option>
+                    <option value="LOW">Baixa</option>
+
+                </select>
+
             </div>
 
             <div class="bulk-actions" id="bulkActions">
-                <button class="btn btn-outline" id="bulkIgnoreBtn">🗑️ Ignorar Selecionados</button>
-                <button class="btn btn-danger" id="bulkSanctionBtn">⚠️ Sancionar Selecionados</button>
+                <button class="btn btn-outline" id="bulkIgnoreBtn">
+                    🗑️ Ignorar Selecionados
+                </button>
+
+                <button class="btn btn-danger" id="bulkSanctionBtn">
+                    ⚠️ Sancionar Selecionados
+                </button>
             </div>
-        </div>
 
         <div class="table-container">
             <table id="reportsTable">
@@ -66,6 +94,7 @@
                 </tbody>
 
             </table>
+        </div>
         </div>
     </section>
 

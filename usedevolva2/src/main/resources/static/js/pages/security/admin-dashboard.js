@@ -15,8 +15,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const tableBody = document.querySelector("#reportsTable tbody");
     const selectAll = document.getElementById('selectAll');
     const bulkActions = document.getElementById('bulkActions');
+    const typeFilter = document.getElementById("typeFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const priorityFilter = document.getElementById("priorityFilter");
+
+    let allReports = [];
 
     fetchReports();
+
+    typeFilter.addEventListener("change", applyFilters);
+    statusFilter.addEventListener("change", applyFilters);
+    priorityFilter.addEventListener("change", applyFilters);
+
 
     async function fetchReports() {
         try {
@@ -32,7 +42,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const reports = await response.json();
-            renderTable(reports);
+
+            allReports = reports;
+
+            renderTable(allReports);
 
         } catch (error) {
             console.error(error);
@@ -71,8 +84,13 @@ document.addEventListener("DOMContentLoaded", function () {
             tr.innerHTML = `
                 <td><input type="checkbox" class="row-checkbox" ${!isPending ? 'disabled' : ''}></td>
                 <td>${getPriorityBadge(report.reason)}</td>
-                <td><span class="badge badge-tipo-user">👤 Utilizador</span></td>
-                <td>
+<td>
+    ${
+                report.toolId
+                    ? `<span class="badge badge-tipo-tool">🛠️ Ferramenta</span>`
+                    : `<span class="badge badge-tipo-user">👤 Utilizador</span>`
+            }
+</td>                <td>
                     <a href="#" class="preview-link" style="text-decoration: none; color: inherit;">
                         <strong>#R-${report.id}</strong> <br>
                         <span style="font-size: 0.8rem; color: var(--cor-texto-medio);">
@@ -258,21 +276,36 @@ ${report.toolId ? `
 `;
 
                     document.getElementById("paneDismiss")
-                        .addEventListener("click", () =>
-                            handleResolveReport(report.id, "DISMISS")
-                        );
+                        .addEventListener("click", async function(e) {
+
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            await handleResolveReport(report.id, "DISMISS");
+                        });
 
                     if (!report.toolId) {
+
                         document.getElementById("paneBlock")
-                            .addEventListener("click", () =>
-                                handleResolveReport(report.id, "BLOCK_USER")
-                            );
+                            .addEventListener("click", async function(e) {
+
+                                e.preventDefault();
+                                e.stopPropagation();
+
+                                await handleResolveReport(report.id, "BLOCK_USER");
+                            });
                     }
+
                     if (report.toolId) {
+
                         document.getElementById("paneTool")
-                            .addEventListener("click", () =>
-                                handleResolveReport(report.id, "DISABLE_TOOL")
-                            );
+                            .addEventListener("click", async function(e) {
+
+                                e.preventDefault();
+                                e.stopPropagation();
+
+                                await handleResolveReport(report.id, "DISABLE_TOOL");
+                            });
                     }
                 } else {
                     actionsContainer.innerHTML = `<p style="color:var(--cor-texto-medio); font-style:italic;">Esta denúncia já foi encerrada.</p>`;
@@ -401,6 +434,73 @@ ${report.toolId ? `
         });
     }
 
+
+    function applyFilters() {
+
+        let filtered = [...allReports];
+
+        const type = typeFilter.value;
+        const status = statusFilter.value;
+        const priority = priorityFilter.value;
+
+        // filtro tipo
+        if (type === "USER") {
+
+            filtered = filtered.filter(report => !report.toolId);
+        }
+
+        if (type === "TOOL") {
+
+            filtered = filtered.filter(report => report.toolId);
+        }
+
+        // filtro status
+        if (status === "PENDING") {
+
+            filtered = filtered.filter(report => report.status === "PENDING");
+        }
+
+        if (status === "RESOLVED") {
+
+            filtered = filtered.filter(report => report.status !== "PENDING");
+        }
+
+        // filtro prioridade
+        if (priority !== "ALL") {
+
+            filtered = filtered.filter(report => {
+
+                const high = [
+                    "NAO_DEVOLVEU",
+                    "ITEM_DEFEITUOSO"
+                ];
+
+                const medium = [
+                    "AVARIA_PRODUTO",
+                    "COMPORTAMENTO_INADEQUADO"
+                ];
+
+                if (priority === "HIGH") {
+                    return high.includes(report.reason);
+                }
+
+                if (priority === "MEDIUM") {
+                    return medium.includes(report.reason);
+                }
+
+                if (priority === "LOW") {
+                    return !high.includes(report.reason)
+                        && !medium.includes(report.reason);
+                }
+
+                return true;
+            });
+        }
+
+        renderTable(filtered);
+    }
+
+
     const bulkIgnoreBtn = document.getElementById("bulkIgnoreBtn");
     if (bulkIgnoreBtn) {
         bulkIgnoreBtn.addEventListener("click", async () => {
@@ -427,3 +527,4 @@ ${report.toolId ? `
         });
     }
 });
+

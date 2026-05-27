@@ -234,7 +234,6 @@ async function renderTools(tools, ownerId) {
                             ${status.expirada ? 'style="background-color: #DC2626; color: white;"' : ''}>
                         Editar
                     </button>
-
                     <button class="action-btn"
                             title="Bloquear ou reativar"
                             onclick="toggleBlockTool(${tool.id}, ${ownerId}, ${!tool.bloqueadaTemporariamente})"

@@ -587,7 +587,8 @@ public class ToolUsecases {
 
         ToolModel tool = findToolOrThrow(toolId);
 
-        tool.setAtivo(false);
+        tool.setAtivo(true);
+
         tool.setDisponivel(false);
         tool.setBloqueadaTemporariamente(true);
 
@@ -601,8 +602,5 @@ public class ToolUsecases {
 
         return toolRepository.save(tool);
     }
-
-
-
 
 }
