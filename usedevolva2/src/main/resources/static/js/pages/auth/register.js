@@ -50,7 +50,7 @@ form.addEventListener("submit", async function (event) {
     }
 
     if (!validarTelefone(telefone)) {
-        mostrarErro("telefone", "Informe um telefone válido com DDD.");
+        mostrarErro("telefone", "Informe um telefone celular válido com DDD, totalizando 11 números.");
         formValido = false;
     }
 
@@ -192,7 +192,7 @@ function validarEmail(email) {
 
 function validarTelefone(telefone) {
     const somenteNumeros = telefone.replace(/\D/g, "");
-    return somenteNumeros.length === 10 || somenteNumeros.length === 11;
+    return somenteNumeros.length === 11;
 }
 
 function validarIdade(dataNascimento) {

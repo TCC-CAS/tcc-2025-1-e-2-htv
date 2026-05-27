@@ -6,10 +6,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     const addressSelect = document.getElementById("addressId");
     const openAddressModalBtn = document.getElementById("openAddressModalBtn");
     const submitButton = form ? form.querySelector("button[type='submit']") : null;
+    const descricaoInput = document.getElementById("descricao");
+    const descricaoCounter = document.getElementById("descricaoCounter");
+    const DESCRICAO_MAX_LENGTH = 255;
 
     let selectedFiles = [];
 
     if (!form) return;
+
+    function updateDescricaoCounter() {
+        if (!descricaoInput || !descricaoCounter) return;
+
+        const used = descricaoInput.value.length;
+        descricaoCounter.textContent = `${used}/${DESCRICAO_MAX_LENGTH} caracteres`;
+        descricaoCounter.classList.toggle("limit-reached", used >= DESCRICAO_MAX_LENGTH);
+    }
+
+    descricaoInput?.addEventListener("input", updateDescricaoCounter);
+    updateDescricaoCounter();
 
     const savedUser = JSON.parse(localStorage.getItem("user"));
 
@@ -195,6 +209,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             !toolData.dataInicioDisponibilidade
         ) {
             showToast("Preencha todos os campos obrigatórios.", "error");
+            return;
+        }
+
+        if (toolData.descricao.length > DESCRICAO_MAX_LENGTH) {
+            showToast(`A descrição deve ter no máximo ${DESCRICAO_MAX_LENGTH} caracteres.`, "error");
+            descricaoInput.focus();
             return;
         }
 

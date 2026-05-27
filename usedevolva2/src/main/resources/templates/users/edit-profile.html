@@ -66,7 +66,8 @@
 
                 <label>
                     Telefone
-                    <input type="tel" id="telefone" required placeholder="(00) 00000-0000">
+                    <input type="tel" id="telefone" required placeholder="(00) 00000-0000" inputmode="numeric" maxlength="15" pattern="\(\d{2}\) \d{5}-\d{4}">
+                    <small id="telefoneError" class="field-error" aria-live="polite"></small>
                 </label>
             </div>
 

@@ -11,6 +11,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const photoInput = document.getElementById("profilePhotoInput");
     const savePhotoBtn = document.getElementById("saveProfilePhotoBtn");
     const removePhotoBtn = document.getElementById("removeProfilePhotoBtn");
+    const telefoneInput = document.getElementById("telefone");
+
+    telefoneInput?.addEventListener("input", () => {
+        telefoneInput.value = aplicarMascaraTelefone(telefoneInput.value);
+        limparErroTelefone();
+    });
 
     let currentUser = savedUser;
     let selectedPhotoFile = null;
@@ -157,6 +163,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        if (!validarTelefone(payload.telefone)) {
+            mostrarErroTelefone("Informe um telefone celular válido com DDD, totalizando 11 números.");
+            showEditProfileToast("Corrija o telefone antes de salvar.", "error");
+            return;
+        }
+
         if (payload.novaSenha && payload.novaSenha.length < 8) {
             showEditProfileToast("A nova senha deve ter no mínimo 8 caracteres.", "error");
             return;
@@ -209,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 function fillProfileForm(user) {
     document.getElementById("nomeCompleto").value = user.nomeCompleto || "";
     document.getElementById("email").value = user.email || "";
-    document.getElementById("telefone").value = user.telefone || "";
+    document.getElementById("telefone").value = aplicarMascaraTelefone(user.telefone || "");
 }
 
 function renderEditProfileAvatar(avatarElement, user) {
@@ -262,4 +274,33 @@ function showEditProfileToast(message, type = "success") {
         toast.classList.remove("show");
         setTimeout(() => toast.remove(), 250);
     }, 3000);
+}
+
+
+function aplicarMascaraTelefone(value) {
+    value = String(value || "").replace(/\D/g, "").slice(0, 11);
+
+    return value
+        .replace(/(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{5})(\d)/, "$1-$2");
+}
+
+function validarTelefone(telefone) {
+    return String(telefone || "").replace(/\D/g, "").length === 11;
+}
+
+function mostrarErroTelefone(texto) {
+    const errorElement = document.getElementById("telefoneError");
+    const inputElement = document.getElementById("telefone");
+
+    if (errorElement) errorElement.textContent = texto;
+    if (inputElement) inputElement.classList.add("input-error");
+}
+
+function limparErroTelefone() {
+    const errorElement = document.getElementById("telefoneError");
+    const inputElement = document.getElementById("telefone");
+
+    if (errorElement) errorElement.textContent = "";
+    if (inputElement) inputElement.classList.remove("input-error");
 }

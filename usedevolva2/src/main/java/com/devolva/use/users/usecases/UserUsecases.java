@@ -47,7 +47,7 @@ public class UserUsecases {
         UserModel user = new UserModel();
         user.setNomeCompleto(dto.nomeCompleto());
         user.setEmail(dto.email());
-        user.setTelefone(dto.telefone());
+        user.setTelefone(dto.telefone().trim());
         user.setSenha(passwordEncoder.encode(dto.senha()));
         user.setDocumento(dto.documento());
         user.setDataNascimento(dto.dataNascimento());
@@ -109,6 +109,7 @@ public class UserUsecases {
         }
 
         if (dto.telefone() != null && !dto.telefone().isBlank()) {
+            validateTelefone(dto.telefone());
             user.setTelefone(dto.telefone().trim());
         }
 
@@ -223,6 +224,8 @@ public class UserUsecases {
             throw new IllegalArgumentException("Telefone é obrigatório.");
         }
 
+        validateTelefone(dto.telefone());
+
         if (dto.senha() == null || dto.senha().length() < 8) {
             throw new IllegalArgumentException("Senha deve ter no mínimo 8 caracteres.");
         }
@@ -237,6 +240,15 @@ public class UserUsecases {
 
         if (!dto.aceitouPoliticaPrivacidade()) {
             throw new IllegalArgumentException("Aceite da política de privacidade é obrigatório.");
+        }
+    }
+
+
+    private void validateTelefone(String telefone) {
+        String apenasNumeros = telefone == null ? "" : telefone.replaceAll("\\D", "");
+
+        if (apenasNumeros.length() != 11) {
+            throw new IllegalArgumentException("Telefone deve conter exatamente 11 números, incluindo DDD.");
         }
     }
 

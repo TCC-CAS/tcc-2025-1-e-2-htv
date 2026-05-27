@@ -65,7 +65,8 @@
 
                 <div class="form-group">
                     <label for="descricao">Descrição detalhada</label>
-                    <textarea id="descricao" name="descricao" placeholder="Descreva a ferramenta, a sua potência, uso indicado, acessórios incluídos, estado de conservação, etc." required></textarea>
+                    <textarea id="descricao" name="descricao" maxlength="255" placeholder="Descreva a ferramenta, a sua potência, uso indicado, acessórios incluídos, estado de conservação, etc." required></textarea>
+                    <small class="char-counter" id="descricaoCounter" aria-live="polite">0/255 caracteres</small>
                 </div>
 
                 <div class="form-group">

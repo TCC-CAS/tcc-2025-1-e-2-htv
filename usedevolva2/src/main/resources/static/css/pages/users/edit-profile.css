@@ -242,3 +242,17 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.field-error {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.35rem;
+    color: #dc2626;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.input-error {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}

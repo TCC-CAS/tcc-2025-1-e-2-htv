@@ -263,6 +263,10 @@ public class ToolUsecases {
             throw new IllegalArgumentException("Descrição da ferramenta é obrigatória.");
         }
 
+        if (descricao.length() > 255) {
+            throw new IllegalArgumentException("Descrição da ferramenta deve ter no máximo 255 caracteres.");
+        }
+
         if (categoria == null || categoria.isBlank()) {
             throw new IllegalArgumentException("Categoria é obrigatória.");
         }
@@ -275,8 +279,8 @@ public class ToolUsecases {
             throw new IllegalArgumentException("Valor da diária deve ser maior que zero.");
         }
 
-        if (quantidadeFotos < 1 || quantidadeFotos > 10) {
-            throw new IllegalArgumentException("A ferramenta deve ter entre 1 e 10 fotos.");
+        if (quantidadeFotos < 1 || quantidadeFotos > 5) {
+            throw new IllegalArgumentException("A ferramenta deve ter entre 1 e 5 fotos.");
         }
 
         if (addressId == null && (localizacao == null || localizacao.isBlank())) {

@@ -344,3 +344,15 @@
                 padding: 1.5rem;
             }
         }
+.char-counter {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-muted, #6b7280);
+    text-align: right;
+}
+
+.char-counter.limit-reached {
+    color: #c0392b;
+    font-weight: 700;
+}

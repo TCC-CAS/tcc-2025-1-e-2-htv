@@ -62,8 +62,12 @@
           name="telefone"
           placeholder="(00) 00000-0000"
           autocomplete="tel"
+          inputmode="numeric"
+          maxlength="15"
+          pattern="\(\d{2}\) \d{5}-\d{4}"
           required
         >
+        <small id="telefoneError" class="field-error" aria-live="polite"></small>
       </div>
 
       <div class="form-group">
