@@ -56,6 +56,16 @@ public class ToolModel {
         this.disponivel = true;
     }
 
+    private Boolean moderada = false;
+
+    @Column(columnDefinition = "TEXT")
+    private String motivoModeracao;
+
+    private LocalDateTime moderadaEm;
+
+    private Long moderadaPorAdminId;
+
+
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = LocalDateTime.now();

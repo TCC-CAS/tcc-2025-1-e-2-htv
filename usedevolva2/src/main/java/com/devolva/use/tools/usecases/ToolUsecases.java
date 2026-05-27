@@ -578,6 +578,31 @@ public class ToolUsecases {
         );
     }
 
+    @Transactional
+    public ToolModel adminDisableTool(
+            Long toolId,
+            Long adminId,
+            String reason
+    ) {
+
+        ToolModel tool = findToolOrThrow(toolId);
+
+        tool.setAtivo(false);
+        tool.setDisponivel(false);
+        tool.setBloqueadaTemporariamente(true);
+
+        tool.setModerada(true);
+        tool.setMotivoModeracao(reason);
+
+        tool.setModeradaEm(LocalDateTime.now());
+        tool.setModeradaPorAdminId(adminId);
+
+        tool.setUpdatedAt(LocalDateTime.now());
+
+        return toolRepository.save(tool);
+    }
+
+
 
 
 }

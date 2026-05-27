@@ -98,10 +98,35 @@ document.addEventListener("DOMContentLoaded", function () {
                 </td>
                 <td><span class="badge ${statusBadgeClass}">${statusText}</span></td>
                 <td style="display: flex; gap: 4px;">
-                    ${isPending ? `
-                        <button class="btn-action btn-outline" data-id="${report.id}" data-action="DISMISS" style="padding: 6px; border:1px solid #ccc; border-radius:4px; background:none; cursor:pointer;" title="Ignorar / Manter">✅</button>
-                        <button class="btn-action btn-danger" data-id="${report.id}" data-action="RESOLVE" style="padding: 6px; border:none; border-radius:4px; cursor:pointer;" title="Sancionar / Resolver">🚫</button>
-                    ` : '-'}
+                ${isPending ? `
+
+<button class="btn-action btn-outline"
+        data-id="${report.id}"
+        data-action="DISMISS"
+        style="padding: 6px; border:1px solid #ccc; border-radius:4px; background:none; cursor:pointer;"
+        title="Ignorar denúncia">
+    ✅
+</button>
+
+<button class="btn-action btn-danger"
+        data-id="${report.id}"
+        data-action="BLOCK_USER"
+        style="padding: 6px; border:none; border-radius:4px; cursor:pointer;"
+        title="Bloquear usuário">
+    👤🚫
+</button>
+
+${report.toolId ? `
+<button class="btn-action"
+        data-id="${report.id}"
+        data-action="DISABLE_TOOL"
+        style="padding: 6px; border:none; border-radius:4px; cursor:pointer; background:#6f42c1; color:white;"
+        title="Desativar ferramenta">
+    🛠️❌
+</button>
+` : ''}
+
+` : '-'}
                 </td>
             `;
 
@@ -206,13 +231,45 @@ document.addEventListener("DOMContentLoaded", function () {
             if (actionsContainer) {
                 if (report.status === "PENDING") {
                     actionsContainer.innerHTML = `
-                        <button class="btn btn-outline" id="paneDismiss" style="width: 100%; border-color: var(--warning); color: var(--warning);">🗑️ Ignorar Denúncia</button>
-                        <button class="btn btn-danger" id="paneResolve" style="width: 100%;">🚫 Aplicar Sanção (Resolver)</button>
-                    `;
 
-                    document.getElementById("paneDismiss").addEventListener("click", () => handleResolveReport(report.id, "DISMISS"));
-                    document.getElementById("paneResolve").addEventListener("click", () => handleResolveReport(report.id, "RESOLVE"));
-                } else {
+<button class="btn btn-outline"
+        id="paneDismiss"
+        style="width: 100%; border-color: var(--warning); color: var(--warning);">
+    🗑️ Ignorar Denúncia
+</button>
+
+<button class="btn btn-danger"
+        id="paneBlock"
+        style="width: 100%;">
+    👤🚫 Bloquear Usuário
+</button>
+
+${report.toolId ? `
+<button class="btn"
+        id="paneTool"
+        style="width: 100%; background:#6f42c1; color:white;">
+    🛠️❌ Desativar Ferramenta
+</button>
+` : ''}
+
+`;
+
+                    document.getElementById("paneDismiss")
+                        .addEventListener("click", () =>
+                            handleResolveReport(report.id, "DISMISS")
+                        );
+
+                    document.getElementById("paneBlock")
+                        .addEventListener("click", () =>
+                            handleResolveReport(report.id, "BLOCK_USER")
+                        );
+
+                    if (report.toolId) {
+                        document.getElementById("paneTool")
+                            .addEventListener("click", () =>
+                                handleResolveReport(report.id, "DISABLE_TOOL")
+                            );
+                    }                } else {
                     actionsContainer.innerHTML = `<p style="color:var(--cor-texto-medio); font-style:italic;">Esta denúncia já foi encerrada.</p>`;
                 }
             }
@@ -226,26 +283,48 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     async function handleResolveReport(reportId, action) {
-        const confirmar = confirm(`Tem certeza que deseja aplicar a ação [${action === 'RESOLVE' ? 'SANCIONAR' : 'IGNORAR'}] para esta denúncia?`);
+
+        const actionLabels = {
+            DISMISS: "ignorar esta denúncia",
+            BLOCK_USER: "BLOQUEAR este usuário",
+            DISABLE_TOOL: "DESATIVAR esta ferramenta"
+        };
+
+        const confirmar = confirm(
+            `Tem certeza que deseja ${actionLabels[action]}?`
+        );
+
         if (!confirmar) return;
 
         try {
-            const response = await fetch(`/reports/admin/${reportId}/resolve?action=${action}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Admin-Id": adminData.id
+
+            const response = await fetch(
+                `/reports/admin/${reportId}/resolve?action=${action}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Admin-Id": adminData.id
+                    }
                 }
-            });
+            );
 
-            if (!response.ok) throw new Error("Falha ao atualizar denúncia.");
+            if (!response.ok) {
+                throw new Error("Falha ao atualizar denúncia.");
+            }
 
-            alert("Denúncia atualizada com sucesso!");
+            alert("Ação aplicada com sucesso!");
+
             fetchReports();
 
             const panel = document.getElementById('investigationPanel');
-            if (panel) panel.style.opacity = '0';
+
+            if (panel) {
+                panel.style.opacity = '0';
+            }
+
             document.getElementById('invName').innerText = "Selecione um item";
+
         } catch (error) {
             alert(error.message);
         }

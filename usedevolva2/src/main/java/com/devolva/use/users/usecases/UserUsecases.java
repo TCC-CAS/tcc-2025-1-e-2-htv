@@ -294,4 +294,13 @@ public class UserUsecases {
         userRepository.save(user);
     }
 
+    public UserModel blockUser(Long userId) {
+
+        UserModel user = findById(userId);
+
+        user.setStatus(UserStatus.BLOQUEADO);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        return userRepository.save(user);
+    }
 }

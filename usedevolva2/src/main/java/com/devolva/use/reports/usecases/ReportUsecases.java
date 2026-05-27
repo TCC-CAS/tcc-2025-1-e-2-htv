@@ -4,8 +4,10 @@ import com.devolva.use.reports.domain.ReportModel;
 import com.devolva.use.reports.domain.ReportStatus;
 import com.devolva.use.reports.dtos.*;
 import com.devolva.use.reports.repository.ReportRepository;
+import com.devolva.use.tools.usecases.ToolUsecases;
 import com.devolva.use.users.repository.UserRepository;
 import com.devolva.use.tools.repository.ToolRepository;
+import com.devolva.use.users.usecases.UserUsecases;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,10 +19,21 @@ public class ReportUsecases {
     private final UserRepository userRepository;
     private final ToolRepository toolRepository;
 
-    public ReportUsecases(ReportRepository reportRepository, UserRepository userRepository, ToolRepository toolRepository) {
+    private final UserUsecases userUsecases;
+    private final ToolUsecases toolUsecases;
+
+    public ReportUsecases(
+            ReportRepository reportRepository,
+            UserRepository userRepository,
+            ToolRepository toolRepository,
+            UserUsecases userUsecases,
+            ToolUsecases toolUsecases
+    ) {
         this.reportRepository = reportRepository;
         this.userRepository = userRepository;
         this.toolRepository = toolRepository;
+        this.userUsecases = userUsecases;
+        this.toolUsecases = toolUsecases;
     }
 
     public ReportModel createReport(CreateReportDto dto) {
@@ -86,13 +99,49 @@ public class ReportUsecases {
     }
 
     public ReportModel resolveReport(Long reportId, Long adminId, String action) {
+
         ReportModel report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Denúncia não encontrada."));
 
-        if (action.equalsIgnoreCase("RESOLVE")) {
-            report.setStatus(ReportStatus.RESOLVED);
-        } else {
-            report.setStatus(ReportStatus.DISMISSED);
+        switch (action.toUpperCase()) {
+
+            case "RESOLVE":
+                report.setStatus(ReportStatus.RESOLVED);
+                break;
+
+            case "DISMISS":
+                report.setStatus(ReportStatus.DISMISSED);
+                break;
+
+            case "BLOCK_USER":
+
+                if (report.getReportedUserId() == null) {
+                    throw new RuntimeException("Usuário denunciado não encontrado.");
+                }
+
+                userUsecases.blockUser(report.getReportedUserId());
+
+                report.setStatus(ReportStatus.RESOLVED);
+                break;
+
+            case "DISABLE_TOOL":
+
+                if (report.getToolId() == null) {
+                    throw new RuntimeException("Ferramenta denunciada não encontrada.");
+                }
+
+                toolUsecases.adminDisableTool(
+                        report.getToolId(),
+                        adminId,
+                        "Ferramenta removida pela moderação após denúncia: "
+                                + report.getReason()
+                );
+
+                report.setStatus(ReportStatus.RESOLVED);
+                break;
+
+            default:
+                throw new RuntimeException("Ação inválida.");
         }
 
         report.setResolvedAt(LocalDateTime.now());
