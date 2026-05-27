@@ -691,6 +691,7 @@ let toolsMapRadiusKm = 10;
 const TOOLS_MAP_MIN_RADIUS_KM = 5;
 const TOOLS_MAP_MAX_RADIUS_KM = 30;
 const TOOLS_MAP_RADIUS_STEP_KM = 5;
+const TOOLS_MAP_CLUSTER_DISTANCE_KM = 2;
 
 function setupToolsMapModal() {
     const openBtn = document.getElementById("openToolsMapBtn");
@@ -865,8 +866,9 @@ async function loadToolsMap(forceReload = false) {
 
         const groups = groupToolsByLocation(availableTools);
         const geocodedGroups = await geocodeToolGroups(groups);
+        const clusteredGroups = clusterToolsMapGroups(geocodedGroups);
 
-        toolsMapAllGroups = geocodedGroups
+        toolsMapAllGroups = clusteredGroups
             .map(group => ({
                 ...group,
                 distanceKm: calculateDistanceKm(
@@ -1061,44 +1063,64 @@ function groupToolsByLocation(tools) {
 }
 
 function buildToolLocationKey(tool) {
-    const estado = normalizeHomeText(tool.estado);
-    const cidade = normalizeHomeText(tool.cidade);
-    const bairro = normalizeHomeText(tool.bairro);
+    const query = buildToolGeocodeQuery(tool);
 
-    if (!bairro || !cidade || !estado) {
+    if (!query) {
         return "";
     }
 
-    return [
-        bairro,
-        cidade,
-        estado
-    ].join("|");
+    return normalizeHomeText(query);
 }
 
 function buildToolLocationLabel(tool) {
-    const parts = [];
+    const bairro = String(tool.bairro || "").trim();
+    const cidade = String(tool.cidade || "").trim();
+    const estado = String(tool.estado || "").trim();
 
-    if (tool.bairro) {
-        parts.push(tool.bairro);
+    if (bairro) {
+        const suffix = [cidade, estado].filter(Boolean).join(" - ");
+        return suffix ? `${bairro} - ${suffix}` : bairro;
     }
 
-    if (tool.cidade || tool.estado) {
-        parts.push(`${tool.cidade || ""}${tool.estado ? ` - ${tool.estado}` : ""}`.trim());
-    }
-
-    if (parts.length > 0) {
-        return parts.join(" • ");
+    if (cidade || estado) {
+        return [cidade, estado].filter(Boolean).join(" - ");
     }
 
     return "Localização aproximada";
 }
 
 function buildToolGeocodeQuery(tool) {
+    const logradouro = String(tool.logradouro || "").trim();
+    const numero = String(tool.numero || "").trim();
     const bairro = String(tool.bairro || "").trim();
     const cidade = String(tool.cidade || "").trim();
     const estado = String(tool.estado || "").trim();
     const cep = String(tool.cep || "").replace(/\D/g, "");
+    const localizacao = String(tool.localizacao || "").trim();
+
+    if (logradouro && numero && cidade && estado) {
+        return [
+            `${logradouro}, ${numero}`,
+            bairro,
+            cidade,
+            estado,
+            "Brasil"
+        ].filter(Boolean).join(", ");
+    }
+
+    if (logradouro && cidade && estado) {
+        return [
+            logradouro,
+            bairro,
+            cidade,
+            estado,
+            "Brasil"
+        ].filter(Boolean).join(", ");
+    }
+
+    if (localizacao && cidade && estado) {
+        return `${localizacao}, ${cidade}, ${estado}, Brasil`;
+    }
 
     if (bairro && cidade && estado) {
         return `${bairro}, ${cidade}, ${estado}, Brasil`;
@@ -1109,6 +1131,92 @@ function buildToolGeocodeQuery(tool) {
     }
 
     return "";
+}
+
+function clusterToolsMapGroups(groups) {
+    const clusters = [];
+
+    groups.forEach(group => {
+        const existingCluster = clusters.find(cluster => {
+            const distanceKm = calculateDistanceKm(
+                cluster.lat,
+                cluster.lon,
+                group.lat,
+                group.lon
+            );
+
+            return distanceKm <= TOOLS_MAP_CLUSTER_DISTANCE_KM;
+        });
+
+        if (!existingCluster) {
+            clusters.push({
+                ...group,
+                isClusteredRegion: false
+            });
+            return;
+        }
+
+        const currentToolsCount = existingCluster.tools.length;
+        const newToolsCount = group.tools.length;
+        const totalToolsCount = currentToolsCount + newToolsCount;
+
+        existingCluster.lat = (
+            (existingCluster.lat * currentToolsCount) +
+            (group.lat * newToolsCount)
+        ) / totalToolsCount;
+
+        existingCluster.lon = (
+            (existingCluster.lon * currentToolsCount) +
+            (group.lon * newToolsCount)
+        ) / totalToolsCount;
+
+        existingCluster.tools.push(...group.tools);
+        existingCluster.isClusteredRegion = true;
+        existingCluster.label = buildNearbyRegionLabel(existingCluster.tools);
+    });
+
+    return clusters;
+}
+
+function buildNearbyRegionLabel(tools) {
+    const bairros = uniqueToolLocationValues(tools, "bairro");
+    const cidades = uniqueToolLocationValues(tools, "cidade");
+    const estados = uniqueToolLocationValues(tools, "estado");
+
+    const bairrosText = bairros.length > 0
+        ? bairros.slice(0, 4).join(" • ") + (bairros.length > 4 ? "..." : "")
+        : "locais próximos";
+
+    const locationSuffix = [];
+
+    if (cidades.length === 1) {
+        locationSuffix.push(cidades[0]);
+    }
+
+    if (estados.length === 1) {
+        locationSuffix.push(estados[0]);
+    }
+
+    return `Região próxima: ${bairrosText}${locationSuffix.length > 0 ? ` - ${locationSuffix.join(" - ")}` : ""}`;
+}
+
+function uniqueToolLocationValues(tools, fieldName) {
+    const values = [];
+    const seen = new Set();
+
+    tools.forEach(tool => {
+        const value = String(tool[fieldName] || "").trim();
+        const key = normalizeHomeText(value);
+
+        if (!value || seen.has(key)) {
+            return;
+        }
+
+        seen.add(key);
+        values.push(value);
+    });
+
+    return values;
 }
 
 async function geocodeToolGroups(groups) {
@@ -1211,30 +1319,53 @@ function buildGeocodeAttempts(query) {
         .map(part => part.trim())
         .filter(Boolean);
 
-    const bairro = parts[0];
-    const cidade = parts[1];
-    const estado = parts[2];
+    const brasilIndex = parts.findIndex(part => normalizeHomeText(part) === "brasil");
+    const usableParts = brasilIndex >= 0 ? parts.slice(0, brasilIndex) : parts;
+
+    const estado = usableParts.length >= 1 ? usableParts[usableParts.length - 1] : "";
+    const cidade = usableParts.length >= 2 ? usableParts[usableParts.length - 2] : "";
+    const bairro = usableParts.length >= 3 ? usableParts[usableParts.length - 3] : "";
+    const endereco = usableParts.length >= 4 ? usableParts.slice(0, usableParts.length - 3).join(", ") : "";
+
+    const cepMatch = cleanQuery.match(/\b\d{5}-?\d{3}\b/);
+
+    if (cepMatch) {
+        attempts.push(`${cepMatch[0]}, Brasil`);
+    }
+
+    if (endereco && bairro && cidade && estado) {
+        attempts.push(`${endereco}, ${bairro}, ${cidade} - ${estado}, Brasil`);
+        attempts.push(`${endereco}, ${cidade}, ${estado}, Brasil`);
+        attempts.push(`${endereco.replace(/,?\s*n[ºo]?\s*\d+$/i, "")}, ${bairro}, ${cidade}, ${estado}, Brasil`);
+    }
 
     if (bairro && cidade && estado) {
+        attempts.push(`${bairro}, ${cidade}, ${estado}, Brasil`);
         attempts.push(`${bairro}, ${cidade} - ${estado}, Brasil`);
-        attempts.push(`${bairro}, ${cidade}, Brasil`);
-        attempts.push(`${bairro}, ${estado}, Brasil`);
-
         attempts.push(`Bairro ${bairro}, ${cidade}, ${estado}, Brasil`);
 
-        const simplifiedBairro = bairro
-            .replace(/^vila\s+/i, "")
-            .replace(/^jardim\s+/i, "")
-            .replace(/^jd\.?\s+/i, "")
-            .trim();
+        const simplifiedBairro = simplifyBrazilianNeighborhoodName(bairro);
 
         if (simplifiedBairro && simplifiedBairro !== bairro) {
             attempts.push(`${simplifiedBairro}, ${cidade}, ${estado}, Brasil`);
             attempts.push(`${simplifiedBairro}, ${cidade}, Brasil`);
         }
+
+        attempts.push(`${cidade}, ${estado}, Brasil`);
+    } else if (cidade && estado) {
+        attempts.push(`${cidade}, ${estado}, Brasil`);
     }
 
     return [...new Set(attempts)];
+}
+
+function simplifyBrazilianNeighborhoodName(value) {
+    return String(value || "")
+        .replace(/^vila\s+/i, "")
+        .replace(/^jardim\s+/i, "")
+        .replace(/^jd\.?\s+/i, "")
+        .replace(/^parque\s+/i, "")
+        .trim();
 }
 
 function renderToolsMapGroups(groups) {
@@ -1329,12 +1460,21 @@ function renderToolsMapGroups(groups) {
 
         sideList.innerHTML = `
             <p class="tools-map-empty">
-                ${totalTools} ferramenta(s) em ${groups.length} local(is)
+                ${formatToolsMapToolsCount(totalTools)} em ${formatToolsMapLocationsCount(groups.length)}
                 dentro de ${toolsMapRadiusKm} km.
                 Clique em um ponto no mapa.
             </p>
         `;
     }
+}
+
+
+function formatToolsMapToolsCount(count) {
+    return count === 1 ? "1 ferramenta" : `${count} ferramentas`;
+}
+
+function formatToolsMapLocationsCount(count) {
+    return count === 1 ? "1 local" : `${count} locais`;
 }
 
 function createToolsMapIcon(count) {
