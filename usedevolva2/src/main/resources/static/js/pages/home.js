@@ -716,6 +716,7 @@ let toolsMapLoaded = false;
 let toolsMapAllGroups = [];
 let toolsMapUserLocation = null;
 let toolsMapLocationSource = null;
+let toolsMapManualLocation = null;
 let toolsMapRadiusKm = 10;
 
 const TOOLS_MAP_MIN_RADIUS_KM = 5;
@@ -729,6 +730,8 @@ function setupToolsMapModal() {
     const modal = document.getElementById("toolsMapModal");
     const minusBtn = document.getElementById("toolsMapRadiusMinus");
     const plusBtn = document.getElementById("toolsMapRadiusPlus");
+    const addressForm = document.getElementById("toolsMapAddressForm");
+    const addressInput = document.getElementById("toolsMapAddressInput");
 
     if (!openBtn || !closeBtn || !modal) {
         return;
@@ -737,7 +740,8 @@ function setupToolsMapModal() {
     openBtn.addEventListener("click", async () => {
         openToolsMapModal();
 
-        // Sempre tenta pedir localização ao abrir o mapa.
+        // Tenta usar a localização do navegador. Caso o usuário negue, o mapa fica no Brasil
+        // e permite buscar manualmente por endereço, sem cair em um endereço cadastrado aleatório.
         await loadToolsMap(true);
     });
 
@@ -758,6 +762,13 @@ function setupToolsMapModal() {
     if (plusBtn) {
         plusBtn.addEventListener("click", () => {
             updateToolsMapRadius(TOOLS_MAP_RADIUS_STEP_KM);
+        });
+    }
+
+    if (addressForm) {
+        addressForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            await applyToolsMapAddressSearch(addressInput?.value || "");
         });
     }
 
@@ -853,17 +864,17 @@ async function loadToolsMap(forceReload = false) {
 
             if (locationStatus) {
                 locationStatus.textContent =
-                    "Não conseguimos obter sua localização nem encontrar um endereço padrão cadastrado.";
+                    "Localização não informada. Digite um endereço no campo acima para buscar no mapa.";
             }
 
             if (sideTitle) {
-                sideTitle.textContent = "Localização não encontrada";
+                sideTitle.textContent = "Digite um endereço";
             }
 
             if (sideList) {
                 sideList.innerHTML = `
                     <p class="tools-map-empty">
-                        Permita o acesso à localização ou cadastre um endereço principal no perfil
+                        Permita o acesso à localização ou digite um endereço no campo acima
                         para visualizar ferramentas próximas no mapa.
                     </p>
                 `;
@@ -936,6 +947,10 @@ async function loadToolsMap(forceReload = false) {
 }
 
 async function resolveToolsMapBaseLocation() {
+    if (toolsMapManualLocation) {
+        return toolsMapManualLocation;
+    }
+
     const browserLocation = await getBrowserLocation();
 
     if (browserLocation) {
@@ -945,16 +960,84 @@ async function resolveToolsMapBaseLocation() {
         };
     }
 
-    const addressLocation = await getMainAddressLocationForToolsMap();
+    return null;
+}
 
-    if (addressLocation) {
-        return {
-            ...addressLocation,
-            source: "address"
-        };
+async function applyToolsMapAddressSearch(rawAddress) {
+    const address = String(rawAddress || "").trim();
+    const sideTitle = document.getElementById("toolsMapSideTitle");
+    const sideList = document.getElementById("toolsMapSideList");
+    const locationStatus = document.getElementById("toolsMapLocationStatus");
+    const searchBtn = document.getElementById("toolsMapAddressSearchBtn");
+
+    if (!address) {
+        if (locationStatus) {
+            locationStatus.textContent = "Digite um endereço, bairro, cidade ou CEP para buscar no mapa.";
+        }
+        return;
     }
 
-    return null;
+    if (searchBtn) {
+        searchBtn.disabled = true;
+        searchBtn.textContent = "Buscando...";
+    }
+
+    if (locationStatus) {
+        locationStatus.textContent = `Buscando endereço: ${address}`;
+    }
+
+    if (sideTitle) {
+        sideTitle.textContent = "Buscando endereço...";
+    }
+
+    if (sideList) {
+        sideList.innerHTML = `<p class="tools-map-empty">Localizando o endereço informado no mapa...</p>`;
+    }
+
+    try {
+        const coordinates = await getCoordinatesForLocation(address);
+
+        if (!coordinates) {
+            if (locationStatus) {
+                locationStatus.textContent = "Não encontramos esse endereço. Confira a digitação e tente novamente.";
+            }
+
+            if (sideTitle) {
+                sideTitle.textContent = "Endereço não encontrado";
+            }
+
+            if (sideList) {
+                sideList.innerHTML = `
+                    <p class="tools-map-empty">
+                        Não foi possível localizar o endereço informado. Tente incluir cidade, estado ou CEP.
+                    </p>
+                `;
+            }
+            return;
+        }
+
+        toolsMapManualLocation = {
+            lat: coordinates.lat,
+            lon: coordinates.lon,
+            source: "manual",
+            label: address
+        };
+        toolsMapLoaded = false;
+
+        await loadToolsMap(true);
+
+    } catch (error) {
+        console.warn("Erro ao buscar endereço no mapa:", error);
+
+        if (locationStatus) {
+            locationStatus.textContent = "Erro ao buscar o endereço. Tente novamente.";
+        }
+    } finally {
+        if (searchBtn) {
+            searchBtn.disabled = false;
+            searchBtn.textContent = "Buscar no mapa";
+        }
+    }
 }
 
 async function getMainAddressLocationForToolsMap() {
@@ -1028,21 +1111,15 @@ function buildAddressTextFromSavedAddress(address) {
 
 function buildToolsMapLocationStatusText(location) {
     if (!location) {
-        return "Localização não encontrada.";
+        return "Localização não encontrada. Digite um endereço para buscar no mapa.";
     }
 
     if (location.source === "browser") {
         return `Usando sua localização atual. Raio de ${toolsMapRadiusKm} km.`;
     }
 
-    if (location.source === "address") {
-        const cityState = [location.cidade, location.estado]
-            .filter(Boolean)
-            .join(" - ");
-
-        return cityState
-            ? `Usando seu endereço padrão em ${cityState}. Raio de ${toolsMapRadiusKm} km.`
-            : `Usando seu endereço padrão. Raio de ${toolsMapRadiusKm} km.`;
+    if (location.source === "manual") {
+        return `Usando o endereço pesquisado${location.label ? `: ${location.label}` : ""}. Raio de ${toolsMapRadiusKm} km.`;
     }
 
     return `Raio de ${toolsMapRadiusKm} km.`;
