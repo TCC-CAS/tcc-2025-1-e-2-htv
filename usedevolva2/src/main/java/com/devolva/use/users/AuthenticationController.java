@@ -31,7 +31,13 @@ public class AuthenticationController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-        userUsecases.resetPassword(body.get("token"), body.get("newPassword"));
-        return ResponseEntity.ok("Senha alterada com sucesso.");
+        try {
+            userUsecases.resetPassword(body.get("token"), body.get("newPassword"));
+            return ResponseEntity.ok("Senha alterada com sucesso.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao alterar a senha.");
+        }
     }
 }

@@ -269,11 +269,23 @@ public class UserUsecases {
         emailService.enviarEmail(email, "Recuperação de Senha", "emails/reset-password-email", context);
     }
     public void resetPassword(String token, String newPassword) {
-        UserModel user = userRepository.findByResetPasswordToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Token inválido."));
+        if (token == null || token.isBlank()) {
+            throw new IllegalArgumentException("Token de recuperação não informado.");
+        }
 
-        if (user.getResetPasswordTokenExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Token expirado.");
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new IllegalArgumentException("A nova senha deve ter no mínimo 8 caracteres.");
+        }
+
+        UserModel user = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Link de recuperação inválido ou já utilizado."));
+
+        LocalDateTime expiresAt = user.getResetPasswordTokenExpiresAt();
+        if (expiresAt == null || expiresAt.isBefore(LocalDateTime.now())) {
+            user.setResetPasswordToken(null);
+            user.setResetPasswordTokenExpiresAt(null);
+            userRepository.save(user);
+            throw new IllegalArgumentException("Link de recuperação expirado. Solicite um novo e-mail de recuperação.");
         }
 
         user.setSenha(passwordEncoder.encode(newPassword));

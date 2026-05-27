@@ -44,27 +44,39 @@ if (loginForm) {
     });
 }
 
-document.querySelector('.auth-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
+const recoveryForm = document.querySelector('.auth-form');
 
-    const email = document.getElementById('email').value;
-    const messageEl = document.querySelector('.form-message');
+if (recoveryForm) {
+    recoveryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    try {
-        const response = await fetch('/auth/request-recovery', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
-        });
+        const email = document.getElementById('email').value.trim();
+        const messageEl = document.querySelector('.form-message');
 
-        if (response.ok) {
-            messageEl.style.color = 'green';
-            messageEl.textContent = 'Verifique sua caixa de entrada, enviamos o link de recuperação!';
-        } else {
-            throw new Error("E-mail não encontrado ou erro no servidor.");
+        if (!email) {
+            messageEl.style.color = 'red';
+            messageEl.textContent = 'Informe o e-mail cadastrado.';
+            return;
         }
-    } catch (err) {
-        messageEl.style.color = 'red';
-        messageEl.textContent = err.message;
-    }
-});
+
+        try {
+            const response = await fetch('/auth/request-recovery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const responseText = await response.text();
+
+            if (response.ok) {
+                messageEl.style.color = 'green';
+                messageEl.textContent = 'Verifique sua caixa de entrada, enviamos o link de recuperação!';
+            } else {
+                throw new Error(responseText || 'E-mail não encontrado ou erro no servidor.');
+            }
+        } catch (err) {
+            messageEl.style.color = 'red';
+            messageEl.textContent = err.message;
+        }
+    });
+}
