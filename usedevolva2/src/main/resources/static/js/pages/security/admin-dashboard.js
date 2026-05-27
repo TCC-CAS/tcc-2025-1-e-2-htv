@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ✅
 </button>
 
+${!report.toolId ? `
 <button class="btn-action btn-danger"
         data-id="${report.id}"
         data-action="BLOCK_USER"
@@ -115,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
         title="Bloquear usuário">
     👤🚫
 </button>
+` : ''}
 
 ${report.toolId ? `
 <button class="btn-action"
@@ -238,11 +240,13 @@ ${report.toolId ? `
     🗑️ Ignorar Denúncia
 </button>
 
+${!report.toolId ? `
 <button class="btn btn-danger"
         id="paneBlock"
         style="width: 100%;">
     👤🚫 Bloquear Usuário
 </button>
+` : ''}
 
 ${report.toolId ? `
 <button class="btn"
@@ -259,11 +263,12 @@ ${report.toolId ? `
                             handleResolveReport(report.id, "DISMISS")
                         );
 
-                    document.getElementById("paneBlock")
-                        .addEventListener("click", () =>
-                            handleResolveReport(report.id, "BLOCK_USER")
-                        );
-
+                    if (!report.toolId) {
+                        document.getElementById("paneBlock")
+                            .addEventListener("click", () =>
+                                handleResolveReport(report.id, "BLOCK_USER")
+                            );
+                    }
                     if (report.toolId) {
                         document.getElementById("paneTool")
                             .addEventListener("click", () =>
