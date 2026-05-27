@@ -1363,12 +1363,21 @@ async function getCoordinatesForLocation(query) {
     }
 
     const queriesToTry = buildGeocodeAttempts(query);
+    const cep = extractBrazilianCep(query);
 
-    for (const currentQuery of queriesToTry) {
+    if (cep) {
+        const viaCepAddress = await getAddressByCep(cep);
+
+        if (viaCepAddress) {
+            queriesToTry.unshift(...buildGeocodeAttempts(viaCepAddress));
+        }
+    }
+
+    for (const currentQuery of [...new Set(queriesToTry)]) {
         try {
             const url =
                 "https://nominatim.openstreetmap.org/search" +
-                `?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(currentQuery)}`;
+                `?format=json&limit=1&addressdetails=1&countrycodes=br&q=${encodeURIComponent(currentQuery)}`;
 
             const response = await fetch(url, {
                 headers: {
@@ -1403,6 +1412,72 @@ async function getCoordinatesForLocation(query) {
     }
 
     return null;
+}
+
+function extractBrazilianCep(value) {
+    const digits = String(value || "").replace(/\D/g, "");
+
+    return digits.length === 8 ? digits : "";
+}
+
+async function getAddressByCep(cep) {
+    const cleanCep = extractBrazilianCep(cep);
+
+    if (!cleanCep) {
+        return "";
+    }
+
+    const cacheKey = `cepAddress:${cleanCep}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+        return cached;
+    }
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+
+        if (!response.ok) {
+            return "";
+        }
+
+        const data = await response.json();
+
+        if (!data || data.erro) {
+            return "";
+        }
+
+        const addressText = buildAddressTextFromViaCep(data);
+
+        if (addressText) {
+            localStorage.setItem(cacheKey, addressText);
+        }
+
+        return addressText;
+
+    } catch (error) {
+        console.warn("Erro ao buscar CEP no ViaCEP:", error);
+        return "";
+    }
+}
+
+function buildAddressTextFromViaCep(data) {
+    const logradouro = String(data.logradouro || "").trim();
+    const bairro = String(data.bairro || "").trim();
+    const cidade = String(data.localidade || "").trim();
+    const estado = String(data.uf || "").trim();
+
+    if (!cidade || !estado) {
+        return "";
+    }
+
+    return [
+        logradouro,
+        bairro,
+        cidade,
+        estado,
+        "Brasil"
+    ].filter(Boolean).join(", ");
 }
 
 function buildGeocodeAttempts(query) {
@@ -1491,11 +1566,7 @@ function renderToolsMapGroups(groups) {
             icon: createToolsMapUserIcon()
         })
             .addTo(toolsMapMarkersLayer)
-            .bindPopup(
-                toolsMapLocationSource === "address"
-                    ? "Seu endereço padrão"
-                    : "Sua localização atual"
-            );
+            .bindPopup(getToolsMapUserPopupText());
 
         L.circle([toolsMapUserLocation.lat, toolsMapUserLocation.lon], {
             radius: toolsMapRadiusKm * 1000,
@@ -1582,6 +1653,18 @@ function formatToolsMapToolsCount(count) {
 
 function formatToolsMapLocationsCount(count) {
     return count === 1 ? "1 local" : `${count} locais`;
+}
+
+function getToolsMapUserPopupText() {
+    if (toolsMapLocationSource === "manual") {
+        return "Endereço pesquisado";
+    }
+
+    if (toolsMapLocationSource === "address") {
+        return "Seu endereço padrão";
+    }
+
+    return "Sua localização atual";
 }
 
 function createToolsMapIcon(count) {
