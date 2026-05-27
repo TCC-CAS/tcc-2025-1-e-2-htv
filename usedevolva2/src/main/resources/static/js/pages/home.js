@@ -53,9 +53,7 @@ async function loadFeaturedTools() {
             const imageUrl = await getMainImage(tool.id);
             const isFavorited = favoriteIds.includes(tool.id);
 
-            const localizacaoFormatada = (tool.cidade && tool.estado)
-                ? `${tool.cidade} - ${tool.estado.toUpperCase()}`
-                : "Localização não informada";
+            const localizacaoFormatada = formatToolNeighborhoodCityState(tool);
 
             const card = document.createElement("article");
             card.className = "tool-card";
@@ -128,6 +126,38 @@ async function loadFeaturedTools() {
         console.error(error);
         container.innerHTML = "<p>Não foi possível carregar as ferramentas em destaque.</p>";
     }
+}
+
+function formatToolNeighborhoodCityState(tool) {
+    const bairro = String(tool.bairro || "").trim();
+    const cidade = String(tool.cidade || "").trim();
+    const estado = String(tool.estado || "").trim().toUpperCase();
+
+    if (bairro && cidade && estado) {
+        return `${bairro} - ${cidade} - ${estado}`;
+    }
+
+    if (bairro && cidade) {
+        return `${bairro} - ${cidade}`;
+    }
+
+    if (bairro && estado) {
+        return `${bairro} - ${estado}`;
+    }
+
+    if (bairro) {
+        return bairro;
+    }
+
+    if (cidade && estado) {
+        return `${cidade} - ${estado}`;
+    }
+
+    if (cidade || estado) {
+        return cidade || estado;
+    }
+
+    return "Localização não informada";
 }
 
 async function toggleFavoriteFromCard(button, toolId) {

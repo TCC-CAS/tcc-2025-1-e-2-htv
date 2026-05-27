@@ -117,9 +117,7 @@ async function loadTool() {
 
         applyOwnerToolRestrictions();
 
-        const localizacaoFormatada = (tool.cidade && tool.estado)
-            ? `${tool.cidade} - ${tool.estado.toUpperCase()}`
-            : (tool.localizacao || "localização não informada");
+        const localizacaoFormatada = formatToolNeighborhoodCityState(tool);
 
         document.getElementById("breadcrumbToolName").textContent = tool.nome || "Ferramenta";
         document.getElementById("toolName").textContent = tool.nome || "Ferramenta";
@@ -158,6 +156,38 @@ async function loadTool() {
         console.error(error);
         showToast("Não foi possível carregar a ferramenta.");
     }
+}
+
+function formatToolNeighborhoodCityState(tool) {
+    const bairro = String(tool.bairro || "").trim();
+    const cidade = String(tool.cidade || "").trim();
+    const estado = String(tool.estado || "").trim().toUpperCase();
+
+    if (bairro && cidade && estado) {
+        return `${bairro} - ${cidade} - ${estado}`;
+    }
+
+    if (bairro && cidade) {
+        return `${bairro} - ${cidade}`;
+    }
+
+    if (bairro && estado) {
+        return `${bairro} - ${estado}`;
+    }
+
+    if (bairro) {
+        return bairro;
+    }
+
+    if (cidade && estado) {
+        return `${cidade} - ${estado}`;
+    }
+
+    if (cidade || estado) {
+        return cidade || estado;
+    }
+
+    return tool.localizacao || "localização não informada";
 }
 
 async function loadBookedPeriods() {
