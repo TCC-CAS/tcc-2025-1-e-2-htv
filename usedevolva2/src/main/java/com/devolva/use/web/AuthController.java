@@ -34,6 +34,11 @@ public class AuthController {
         return "users/profile";
     }
 
+    @GetMapping("/users/edit-profile")
+    public String editProfile() {
+        return "users/edit-profile";
+    }
+
     @GetMapping("/users/my-tools")
     public String myTools() {
         return "users/my-tools";

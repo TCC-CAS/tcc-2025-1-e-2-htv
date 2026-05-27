@@ -9,8 +9,7 @@ import com.devolva.use.users.usecases.UserUsecases;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @CrossOrigin(origins = "*")
@@ -41,13 +40,31 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserModel> updateBasicData(@PathVariable Long id, @RequestBody UpdateUserDto dto) {
-        return ResponseEntity.ok(userUsecases.updateBasicData(id, dto));
+    public ResponseEntity<?> updateBasicData(@PathVariable Long id, @RequestBody UpdateUserDto dto) {
+        try {
+            return ResponseEntity.ok(userUsecases.updateBasicData(id, dto));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserModel> findById(@PathVariable Long id) {
         return ResponseEntity.ok(userUsecases.findById(id));
+    }
+
+    @PostMapping(value = "/{id}/profile-photo", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> updateProfilePhoto(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) {
+        try {
+            return ResponseEntity.ok(userUsecases.updateProfilePhoto(id, file));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
     
 }

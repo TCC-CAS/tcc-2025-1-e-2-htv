@@ -26,6 +26,12 @@ public class UserModel {
 
     private String telefone;
 
+    @Column(name = "profile_image_url", length = 1000)
+    private String profileImageUrl;
+
+    @Column(name = "profile_image_public_id")
+    private String profileImagePublicId;
+
     @JsonIgnore
     private String senha;
     private String documento;

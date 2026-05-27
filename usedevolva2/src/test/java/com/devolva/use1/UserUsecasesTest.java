@@ -167,7 +167,7 @@ class UserUsecasesTest {
         user.setId(1L);
         user.setStatus(UserStatus.ATIVO);
 
-        UpdateUserDto dto = new UpdateUserDto("Novo Nome", "11888888888");
+        UpdateUserDto dto = new UpdateUserDto("Novo Nome", null, "11888888888", null, null);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(UserModel.class))).thenAnswer(i -> i.getArgument(0));

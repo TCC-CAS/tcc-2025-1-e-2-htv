@@ -8,12 +8,17 @@ import com.devolva.use.users.dtos.LoginUserDto;
 import com.devolva.use.users.dtos.UpdateUserDto;
 import com.devolva.use.users.dtos.VerifyUserDto;
 import com.devolva.use.users.repository.UserRepository;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -22,12 +27,14 @@ public class UserUsecases {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final Cloudinary cloudinary;
 
 
-    public UserUsecases(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserUsecases(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, Cloudinary cloudinary) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.cloudinary = cloudinary;
     }
 
     public UserModel createUser(CreateUserDto dto) {
@@ -88,16 +95,85 @@ public class UserUsecases {
         UserModel user = findActiveUser(userId);
 
         if (dto.nomeCompleto() != null && !dto.nomeCompleto().isBlank()) {
-            user.setNomeCompleto(dto.nomeCompleto());
+            user.setNomeCompleto(dto.nomeCompleto().trim());
+        }
+
+        if (dto.email() != null && !dto.email().isBlank()) {
+            String newEmail = dto.email().trim().toLowerCase();
+
+            if (!newEmail.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
+                throw new IllegalArgumentException("E-mail já cadastrado.");
+            }
+
+            user.setEmail(newEmail);
         }
 
         if (dto.telefone() != null && !dto.telefone().isBlank()) {
-            user.setTelefone(dto.telefone());
+            user.setTelefone(dto.telefone().trim());
+        }
+
+        if (dto.novaSenha() != null && !dto.novaSenha().isBlank()) {
+            if (dto.novaSenha().length() < 8) {
+                throw new IllegalArgumentException("Nova senha deve ter no mínimo 8 caracteres.");
+            }
+
+            if (dto.senhaAtual() == null || dto.senhaAtual().isBlank()) {
+                throw new IllegalArgumentException("Informe a senha atual para alterar a senha.");
+            }
+
+            if (!passwordEncoder.matches(dto.senhaAtual(), user.getSenha())) {
+                throw new IllegalArgumentException("Senha atual inválida.");
+            }
+
+            user.setSenha(passwordEncoder.encode(dto.novaSenha()));
         }
 
         user.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
+    }
+
+    public UserModel updateProfilePhoto(Long userId, MultipartFile file) {
+        UserModel user = findActiveUser(userId);
+
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Selecione uma imagem para o perfil.");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("O arquivo precisa ser uma imagem válida.");
+        }
+
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("A imagem deve ter no máximo 5 MB.");
+        }
+
+        try {
+            if (user.getProfileImagePublicId() != null && !user.getProfileImagePublicId().isBlank()) {
+                try {
+                    cloudinary.uploader().destroy(user.getProfileImagePublicId(), ObjectUtils.emptyMap());
+                } catch (Exception ignored) {
+                    // Se a imagem antiga não for removida, ainda assim salvamos a nova foto.
+                }
+            }
+
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "users/user_" + userId + "/profile",
+                            "resource_type", "image",
+                            "overwrite", true,
+                            "transformation", "c_fill,g_face,w_400,h_400,q_auto,f_auto"
+                    ));
+
+            user.setProfileImageUrl((String) uploadResult.get("secure_url"));
+            user.setProfileImagePublicId((String) uploadResult.get("public_id"));
+            user.setUpdatedAt(LocalDateTime.now());
+
+            return userRepository.save(user);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar a imagem de perfil.", e);
+        }
     }
 
     public UserModel findById(Long userId) {

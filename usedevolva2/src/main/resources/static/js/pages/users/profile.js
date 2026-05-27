@@ -64,8 +64,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
-        const initials = getInitials(user.nomeCompleto);
-        document.getElementById("profileAvatar").textContent = initials;
+        renderProfileAvatar(user);
+        setupProfilePhotoUpload(user);
 
         localStorage.setItem("user", JSON.stringify(user));
         console.log("LocalStorage atualizado com os dados do usuário:", localStorage.getItem("user"));
@@ -75,6 +75,82 @@ document.addEventListener("DOMContentLoaded", async () => {
         alert("Não foi possível carregar os dados do perfil.");
     }
 });
+
+function setupProfilePhotoUpload(user) {
+    const button = document.getElementById("profilePhotoBtn");
+    const input = document.getElementById("profilePhotoInput");
+
+    if (!button || !input || button.dataset.initialized === "true") {
+        return;
+    }
+
+    button.dataset.initialized = "true";
+
+    button.addEventListener("click", () => {
+        input.click();
+    });
+
+    input.addEventListener("change", async () => {
+        const file = input.files && input.files[0] ? input.files[0] : null;
+
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            showProfileToast("Selecione um arquivo de imagem.", "error");
+            input.value = "";
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            showProfileToast("A imagem deve ter no máximo 5 MB.", "error");
+            input.value = "";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            button.classList.add("loading");
+            button.disabled = true;
+
+            const response = await fetch(`/users/${user.id}/profile-photo`, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Erro ao salvar a foto de perfil.");
+            }
+
+            const updatedUser = await response.json();
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+            renderProfileAvatar(updatedUser);
+            showProfileToast("Foto de perfil atualizada com sucesso.", "success");
+        } catch (error) {
+            console.error(error);
+            showProfileToast(error.message || "Não foi possível atualizar a foto.", "error");
+        } finally {
+            button.classList.remove("loading");
+            button.disabled = false;
+            input.value = "";
+        }
+    });
+}
+
+function renderProfileAvatar(user) {
+    const avatar = document.getElementById("profileAvatar");
+
+    if (!avatar) return;
+
+    if (user.profileImageUrl) {
+        avatar.innerHTML = `<img src="${user.profileImageUrl}" alt="Foto de perfil">`;
+        return;
+    }
+
+    avatar.textContent = getInitials(user.nomeCompleto);
+}
 
 function getInitials(name) {
     if (!name) return "--";
