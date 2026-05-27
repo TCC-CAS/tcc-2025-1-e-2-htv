@@ -28,7 +28,10 @@ if (loginForm) {
             });
 
             if (!response.ok) {
-                throw new Error("Login inválido.");
+
+                const errorText = await response.text();
+
+                throw new Error(errorText || "Login inválido.");
             }
 
             const user = await response.json();
@@ -38,8 +41,24 @@ if (loginForm) {
             window.location.href = "/home";
 
         } catch (error) {
-            formMessage.textContent = "E-mail ou senha inválidos.";
-            console.error(error);
+
+            formMessage.textContent = error.message;
+
+            if (error.message.includes("bloqueada")) {
+
+                formMessage.style.background = "#fff3cd";
+                formMessage.style.color = "#856404";
+                formMessage.style.border = "1px solid #ffeeba";
+                formMessage.style.padding = "12px";
+                formMessage.style.borderRadius = "8px";
+
+            } else {
+
+                formMessage.style.background = "transparent";
+                formMessage.style.color = "#dc3545";
+                formMessage.style.border = "none";
+                formMessage.style.padding = "0";
+            }            console.error(error);
         }
     });
 }
