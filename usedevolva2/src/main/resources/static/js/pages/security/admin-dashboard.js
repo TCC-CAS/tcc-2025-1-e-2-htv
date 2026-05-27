@@ -250,63 +250,50 @@ ${report.toolId ? `
             if (actionsContainer) {
                 if (report.status === "PENDING") {
                     actionsContainer.innerHTML = `
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
 
-<button class="btn btn-outline"
-        id="paneDismiss"
-        style="width: 100%; border-color: var(--warning); color: var(--warning);">
-    🗑️ Ignorar Denúncia
-</button>
+        <button class="btn-action btn-outline"
+                data-id="${report.id}"
+                data-action="DISMISS"
+                style="padding: 10px 14px; border:1px solid #ccc; border-radius:6px; background:none; cursor:pointer;">
+            🗑️ Ignorar Denúncia
+        </button>
 
-${!report.toolId ? `
-<button class="btn btn-danger"
-        id="paneBlock"
-        style="width: 100%;">
-    👤🚫 Bloquear Usuário
-</button>
-` : ''}
+        ${!report.toolId ? `
+            <button class="btn-action btn-danger"
+                    data-id="${report.id}"
+                    data-action="BLOCK_USER"
+                    style="padding: 10px 14px; border:none; border-radius:6px; cursor:pointer;">
+                👤🚫 Bloquear Usuário
+            </button>
+        ` : ''}
 
-${report.toolId ? `
-<button class="btn"
-        id="paneTool"
-        style="width: 100%; background:#6f42c1; color:white;">
-    🛠️❌ Desativar Ferramenta
-</button>
-` : ''}
+        ${report.toolId ? `
+            <button class="btn-action"
+                    data-id="${report.id}"
+                    data-action="DISABLE_TOOL"
+                    style="padding: 10px 14px; border:none; border-radius:6px; cursor:pointer; background:#6f42c1; color:white;">
+                🛠️❌ Desativar Ferramenta
+            </button>
+        ` : ''}
 
+    </div>
 `;
 
-                    document.getElementById("paneDismiss")
-                        .addEventListener("click", async function(e) {
+                    actionsContainer.querySelectorAll(".btn-action").forEach(btn => {
+
+                        btn.addEventListener("click", async function(e) {
 
                             e.preventDefault();
                             e.stopPropagation();
 
-                            await handleResolveReport(report.id, "DISMISS");
+                            const id = this.getAttribute("data-id");
+                            const action = this.getAttribute("data-action");
+
+                            await handleResolveReport(id, action);
                         });
+                    });
 
-                    if (!report.toolId) {
-
-                        document.getElementById("paneBlock")
-                            .addEventListener("click", async function(e) {
-
-                                e.preventDefault();
-                                e.stopPropagation();
-
-                                await handleResolveReport(report.id, "BLOCK_USER");
-                            });
-                    }
-
-                    if (report.toolId) {
-
-                        document.getElementById("paneTool")
-                            .addEventListener("click", async function(e) {
-
-                                e.preventDefault();
-                                e.stopPropagation();
-
-                                await handleResolveReport(report.id, "DISABLE_TOOL");
-                            });
-                    }
                 } else {
                     actionsContainer.innerHTML = `<p style="color:var(--cor-texto-medio); font-style:italic;">Esta denúncia já foi encerrada.</p>`;
                 }
