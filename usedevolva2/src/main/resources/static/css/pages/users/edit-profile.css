@@ -104,6 +104,12 @@ body {
     gap: 0.75rem;
 }
 
+.profile-photo-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
 .edit-profile-form label {
     display: flex;
     flex-direction: column;
@@ -153,7 +159,8 @@ body {
 }
 
 .btn-primary,
-.btn-secondary {
+.btn-secondary,
+.btn-danger {
     border: none;
     border-radius: 12px;
     padding: 0.85rem 1.25rem;

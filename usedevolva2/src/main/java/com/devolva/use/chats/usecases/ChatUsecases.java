@@ -122,6 +122,7 @@ public class ChatUsecases {
                 chat.getOwnerId(),
                 chat.getRenterId(),
                 otherUser.getNomeCompleto(),
+                otherUser.getProfileImageUrl(),
                 tool.getNome(),
                 messages
         );
@@ -245,6 +246,7 @@ public class ChatUsecases {
                 chat.getOwnerId(),
                 chat.getRenterId(),
                 otherUser.getNomeCompleto(),
+                otherUser.getProfileImageUrl(),
                 tool.getNome(),
                 lastMessage,
                 updatedAtStr,

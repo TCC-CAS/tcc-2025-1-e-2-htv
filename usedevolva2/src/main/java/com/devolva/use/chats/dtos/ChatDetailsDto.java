@@ -9,6 +9,7 @@ public record ChatDetailsDto(
         Long ownerId,
         Long renterId,
         String otherUserName,
+        String otherUserProfileImageUrl,
         String toolName,
         List<ChatMessageDto> messages
 ) {}

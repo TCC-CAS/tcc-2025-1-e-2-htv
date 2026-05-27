@@ -549,6 +549,7 @@ public class ToolUsecases {
     private ToolResponseDto mapToResponseDto(ToolModel tool, UserModel owner) {
         String ownerNome = (owner != null) ? owner.getNomeCompleto() : "Desconhecido";
         String ownerPlano = (owner != null && owner.getPlano() != null) ? owner.getPlano().name() : "FREE";
+        String ownerProfileImageUrl = (owner != null) ? owner.getProfileImageUrl() : null;
 
         return new ToolResponseDto(
                 tool.getId(),
@@ -560,6 +561,7 @@ public class ToolUsecases {
                 tool.getOwnerId(),
                 ownerNome,
                 ownerPlano,
+                ownerProfileImageUrl,
                 tool.isDisponivel(),
                 tool.getCep(),
                 tool.getLogradouro(),

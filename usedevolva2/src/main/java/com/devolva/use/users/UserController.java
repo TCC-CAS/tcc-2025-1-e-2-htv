@@ -66,5 +66,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/{id}/profile-photo")
+    public ResponseEntity<?> removeProfilePhoto(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userUsecases.removeProfilePhoto(id));
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
     
 }

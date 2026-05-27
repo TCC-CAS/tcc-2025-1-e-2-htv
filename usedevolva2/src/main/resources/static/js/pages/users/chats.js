@@ -15,6 +15,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    try {
+        const userResponse = await fetch(`/users/${currentUser.id}`);
+        if (userResponse.ok) {
+            currentUser = await userResponse.json();
+            localStorage.setItem("user", JSON.stringify(currentUser));
+        }
+    } catch (error) {
+        console.warn("Não foi possível atualizar os dados do usuário no chat.", error);
+    }
+
     const form = document.getElementById("chatMessageForm");
     const input = document.getElementById("chatMessageInput");
 
@@ -177,7 +187,7 @@ async function loadChats(showLoading = true) {
         }
 
         list.innerHTML = currentChats.map(chat => {
-            const initials = getInitials(chat.otherUserName || "U");
+            const avatarHtml = renderChatAvatar(chat.otherUserName || "Usuário", chat.otherUserProfileImageUrl, "chat-list-avatar");
             const activeClass = Number(chat.id) === Number(currentChatId) ? "active" : "";
             const unreadBadge = chat.unreadCount > 0
                 ? `<span class="chat-list-unread">${chat.unreadCount}</span>`
@@ -185,7 +195,7 @@ async function loadChats(showLoading = true) {
 
             return `
                 <button type="button" class="chat-list-item ${activeClass}" data-chat-id="${chat.id}">
-                    <div class="chat-list-avatar">${initials}</div>
+                    ${avatarHtml}
 
                     <div class="chat-list-body">
                         <div class="chat-list-title-row">
@@ -237,7 +247,7 @@ async function openChat(chatId) {
         const btnReport = document.getElementById("btnReportChat");
         if (btnReport) btnReport.style.display = "block";
 
-        document.getElementById("chatTitle").textContent = chat.otherUserName || "Chat";
+        renderChatHeader(chat);
 
         const subtitle = document.getElementById("chatSubtitle");
 
@@ -299,8 +309,17 @@ function renderMessages(messages) {
         const canReport = !isSent && !message.automaticMessage;
         const showCheckboxClass = (isReportModeActive && canReport) ? "active" : "";
 
+        const avatarHtml = !message.automaticMessage
+            ? renderChatAvatar(
+                isSent ? (currentUser.nomeCompleto || currentUser.email || "Você") : (currentChatDetails?.otherUserName || "Usuário"),
+                isSent ? currentUser.profileImageUrl : currentChatDetails?.otherUserProfileImageUrl,
+                "chat-message-avatar"
+            )
+            : "";
+
         return `
             <div class="chat-message-wrapper ${isSent ? 'sent' : ''}">
+                ${!isSent && !message.automaticMessage ? avatarHtml : ""}
                 ${canReport ? `
                     <input type="checkbox" class="report-checkbox ${showCheckboxClass}" data-msg-text="${escapeHtml(message.message)}" value="${message.id}">
                 ` : `
@@ -310,6 +329,7 @@ function renderMessages(messages) {
                     <div class="chat-message-text">${escapeHtml(message.message)}</div>
                     <div class="chat-message-time">${formatChatDateTime(message.createdAt)}</div>
                 </div>
+                ${isSent && !message.automaticMessage ? avatarHtml : ""}
             </div>
         `;
     }).join("");
@@ -362,6 +382,30 @@ async function sendChatMessage(chatId, message) {
         console.error(error);
         alert("Não foi possível enviar a mensagem.");
     }
+}
+
+function renderChatHeader(chat) {
+    const title = document.getElementById("chatTitle");
+
+    if (!title) {
+        return;
+    }
+
+    const otherUserName = chat.otherUserName || "Chat";
+    title.innerHTML = `
+        ${renderChatAvatar(otherUserName, chat.otherUserProfileImageUrl, "chat-header-avatar")}
+        <span>${escapeHtml(otherUserName)}</span>
+    `;
+}
+
+function renderChatAvatar(name, profileImageUrl, className) {
+    const safeName = escapeHtml(name || "Usuário");
+
+    if (profileImageUrl) {
+        return `<div class="${className} has-image"><img src="${escapeHtml(profileImageUrl)}" alt="Foto de perfil de ${safeName}"></div>`;
+    }
+
+    return `<div class="${className}">${escapeHtml(getInitials(name || "U"))}</div>`;
 }
 
 function getInitials(name) {
@@ -457,8 +501,9 @@ async function refreshCurrentChatSilently(chatId) {
     }
 
     const chat = await response.json();
+    currentChatDetails = chat;
 
-    document.getElementById("chatTitle").textContent = chat.otherUserName || "Chat";
+    renderChatHeader(chat);
 
     const subtitle = document.getElementById("chatSubtitle");
 

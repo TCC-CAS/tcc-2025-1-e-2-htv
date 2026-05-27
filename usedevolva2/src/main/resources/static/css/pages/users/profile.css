@@ -287,3 +287,10 @@
     opacity: 0.65;
     pointer-events: none;
 }
+
+.profile-logout-card {
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+}

@@ -176,6 +176,25 @@ public class UserUsecases {
         }
     }
 
+
+    public UserModel removeProfilePhoto(Long userId) {
+        UserModel user = findActiveUser(userId);
+
+        if (user.getProfileImagePublicId() != null && !user.getProfileImagePublicId().isBlank()) {
+            try {
+                cloudinary.uploader().destroy(user.getProfileImagePublicId(), ObjectUtils.emptyMap());
+            } catch (Exception ignored) {
+                // Mesmo se o Cloudinary falhar, removemos a referência no perfil do usuário.
+            }
+        }
+
+        user.setProfileImageUrl(null);
+        user.setProfileImagePublicId(null);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        return userRepository.save(user);
+    }
+
     public UserModel findById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));

@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const form = document.getElementById("editProfileForm");
     const photoInput = document.getElementById("profilePhotoInput");
     const savePhotoBtn = document.getElementById("saveProfilePhotoBtn");
+    const removePhotoBtn = document.getElementById("removeProfilePhotoBtn");
 
     let currentUser = savedUser;
     let selectedPhotoFile = null;
@@ -25,10 +26,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.setItem("user", JSON.stringify(currentUser));
         fillProfileForm(currentUser);
         renderEditProfileAvatar(avatar, currentUser);
+        updateRemovePhotoButton(removePhotoBtn, currentUser);
     } catch (error) {
         showEditProfileToast(error.message || "Erro ao carregar o perfil.", "error");
         fillProfileForm(savedUser);
         renderEditProfileAvatar(avatar, savedUser);
+        updateRemovePhotoButton(removePhotoBtn, savedUser);
     }
 
     photoInput?.addEventListener("change", () => {
@@ -87,6 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentUser = await response.json();
             localStorage.setItem("user", JSON.stringify(currentUser));
             renderEditProfileAvatar(avatar, currentUser);
+            updateRemovePhotoButton(removePhotoBtn, currentUser);
             selectedPhotoFile = null;
             photoInput.value = "";
             showEditProfileToast("Foto de perfil atualizada com sucesso.", "success");
@@ -95,6 +99,45 @@ document.addEventListener("DOMContentLoaded", async () => {
             savePhotoBtn.disabled = false;
         } finally {
             savePhotoBtn.textContent = "Salvar foto";
+        }
+    });
+
+    removePhotoBtn?.addEventListener("click", async () => {
+        if (!currentUser || !currentUser.id || !currentUser.profileImageUrl) {
+            return;
+        }
+
+        const confirmed = window.confirm("Remover sua foto de perfil?");
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            removePhotoBtn.disabled = true;
+            removePhotoBtn.textContent = "Removendo...";
+
+            const response = await fetch(`/users/${currentUser.id}/profile-photo`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Erro ao remover a foto de perfil.");
+            }
+
+            currentUser = await response.json();
+            localStorage.setItem("user", JSON.stringify(currentUser));
+            selectedPhotoFile = null;
+            photoInput.value = "";
+            savePhotoBtn.disabled = true;
+            renderEditProfileAvatar(avatar, currentUser);
+            updateRemovePhotoButton(removePhotoBtn, currentUser);
+            showEditProfileToast("Foto de perfil removida com sucesso.", "success");
+        } catch (error) {
+            showEditProfileToast(error.message || "Não foi possível remover a foto.", "error");
+            updateRemovePhotoButton(removePhotoBtn, currentUser);
+        } finally {
+            removePhotoBtn.textContent = "Remover foto";
         }
     });
 
@@ -178,6 +221,12 @@ function renderEditProfileAvatar(avatarElement, user) {
     }
 
     avatarElement.textContent = getEditProfileInitials(user.nomeCompleto);
+}
+
+function updateRemovePhotoButton(button, user) {
+    if (!button) return;
+
+    button.disabled = !(user && user.profileImageUrl);
 }
 
 function getEditProfileInitials(name) {

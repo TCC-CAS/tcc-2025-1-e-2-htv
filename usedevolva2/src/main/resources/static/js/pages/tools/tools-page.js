@@ -150,7 +150,7 @@ async function loadTool() {
             }
         }
 
-        await loadOwner(tool.ownerId);
+        await loadOwner(getToolOwnerId(tool), tool);
 
     } catch (error) {
         console.error(error);
@@ -266,8 +266,18 @@ async function loadImages() {
     }
 }
 
-async function loadOwner(ownerId) {
-    if (!ownerId) return;
+async function loadOwner(ownerId, tool = null) {
+    const fallbackOwner = buildOwnerFromTool(tool);
+
+    updateOwnerInfo(
+        fallbackOwner.name || "Proprietário da ferramenta",
+        fallbackOwner.profileImageUrl,
+        fallbackOwner.plano
+    );
+
+    if (!ownerId) {
+        return;
+    }
 
     try {
         const response = await fetch(`/users/${ownerId}`);
@@ -277,27 +287,96 @@ async function loadOwner(ownerId) {
         }
 
         const owner = await response.json();
-        ownerPlano = owner.plano;
-
-        const goldBadge = document.getElementById("goldPlanDiscountBadge");
-        if (goldBadge && ownerPlano === "OURO") {
-            goldBadge.classList.remove("hidden");
-        }
+        ownerPlano = owner.plano || fallbackOwner.plano || ownerPlano;
 
         const ownerName =
-            owner.nomeCompleto ||
-            owner.nome ||
-            owner.email ||
+            getFirstFilledValue(owner, ["nomeCompleto", "nome", "name", "email"]) ||
+            fallbackOwner.name ||
             "Proprietário da ferramenta";
 
-        document.getElementById("ownerName").textContent = ownerName;
-        document.getElementById("ownerAvatar").textContent = getInitials(ownerName);
+        const ownerImageUrl =
+            getFirstFilledValue(owner, ["profileImageUrl", "fotoPerfil", "photoUrl", "avatarUrl"]) ||
+            fallbackOwner.profileImageUrl;
+
+        updateOwnerInfo(ownerName, ownerImageUrl, ownerPlano);
 
     } catch (error) {
         console.error(error);
-        document.getElementById("ownerName").textContent = "Proprietário não identificado";
-        document.getElementById("ownerAvatar").textContent = "U";
+        updateOwnerInfo(
+            fallbackOwner.name || "Proprietário da ferramenta",
+            fallbackOwner.profileImageUrl,
+            fallbackOwner.plano
+        );
     }
+}
+
+function getToolOwnerId(tool) {
+    if (!tool) {
+        return null;
+    }
+
+    return tool.ownerId || tool.proprietarioId || tool.usuarioId || tool.userId || null;
+}
+
+function buildOwnerFromTool(tool) {
+    if (!tool) {
+        return {
+            name: "Proprietário da ferramenta",
+            profileImageUrl: null,
+            plano: null
+        };
+    }
+
+    return {
+        name: getFirstFilledValue(tool, ["ownerNome", "ownerName", "proprietarioNome", "usuarioNome"]) || "Proprietário da ferramenta",
+        profileImageUrl: getFirstFilledValue(tool, ["ownerProfileImageUrl", "ownerProfileImage", "ownerPhotoUrl", "ownerAvatarUrl", "profileImageUrl"]),
+        plano: getFirstFilledValue(tool, ["ownerPlano", "planoProprietario", "ownerPlan"])
+    };
+}
+
+function getFirstFilledValue(source, keys) {
+    if (!source) {
+        return null;
+    }
+
+    for (const key of keys) {
+        const value = source[key];
+
+        if (value !== null && value !== undefined && String(value).trim() !== "") {
+            return String(value).trim();
+        }
+    }
+
+    return null;
+}
+
+function updateOwnerInfo(ownerName, profileImageUrl, plano) {
+    const goldBadge = document.getElementById("goldPlanDiscountBadge");
+
+    if (goldBadge && plano === "OURO") {
+        goldBadge.classList.remove("hidden");
+    }
+
+    document.getElementById("ownerName").textContent = ownerName;
+    renderOwnerAvatar(ownerName, profileImageUrl);
+}
+
+
+function renderOwnerAvatar(ownerName, profileImageUrl) {
+    const ownerAvatar = document.getElementById("ownerAvatar");
+
+    if (!ownerAvatar) {
+        return;
+    }
+
+    if (profileImageUrl) {
+        ownerAvatar.innerHTML = `<img src="${escapeHtml(profileImageUrl)}" alt="Foto de perfil de ${escapeHtml(ownerName)}">`;
+        ownerAvatar.classList.add("has-image");
+        return;
+    }
+
+    ownerAvatar.classList.remove("has-image");
+    ownerAvatar.textContent = getInitials(ownerName);
 }
 
 function updateBookingSummary() {

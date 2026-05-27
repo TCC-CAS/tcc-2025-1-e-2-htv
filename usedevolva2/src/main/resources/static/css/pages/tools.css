@@ -351,6 +351,20 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: 700;
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+
+.owner-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.owner-avatar.has-image {
+    background: #e5e7eb;
+    color: transparent;
 }
 
 .owner-details span {

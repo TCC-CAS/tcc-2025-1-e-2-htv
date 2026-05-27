@@ -206,10 +206,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             const imageUrl = await getMainImage(tool.id);
             const isFavorited = userFavoriteIds.includes(tool.id);
 
-            // CORREÇÃO DA LOCALIZAÇÃO: Monta a string dinamicamente usando cidade e estado do objeto
-            const localizacaoFormatada = (tool.cidade && tool.estado)
-                ? `${tool.cidade} - ${tool.estado.toUpperCase()}`
-                : "Localização não informada";
+            const localizacaoFormatada = formatToolNeighborhoodCityState(tool);
 
             const card = document.createElement("article");
             card.className = "tool-card";
@@ -578,6 +575,39 @@ document.addEventListener("DOMContentLoaded", async() => {
         }
 
         setupLocationFilters();
+    }
+
+
+    function formatToolNeighborhoodCityState(tool) {
+        const bairro = String(tool.bairro || "").trim();
+        const cidade = String(tool.cidade || "").trim();
+        const estado = String(tool.estado || "").trim().toUpperCase();
+
+        if (bairro && cidade && estado) {
+            return `${bairro} - ${cidade} - ${estado}`;
+        }
+
+        if (bairro && cidade) {
+            return `${bairro} - ${cidade}`;
+        }
+
+        if (bairro && estado) {
+            return `${bairro} - ${estado}`;
+        }
+
+        if (bairro) {
+            return bairro;
+        }
+
+        if (cidade && estado) {
+            return `${cidade} - ${estado}`;
+        }
+
+        if (cidade || estado) {
+            return cidade || estado;
+        }
+
+        return tool.localizacao || "Localização não informada";
     }
 
     function normalizeText(value) {

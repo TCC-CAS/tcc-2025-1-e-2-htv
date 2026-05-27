@@ -25,6 +25,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    const profileLogoutBtn = document.getElementById("profileLogoutBtn");
+    if (profileLogoutBtn) {
+        profileLogoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("user");
+            localStorage.removeItem("pendingPaymentId");
+            window.location.href = "/auth/login";
+        });
+    }
+
     try {
         const response = await fetch(`/users/${savedUser.id}`);
         console.log("Resposta do fetch /users/:id:", response);

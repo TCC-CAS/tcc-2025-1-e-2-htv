@@ -7,6 +7,7 @@ public record ChatSummaryDto(
         Long ownerId,
         Long renterId,
         String otherUserName,
+        String otherUserProfileImageUrl,
         String toolName,
         String lastMessage,
         String updatedAt,

@@ -25,6 +25,11 @@ public class AuthController {
         return "auth/register";
     }
 
+    @GetMapping("/auth/logout")
+    public String logout() {
+        return "redirect:/auth/login";
+    }
+
     @GetMapping("/home")
     public String homePage() {
         return "home/home";

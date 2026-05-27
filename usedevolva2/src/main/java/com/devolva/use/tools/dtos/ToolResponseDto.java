@@ -12,6 +12,7 @@ public record ToolResponseDto(
         Long ownerId,
         String ownerNome,
         String ownerPlano,
+        String ownerProfileImageUrl,
         boolean disponivel,
         String cep,
         String logradouro,
