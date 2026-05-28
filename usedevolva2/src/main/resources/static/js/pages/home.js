@@ -8,9 +8,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupToolsMapModal();
 });
 
+let homeToolsLoadSequence = 0;
+
 async function loadFeaturedTools() {
     const container = document.getElementById("featuredToolsContainer");
     if (!container) return;
+
+    const currentLoadSequence = ++homeToolsLoadSequence;
+    container.innerHTML = "<p>Carregando ferramentas...</p>";
+
+    const isCurrentLoad = () => currentLoadSequence === homeToolsLoadSequence;
 
     try {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -19,44 +26,64 @@ async function loadFeaturedTools() {
         if (user && user.id) {
             try {
                 const favResponse = await fetch(`/favorites/user/${user.id}`);
+                if (!isCurrentLoad()) return;
+
                 if (favResponse.ok) {
                     const favs = await favResponse.json();
+                    if (!isCurrentLoad()) return;
                     favoriteIds = favs.map(f => f.id);
                 }
             } catch (err) {
+                if (!isCurrentLoad()) return;
                 console.error("Erro ao carregar favoritos do usuário:", err);
             }
         }
 
         const response = await fetch("/tools");
+        if (!isCurrentLoad()) return;
         if (!response.ok) throw new Error("Erro ao buscar ferramentas.");
 
         let tools = await response.json();
+        if (!isCurrentLoad()) return;
 
         tools = filterToolsByHomeLocation(tools);
 
-        if (!tools || tools.length === 0) {
+        const uniqueTools = [];
+        const renderedToolIds = new Set();
+
+        for (const tool of tools || []) {
+            const toolKey = String(tool.id || "").trim();
+            if (!toolKey || renderedToolIds.has(toolKey)) continue;
+
+            renderedToolIds.add(toolKey);
+            uniqueTools.push(tool);
+        }
+
+        if (uniqueTools.length === 0) {
             container.innerHTML = "<p>Nenhuma ferramenta disponível para a localização selecionada.</p>";
             return;
         }
 
-        tools.sort((a, b) => {
+        uniqueTools.sort((a, b) => {
             const aIsOuro = a.ownerPlano === "OURO" ? 1 : 0;
             const bIsOuro = b.ownerPlano === "OURO" ? 1 : 0;
             return bIsOuro - aIsOuro; // Ouro primeiro
         });
 
-        container.innerHTML = "";
-        const featuredTools = tools.slice(0, 15);
+        const fragment = document.createDocumentFragment();
+        const featuredTools = uniqueTools.slice(0, 15);
 
         for (const tool of featuredTools) {
             const imageUrl = await getMainImage(tool.id);
+            if (!isCurrentLoad()) return;
+
             const isFavorited = favoriteIds.includes(tool.id);
 
             const localizacaoFormatada = formatToolNeighborhoodCityState(tool);
 
             const card = document.createElement("article");
             card.className = "tool-card";
+            card.dataset.toolId = tool.id;
             card.setAttribute("role", "link");
             card.setAttribute("tabindex", "0");
             card.setAttribute("aria-label", `Ver detalhes de ${tool.nome || "ferramenta"}`);
@@ -119,10 +146,14 @@ async function loadFeaturedTools() {
                 await toggleFavoriteFromCard(favBtn, tool.id);
             });
 
-            container.appendChild(card);
+            fragment.appendChild(card);
         }
 
+        if (!isCurrentLoad()) return;
+        container.replaceChildren(fragment);
+
     } catch (error) {
+        if (!isCurrentLoad()) return;
         console.error(error);
         container.innerHTML = "<p>Não foi possível carregar as ferramentas em destaque.</p>";
     }
