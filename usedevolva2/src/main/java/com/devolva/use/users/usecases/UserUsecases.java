@@ -10,6 +10,7 @@ import com.devolva.use.users.dtos.VerifyUserDto;
 import com.devolva.use.users.repository.UserRepository;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.devolva.use.uploads.ImageUploadConfirmationService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,13 +29,15 @@ public class UserUsecases {
     private final BCryptPasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final Cloudinary cloudinary;
+    private final ImageUploadConfirmationService imageUploadConfirmationService;
 
 
-    public UserUsecases(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, Cloudinary cloudinary) {
+    public UserUsecases(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, EmailService emailService, Cloudinary cloudinary, ImageUploadConfirmationService imageUploadConfirmationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.cloudinary = cloudinary;
+        this.imageUploadConfirmationService = imageUploadConfirmationService;
     }
 
     public UserModel createUser(CreateUserDto dto) {
@@ -158,32 +161,71 @@ public class UserUsecases {
         }
 
         try {
-            if (user.getProfileImagePublicId() != null && !user.getProfileImagePublicId().isBlank()) {
+            String oldPublicId = user.getProfileImagePublicId();
+
+            Map uploadResult = uploadProfileImageWithModeration(userId, file);
+            String newPublicId = uploadResult.get("public_id") == null ? null : String.valueOf(uploadResult.get("public_id"));
+
+            try {
+                imageUploadConfirmationService.validateModeration(uploadResult, file.getOriginalFilename());
+                imageUploadConfirmationService.confirmAccessibleImage(cloudinary, uploadResult, file.getOriginalFilename());
+            } catch (RuntimeException e) {
+                imageUploadConfirmationService.destroyUploadedImage(cloudinary, newPublicId);
+                throw e;
+            }
+
+            if (oldPublicId != null && !oldPublicId.isBlank()) {
                 try {
-                    cloudinary.uploader().destroy(user.getProfileImagePublicId(), ObjectUtils.emptyMap());
+                    cloudinary.uploader().destroy(oldPublicId, ObjectUtils.emptyMap());
                 } catch (Exception ignored) {
                     // Se a imagem antiga não for removida, ainda assim salvamos a nova foto.
                 }
             }
 
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                    ObjectUtils.asMap(
-                            "folder", "users/user_" + userId + "/profile",
-                            "resource_type", "image",
-                            "overwrite", true,
-                            "transformation", "c_fill,g_face,w_400,h_400,q_auto,f_auto"
-                    ));
-
             user.setProfileImageUrl((String) uploadResult.get("secure_url"));
-            user.setProfileImagePublicId((String) uploadResult.get("public_id"));
+            user.setProfileImagePublicId(newPublicId);
             user.setUpdatedAt(LocalDateTime.now());
 
             return userRepository.save(user);
         } catch (IOException e) {
             throw new RuntimeException("Erro ao processar a imagem de perfil.", e);
+        } catch (RuntimeException e) {
+            throw e;
         }
     }
 
+
+    private Map uploadProfileImageWithModeration(Long userId, MultipartFile file) throws IOException {
+        try {
+            return cloudinary.uploader().upload(file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", "users/user_" + userId + "/profile",
+                            "resource_type", "image",
+                            "overwrite", true,
+                            "moderation", "aws_rek",
+                            "transformation", "c_fill,g_face,w_400,h_400,q_auto,f_auto"
+                    ));
+        } catch (Exception e1) {
+            try {
+                return cloudinary.uploader().upload(file.getBytes(),
+                        ObjectUtils.asMap(
+                                "folder", "users/user_" + userId + "/profile",
+                                "resource_type", "image",
+                                "overwrite", true,
+                                "moderation", "webpurify",
+                                "transformation", "c_fill,g_face,w_400,h_400,q_auto,f_auto"
+                        ));
+            } catch (Exception e2) {
+                return cloudinary.uploader().upload(file.getBytes(),
+                        ObjectUtils.asMap(
+                                "folder", "users/user_" + userId + "/profile",
+                                "resource_type", "image",
+                                "overwrite", true,
+                                "transformation", "c_fill,g_face,w_400,h_400,q_auto,f_auto"
+                        ));
+            }
+        }
+    }
 
     public UserModel removeProfilePhoto(Long userId) {
         UserModel user = findActiveUser(userId);

@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import com.devolva.use.tools.domain.ToolImageModel;
 import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
+import com.devolva.use.uploads.ImageUploadConfirmationService;
 
 import com.devolva.use.addresses.domain.AddressModel;
 import com.devolva.use.addresses.usecases.AddressUsecases;
@@ -28,6 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 // import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,6 +43,7 @@ public class ToolUsecases {
     private final RentalRepository rentalRepository;
     private final ToolImageRepository toolImageRepository;
     private final Cloudinary cloudinary;
+    private final ImageUploadConfirmationService imageUploadConfirmationService;
     private final AddressUsecases addressUsecases;
 
     public ToolUsecases(
@@ -49,6 +52,7 @@ public class ToolUsecases {
             RentalRepository rentalRepository,
             ToolImageRepository toolImageRepository,
             Cloudinary cloudinary,
+            ImageUploadConfirmationService imageUploadConfirmationService,
             AddressUsecases addressUsecases
     ) {
         this.toolRepository = toolRepository;
@@ -56,6 +60,7 @@ public class ToolUsecases {
         this.rentalRepository = rentalRepository;
         this.toolImageRepository = toolImageRepository;
         this.cloudinary = cloudinary;
+        this.imageUploadConfirmationService = imageUploadConfirmationService;
         this.addressUsecases = addressUsecases;
     }
 
@@ -301,8 +306,10 @@ public class ToolUsecases {
         }
 
         if (files.length > 5) {
-            throw new IllegalArgumentException("Limite excedido: Podes enviar no máximo 5 fotos.");
+            throw new IllegalArgumentException("Limite excedido: podes enviar no máximo 5 fotos.");
         }
+
+        List<String> uploadedPublicIds = new ArrayList<>();
 
         try {
             boolean hasImages = toolImageRepository.existsByToolId(toolId);
@@ -312,45 +319,20 @@ public class ToolUsecases {
 
                 String contentType = file.getContentType();
                 if (contentType == null || !contentType.startsWith("image/")) {
-                    throw new IllegalArgumentException("O ficheiro " + file.getOriginalFilename() + " não é uma imagem válida.");
+                    throw new IllegalArgumentException("O arquivo " + file.getOriginalFilename() + " não é uma imagem válida.");
                 }
 
-                Map uploadResult = null;
+                Map uploadResult = uploadToolImageWithModeration(toolId, file);
+                String publicId = String.valueOf(uploadResult.get("public_id"));
+                uploadedPublicIds.add(publicId);
+                imageUploadConfirmationService.validateModeration(uploadResult, file.getOriginalFilename());
+                imageUploadConfirmationService.confirmAccessibleImage(cloudinary, uploadResult, file.getOriginalFilename());
 
-                try {
-                    uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                            com.cloudinary.utils.ObjectUtils.asMap(
-                                    "folder", "tools/tool_" + toolId,
-                                    "resource_type", "auto",
-                                    "moderation", "aws_rek"
-                            ));
-                } catch (Exception e1) {
-                    try {
-                        uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                                com.cloudinary.utils.ObjectUtils.asMap(
-                                        "folder", "tools/tool_" + toolId,
-                                        "resource_type", "auto",
-                                        "moderation", "webpurify"
-                                ));
-                    } catch (Exception e2) {
-                        uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                                com.cloudinary.utils.ObjectUtils.asMap(
-                                        "folder", "tools/tool_" + toolId,
-                                        "resource_type", "auto"
-                                ));
-                    }
-                }
-
-                if (uploadResult != null && "rejected".equals(uploadResult.get("moderation_status"))) {
-                    throw new IllegalArgumentException("Conteúdo impróprio detetado no ficheiro: " + file.getOriginalFilename());
-                }
-
-                String urlDaFoto = (String) uploadResult.get("secure_url");
-                String publicId = (String) uploadResult.get("public_id");
+                String urlDaFoto = String.valueOf(uploadResult.get("secure_url"));
 
                 ToolImageModel image = new ToolImageModel();
                 image.setToolId(toolId);
-                image.setFilePath(urlDaFoto); // Guarda o link HTTPS do Cloudinary
+                image.setFilePath(urlDaFoto);
                 image.setFileName(publicId);
                 image.setContentType(contentType);
 
@@ -366,7 +348,43 @@ public class ToolUsecases {
             toolRepository.save(tool);
 
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao processar o upload das imagens", e);
+            cleanupUploadedImages(uploadedPublicIds);
+            throw new RuntimeException("Erro ao processar o upload das imagens.", e);
+        } catch (RuntimeException e) {
+            cleanupUploadedImages(uploadedPublicIds);
+            throw e;
+        }
+    }
+
+    private Map uploadToolImageWithModeration(Long toolId, MultipartFile file) throws IOException {
+        try {
+            return cloudinary.uploader().upload(file.getBytes(),
+                    com.cloudinary.utils.ObjectUtils.asMap(
+                            "folder", "tools/tool_" + toolId,
+                            "resource_type", "image",
+                            "moderation", "aws_rek"
+                    ));
+        } catch (Exception e1) {
+            try {
+                return cloudinary.uploader().upload(file.getBytes(),
+                        com.cloudinary.utils.ObjectUtils.asMap(
+                                "folder", "tools/tool_" + toolId,
+                                "resource_type", "image",
+                                "moderation", "webpurify"
+                        ));
+            } catch (Exception e2) {
+                return cloudinary.uploader().upload(file.getBytes(),
+                        com.cloudinary.utils.ObjectUtils.asMap(
+                                "folder", "tools/tool_" + toolId,
+                                "resource_type", "image"
+                        ));
+            }
+        }
+    }
+
+    private void cleanupUploadedImages(List<String> uploadedPublicIds) {
+        for (String publicId : uploadedPublicIds) {
+            imageUploadConfirmationService.destroyUploadedImage(cloudinary, publicId);
         }
     }
 

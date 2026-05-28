@@ -31,7 +31,7 @@ public class ToolController {
         try {
             ToolModel tool = toolUsecases.createToolWithImages(ownerId, dto, files);
             return ResponseEntity.status(HttpStatus.CREATED).body(tool);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,13 +88,21 @@ public class ToolController {
     }
 
     @PostMapping("/{toolId}/owner/{ownerId}/images")
-    public ResponseEntity<Void> uploadImages(
+    public ResponseEntity<?> uploadImages(
             @PathVariable Long toolId,
             @PathVariable Long ownerId,
             @RequestParam("files") MultipartFile[] files
     ) {
-        toolUsecases.uploadImages(toolId, ownerId, files);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        try {
+            toolUsecases.uploadImages(toolId, ownerId, files);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao enviar imagens: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{toolId}/images")
