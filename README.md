@@ -103,6 +103,11 @@ Assim que o pedido é aceito pelo locador, o andamento do contrato passa a ser a
 2. **Devolução (`RETURNED`):** Ao finalizar o período do aluguel, o locatário faz a entrega física do equipamento e clica em devolver no sistema. O status muda para *Devolvido (Aguardando Confirmação)*.
 3. **Garantia de Recebimento (`FINALIZED`):** O locador (dono da ferramenta) avalia se o equipamento foi entregue corretamente e sem avarias. Ao confirmar que está tudo OK, ele clica em **"Confirmar e Finalizar Locação"**. Essa etapa é obrigatória e serve como gatilho de segurança: o dinheiro retido só é liberado para o saldo do locador após essa confirmação mútua, encerrando o contrato com sucesso.
 
+> [!IMPORTANT]
+> 🛡️ **Painel Administrativo e Moderação (`/admin`)**
+> O ecossistema possui um *backoffice* exclusivo para administradores centralizado na rota `/admin`. Através deste painel, a equipe de suporte consegue gerenciar a plataforma, auditar transações e aplicar moderações diretamente sobre **denúncias (reports)** de usuários, comportamentos inadequados ou disputas financeiras, fechando o ciclo de segurança e confiabilidade do aplicativo.
+> 
+<img width="1822" height="500" alt="image" src="https://github.com/user-attachments/assets/f6a6c74b-3884-4a8c-956d-d9c5508e3730" />
 
 ---
 
