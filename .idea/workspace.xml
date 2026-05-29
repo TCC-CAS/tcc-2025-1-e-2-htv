@@ -81,6 +81,25 @@
 }</component>
   <component name="RunManager">
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <envs>
+        <env name="ABACATE_API_KEY" value="abc_dev_SmacNr4wk2dMPgp54tme2FUn" />
+        <env name="ABACATE_API_URL" value="https://api.abacatepay.com/v2" />
+        <env name="ABACATE_WEBHOOK_SECRET" value="use-e-devolva-abacate-webhook-2026" />
+        <env name="APP_CRYPTO_SECRET_KEY" value="A3u2i3alSdreceba" />
+        <env name="CLOUDINARY_API_KEY" value="236823833273843" />
+        <env name="CLOUDINARY_API_SECRET" value="9Wsd7-JKjXzg6j3WN6630f7zuDA" />
+        <env name="CLOUDINARY_CLOUD_NAME" value="dzokj6xow" />
+        <env name="DB_PASSWORD" value="useedevolva1231234" />
+        <env name="DB_URL" value="jdbc:postgresql://database-1.cxi0kmo0aqbk.sa-east-1.rds.amazonaws.com:5432/postgres" />
+        <env name="DB_USERNAME" value="postgres" />
+        <env name="GRADLE_HOME" value="/usr/local/gradle" />
+        <env name="M2" value="/usr/local/apache-maven/bin" />
+        <env name="M2_HOME" value="/usr/local/apache-maven" />
+        <env name="MAIL_HOST" value="smtp.gmail.com" />
+        <env name="MAIL_PASSWORD" value="vathchqqaraoceqy" />
+        <env name="MAIL_PORT" value="587" />
+        <env name="MAIL_USERNAME" value="usedevolva@gmail.com" />
+      </envs>
       <module name="demo" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.devolva.use.Application" />
       <method v="2">

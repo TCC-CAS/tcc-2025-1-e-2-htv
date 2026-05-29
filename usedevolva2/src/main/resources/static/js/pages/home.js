@@ -8,9 +8,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupToolsMapModal();
 });
 
+let homeToolsLoadSequence = 0;
+
 async function loadFeaturedTools() {
     const container = document.getElementById("featuredToolsContainer");
     if (!container) return;
+
+    const currentLoadSequence = ++homeToolsLoadSequence;
+    container.innerHTML = "<p>Carregando ferramentas...</p>";
+
+    const isCurrentLoad = () => currentLoadSequence === homeToolsLoadSequence;
 
     try {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -19,44 +26,64 @@ async function loadFeaturedTools() {
         if (user && user.id) {
             try {
                 const favResponse = await fetch(`/favorites/user/${user.id}`);
+                if (!isCurrentLoad()) return;
+
                 if (favResponse.ok) {
                     const favs = await favResponse.json();
+                    if (!isCurrentLoad()) return;
                     favoriteIds = favs.map(f => f.id);
                 }
             } catch (err) {
+                if (!isCurrentLoad()) return;
                 console.error("Erro ao carregar favoritos do usuário:", err);
             }
         }
 
         const response = await fetch("/tools");
+        if (!isCurrentLoad()) return;
         if (!response.ok) throw new Error("Erro ao buscar ferramentas.");
 
         let tools = await response.json();
+        if (!isCurrentLoad()) return;
 
         tools = filterToolsByHomeLocation(tools);
 
-        if (!tools || tools.length === 0) {
+        const uniqueTools = [];
+        const renderedToolIds = new Set();
+
+        for (const tool of tools || []) {
+            const toolKey = String(tool.id || "").trim();
+            if (!toolKey || renderedToolIds.has(toolKey)) continue;
+
+            renderedToolIds.add(toolKey);
+            uniqueTools.push(tool);
+        }
+
+        if (uniqueTools.length === 0) {
             container.innerHTML = "<p>Nenhuma ferramenta disponível para a localização selecionada.</p>";
             return;
         }
 
-        tools.sort((a, b) => {
+        uniqueTools.sort((a, b) => {
             const aIsOuro = a.ownerPlano === "OURO" ? 1 : 0;
             const bIsOuro = b.ownerPlano === "OURO" ? 1 : 0;
             return bIsOuro - aIsOuro; // Ouro primeiro
         });
 
-        container.innerHTML = "";
-        const featuredTools = tools.slice(0, 15);
+        const fragment = document.createDocumentFragment();
+        const featuredTools = uniqueTools.slice(0, 15);
 
         for (const tool of featuredTools) {
             const imageUrl = await getMainImage(tool.id);
+            if (!isCurrentLoad()) return;
+
             const isFavorited = favoriteIds.includes(tool.id);
 
             const localizacaoFormatada = formatToolNeighborhoodCityState(tool);
 
             const card = document.createElement("article");
             card.className = "tool-card";
+            card.dataset.toolId = tool.id;
             card.setAttribute("role", "link");
             card.setAttribute("tabindex", "0");
             card.setAttribute("aria-label", `Ver detalhes de ${tool.nome || "ferramenta"}`);
@@ -119,10 +146,14 @@ async function loadFeaturedTools() {
                 await toggleFavoriteFromCard(favBtn, tool.id);
             });
 
-            container.appendChild(card);
+            fragment.appendChild(card);
         }
 
+        if (!isCurrentLoad()) return;
+        container.replaceChildren(fragment);
+
     } catch (error) {
+        if (!isCurrentLoad()) return;
         console.error(error);
         container.innerHTML = "<p>Não foi possível carregar as ferramentas em destaque.</p>";
     }
@@ -716,6 +747,7 @@ let toolsMapLoaded = false;
 let toolsMapAllGroups = [];
 let toolsMapUserLocation = null;
 let toolsMapLocationSource = null;
+let toolsMapManualLocation = null;
 let toolsMapRadiusKm = 10;
 
 const TOOLS_MAP_MIN_RADIUS_KM = 5;
@@ -729,6 +761,8 @@ function setupToolsMapModal() {
     const modal = document.getElementById("toolsMapModal");
     const minusBtn = document.getElementById("toolsMapRadiusMinus");
     const plusBtn = document.getElementById("toolsMapRadiusPlus");
+    const addressForm = document.getElementById("toolsMapAddressForm");
+    const addressInput = document.getElementById("toolsMapAddressInput");
 
     if (!openBtn || !closeBtn || !modal) {
         return;
@@ -737,7 +771,8 @@ function setupToolsMapModal() {
     openBtn.addEventListener("click", async () => {
         openToolsMapModal();
 
-        // Sempre tenta pedir localização ao abrir o mapa.
+        // Tenta usar a localização do navegador. Caso o usuário negue, o mapa fica no Brasil
+        // e permite buscar manualmente por endereço, sem cair em um endereço cadastrado aleatório.
         await loadToolsMap(true);
     });
 
@@ -758,6 +793,13 @@ function setupToolsMapModal() {
     if (plusBtn) {
         plusBtn.addEventListener("click", () => {
             updateToolsMapRadius(TOOLS_MAP_RADIUS_STEP_KM);
+        });
+    }
+
+    if (addressForm) {
+        addressForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            await applyToolsMapAddressSearch(addressInput?.value || "");
         });
     }
 
@@ -853,17 +895,17 @@ async function loadToolsMap(forceReload = false) {
 
             if (locationStatus) {
                 locationStatus.textContent =
-                    "Não conseguimos obter sua localização nem encontrar um endereço padrão cadastrado.";
+                    "Localização não informada. Digite um endereço no campo acima para buscar no mapa.";
             }
 
             if (sideTitle) {
-                sideTitle.textContent = "Localização não encontrada";
+                sideTitle.textContent = "Digite um endereço";
             }
 
             if (sideList) {
                 sideList.innerHTML = `
                     <p class="tools-map-empty">
-                        Permita o acesso à localização ou cadastre um endereço principal no perfil
+                        Permita o acesso à localização ou digite um endereço no campo acima
                         para visualizar ferramentas próximas no mapa.
                     </p>
                 `;
@@ -936,6 +978,10 @@ async function loadToolsMap(forceReload = false) {
 }
 
 async function resolveToolsMapBaseLocation() {
+    if (toolsMapManualLocation) {
+        return toolsMapManualLocation;
+    }
+
     const browserLocation = await getBrowserLocation();
 
     if (browserLocation) {
@@ -945,16 +991,84 @@ async function resolveToolsMapBaseLocation() {
         };
     }
 
-    const addressLocation = await getMainAddressLocationForToolsMap();
+    return null;
+}
 
-    if (addressLocation) {
-        return {
-            ...addressLocation,
-            source: "address"
-        };
+async function applyToolsMapAddressSearch(rawAddress) {
+    const address = String(rawAddress || "").trim();
+    const sideTitle = document.getElementById("toolsMapSideTitle");
+    const sideList = document.getElementById("toolsMapSideList");
+    const locationStatus = document.getElementById("toolsMapLocationStatus");
+    const searchBtn = document.getElementById("toolsMapAddressSearchBtn");
+
+    if (!address) {
+        if (locationStatus) {
+            locationStatus.textContent = "Digite um endereço, bairro, cidade ou CEP para buscar no mapa.";
+        }
+        return;
     }
 
-    return null;
+    if (searchBtn) {
+        searchBtn.disabled = true;
+        searchBtn.textContent = "Buscando...";
+    }
+
+    if (locationStatus) {
+        locationStatus.textContent = `Buscando endereço: ${address}`;
+    }
+
+    if (sideTitle) {
+        sideTitle.textContent = "Buscando endereço...";
+    }
+
+    if (sideList) {
+        sideList.innerHTML = `<p class="tools-map-empty">Localizando o endereço informado no mapa...</p>`;
+    }
+
+    try {
+        const coordinates = await getCoordinatesForLocation(address);
+
+        if (!coordinates) {
+            if (locationStatus) {
+                locationStatus.textContent = "Não encontramos esse endereço. Confira a digitação e tente novamente.";
+            }
+
+            if (sideTitle) {
+                sideTitle.textContent = "Endereço não encontrado";
+            }
+
+            if (sideList) {
+                sideList.innerHTML = `
+                    <p class="tools-map-empty">
+                        Não foi possível localizar o endereço informado. Tente incluir cidade, estado ou CEP.
+                    </p>
+                `;
+            }
+            return;
+        }
+
+        toolsMapManualLocation = {
+            lat: coordinates.lat,
+            lon: coordinates.lon,
+            source: "manual",
+            label: address
+        };
+        toolsMapLoaded = false;
+
+        await loadToolsMap(true);
+
+    } catch (error) {
+        console.warn("Erro ao buscar endereço no mapa:", error);
+
+        if (locationStatus) {
+            locationStatus.textContent = "Erro ao buscar o endereço. Tente novamente.";
+        }
+    } finally {
+        if (searchBtn) {
+            searchBtn.disabled = false;
+            searchBtn.textContent = "Buscar no mapa";
+        }
+    }
 }
 
 async function getMainAddressLocationForToolsMap() {
@@ -1028,21 +1142,15 @@ function buildAddressTextFromSavedAddress(address) {
 
 function buildToolsMapLocationStatusText(location) {
     if (!location) {
-        return "Localização não encontrada.";
+        return "Localização não encontrada. Digite um endereço para buscar no mapa.";
     }
 
     if (location.source === "browser") {
         return `Usando sua localização atual. Raio de ${toolsMapRadiusKm} km.`;
     }
 
-    if (location.source === "address") {
-        const cityState = [location.cidade, location.estado]
-            .filter(Boolean)
-            .join(" - ");
-
-        return cityState
-            ? `Usando seu endereço padrão em ${cityState}. Raio de ${toolsMapRadiusKm} km.`
-            : `Usando seu endereço padrão. Raio de ${toolsMapRadiusKm} km.`;
+    if (location.source === "manual") {
+        return `Usando o endereço pesquisado${location.label ? `: ${location.label}` : ""}. Raio de ${toolsMapRadiusKm} km.`;
     }
 
     return `Raio de ${toolsMapRadiusKm} km.`;
@@ -1286,12 +1394,21 @@ async function getCoordinatesForLocation(query) {
     }
 
     const queriesToTry = buildGeocodeAttempts(query);
+    const cep = extractBrazilianCep(query);
 
-    for (const currentQuery of queriesToTry) {
+    if (cep) {
+        const viaCepAddress = await getAddressByCep(cep);
+
+        if (viaCepAddress) {
+            queriesToTry.unshift(...buildGeocodeAttempts(viaCepAddress));
+        }
+    }
+
+    for (const currentQuery of [...new Set(queriesToTry)]) {
         try {
             const url =
                 "https://nominatim.openstreetmap.org/search" +
-                `?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(currentQuery)}`;
+                `?format=json&limit=1&addressdetails=1&countrycodes=br&q=${encodeURIComponent(currentQuery)}`;
 
             const response = await fetch(url, {
                 headers: {
@@ -1326,6 +1443,72 @@ async function getCoordinatesForLocation(query) {
     }
 
     return null;
+}
+
+function extractBrazilianCep(value) {
+    const digits = String(value || "").replace(/\D/g, "");
+
+    return digits.length === 8 ? digits : "";
+}
+
+async function getAddressByCep(cep) {
+    const cleanCep = extractBrazilianCep(cep);
+
+    if (!cleanCep) {
+        return "";
+    }
+
+    const cacheKey = `cepAddress:${cleanCep}`;
+    const cached = localStorage.getItem(cacheKey);
+
+    if (cached) {
+        return cached;
+    }
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+
+        if (!response.ok) {
+            return "";
+        }
+
+        const data = await response.json();
+
+        if (!data || data.erro) {
+            return "";
+        }
+
+        const addressText = buildAddressTextFromViaCep(data);
+
+        if (addressText) {
+            localStorage.setItem(cacheKey, addressText);
+        }
+
+        return addressText;
+
+    } catch (error) {
+        console.warn("Erro ao buscar CEP no ViaCEP:", error);
+        return "";
+    }
+}
+
+function buildAddressTextFromViaCep(data) {
+    const logradouro = String(data.logradouro || "").trim();
+    const bairro = String(data.bairro || "").trim();
+    const cidade = String(data.localidade || "").trim();
+    const estado = String(data.uf || "").trim();
+
+    if (!cidade || !estado) {
+        return "";
+    }
+
+    return [
+        logradouro,
+        bairro,
+        cidade,
+        estado,
+        "Brasil"
+    ].filter(Boolean).join(", ");
 }
 
 function buildGeocodeAttempts(query) {
@@ -1414,11 +1597,7 @@ function renderToolsMapGroups(groups) {
             icon: createToolsMapUserIcon()
         })
             .addTo(toolsMapMarkersLayer)
-            .bindPopup(
-                toolsMapLocationSource === "address"
-                    ? "Seu endereço padrão"
-                    : "Sua localização atual"
-            );
+            .bindPopup(getToolsMapUserPopupText());
 
         L.circle([toolsMapUserLocation.lat, toolsMapUserLocation.lon], {
             radius: toolsMapRadiusKm * 1000,
@@ -1505,6 +1684,18 @@ function formatToolsMapToolsCount(count) {
 
 function formatToolsMapLocationsCount(count) {
     return count === 1 ? "1 local" : `${count} locais`;
+}
+
+function getToolsMapUserPopupText() {
+    if (toolsMapLocationSource === "manual") {
+        return "Endereço pesquisado";
+    }
+
+    if (toolsMapLocationSource === "address") {
+        return "Seu endereço padrão";
+    }
+
+    return "Sua localização atual";
 }
 
 function createToolsMapIcon(count) {

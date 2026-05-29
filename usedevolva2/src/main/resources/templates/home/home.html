@@ -153,8 +153,18 @@
                 <h2>Ferramentas no mapa</h2>
                 <p>Clique em um ponto para ver as ferramentas disponíveis naquele local.</p>
                 <small id="toolsMapLocationStatus" class="tools-map-location-status">
-                    Ao abrir, vamos solicitar sua localização.
+                    Ao abrir, vamos solicitar sua localização. Se preferir, digite um endereço abaixo.
                 </small>
+
+                <form id="toolsMapAddressForm" class="tools-map-address-form" autocomplete="off">
+                    <input
+                        type="text"
+                        id="toolsMapAddressInput"
+                        placeholder="Digite um endereço, bairro, cidade ou CEP"
+                        aria-label="Endereço para buscar no mapa"
+                    />
+                    <button type="submit" id="toolsMapAddressSearchBtn">Buscar no mapa</button>
+                </form>
             </div>
 
             <div class="tools-map-header-actions">
