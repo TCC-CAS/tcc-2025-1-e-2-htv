@@ -49,6 +49,8 @@ O usuário pode encontrar as ferramentas de duas formas integradas:
 * **Busca por Nome e Filtros:** Digitando o nome do produto e refinando a pesquisa por faixa de preço, proximidade e categorias.
 * **Busca Geográfica Interativa:** Visualizando as ferramentas diretamente no mapa interativo (*Leaflet.js*), identificando com precisão o que está disponível na sua região.
 
+<img width="1163" height="740" alt="image" src="https://github.com/user-attachments/assets/be053edd-09a4-4be8-8402-f2593f9e204e" />
+
 ---
 
 ### 💬 2. Negociação e Chat Nativo
@@ -57,10 +59,14 @@ A plataforma conta com um **sistema de chat interno integrado**. Antes ou durant
 * Alinhar pontos de entrega e devolução.
 * Combinar detalhes de uso do equipamento.
 
+<img width="685" height="809" alt="image" src="https://github.com/user-attachments/assets/8ebc7137-79d7-4f59-ad8c-14d0db4764a5" />
+
 ---
 
 ### 💳 3. Reserva, Pagamento e Fluxo de Aprovação
 O processo de locação segue um fluxo rigoroso de segurança para garantir que ninguém saia no prejuízo:
+
+<img width="1013" height="899" alt="image" src="https://github.com/user-attachments/assets/cb1f2c41-7506-4eff-8e2d-d6002e94a434" />
 
 ```text
   [ Locatário escolhe as datas e faz o Pagamento via AbacatePay ]
