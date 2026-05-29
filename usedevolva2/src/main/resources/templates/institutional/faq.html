@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title>Perguntas Frequentes - Use e Devolva</title>
 
-    <link rel="stylesheet" href="/css/root.css">
-    <link rel="stylesheet" href="/css/fragments/header.css">
-    <link rel="stylesheet" href="/css/fragments/footer.css">
-    <link rel="stylesheet" href="/css/pages/institutional/institutional.css">
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/institutional/institutional.css(v=${#dates.createNow().time})}">
     <script src="/js/core/main.js" defer></script>
 </head>
 

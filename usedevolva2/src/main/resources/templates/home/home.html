@@ -13,15 +13,12 @@
     <link rel="stylesheet" href="../../static/css/root.css">
      <script src="../../static/js/main.js" defer></script>-->
 
-    <link rel="stylesheet" href="/css/fragments/header.css">
-    <link rel="stylesheet" href="/css/fragments/footer.css">
-    <link rel="stylesheet" href="/css/pages/home.css">
-    <link rel="stylesheet" href="/css/root.css">
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/home.css(v=${#dates.createNow().time})}">
 
-    <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <script src="/js/core/main.js" defer></script>
 </head>

@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Criar Conta | Use&Devolva</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" th:href="@{/css/style.css(v=${#dates.createNow().time})}">
+  
 </head>
 
 <body class="create-body-root">

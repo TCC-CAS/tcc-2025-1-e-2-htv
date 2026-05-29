@@ -6,11 +6,29 @@
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/home/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/home/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-list.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-page.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/chats.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/chats.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/create-tool.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/create-tool.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-tool.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-tool.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/favorites.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/favorites.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-rentals.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-rentals.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-tools.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-tools.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/profile.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -47,38 +65,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Application.executor&quot;: &quot;Run&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.Application.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/TCC/tcc-2025-1-e-2-htv&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Application.executor": "Run",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.Application.executor": "Run",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/TCC/tcc-2025-1-e-2-htv",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "project.propCompiler",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <envs>
@@ -100,8 +118,10 @@
         <env name="MAIL_PORT" value="587" />
         <env name="MAIL_USERNAME" value="usedevolva@gmail.com" />
       </envs>
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="demo" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.devolva.use.Application" />
+      <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -133,6 +153,7 @@
       <workItem from="1779574971157" duration="5872000" />
       <workItem from="1779839513619" duration="200000" />
       <workItem from="1780084603275" duration="2001000" />
+      <workItem from="1780095629194" duration="3114000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />

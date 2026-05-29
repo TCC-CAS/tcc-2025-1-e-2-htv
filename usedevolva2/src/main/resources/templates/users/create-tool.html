@@ -6,10 +6,10 @@
     <title>Cadastrar Ferramenta - Use e Devolva</title>
 
 
-    <link rel="stylesheet" href="/css/fragments/header.css">
-    <link rel="stylesheet" href="/css/fragments/footer.css">
-    <link rel="stylesheet" href="/css/root.css">
-    <link rel="stylesheet" href="/css/pages/users/create-tool.css">
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/create-tool.css(v=${#dates.createNow().time})}">
 
 
 <!--        <link rel="stylesheet" href="../../static/css/fragments/header.css">-->

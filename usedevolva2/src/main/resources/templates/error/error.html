@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ops! Ocorreu um Erro - Use e Devolva</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/root.css">
-    <link rel="stylesheet" href="/css/fragments/header.css">
-    <link rel="stylesheet" href="/css/fragments/footer.css">
-    <link rel="stylesheet" href="/css/pages/home.css">
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/home.css(v=${#dates.createNow().time})}">
 
 
     <style>

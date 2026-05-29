@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Buscar Ferramentas - Use e Devolva</title>
 
-    <link rel="stylesheet" href="/css/fragments/header.css">
-    <link rel="stylesheet" href="/css/fragments/footer.css">
-    <link rel="stylesheet" href="/css/pages/tools.css">
-    <link rel="stylesheet" href="/css/root.css">
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/tools.css(v=${#dates.createNow().time})}">
+
 </head>
 <body>
 
