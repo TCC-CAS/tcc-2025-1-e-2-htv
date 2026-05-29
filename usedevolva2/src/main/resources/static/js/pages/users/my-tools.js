@@ -114,6 +114,8 @@ async function renderTools(tools, ownerId) {
 
         const status = getToolStatus(tool);
 
+        const motivoTraduzido = getMotivoModeracaoTexto(tool.motivoModeracao);
+
         const avisoModeracaoHtml = tool.moderada
             ? `
             <div style="
@@ -129,15 +131,19 @@ async function renderTools(tools, ownerId) {
                     🚫 Ferramenta desativada pela moderação
                 </strong>
 
-                <span style="font-size:0.9rem;">
-                    Motivo: ${tool.motivoModeracao || "Violação das políticas da plataforma."}
-                </span>
+                <div style="font-size:0.9rem; margin-bottom: 8px;">
+                    <strong>Motivo:</strong> ${motivoTraduzido}
+                </div>
+
+                <div style="font-size:0.85rem; color: #7F1D1D; font-weight: 500; background: #FFF5F5; padding: 6px 10px; border-radius: 4px; border: 1px dashed #FCA5A5;">
+                    💡 <strong>Como reativar?</strong> Clique em <strong>Editar</strong> logo abaixo para corrigir as informações e reenviar seu anúncio para análise.
+                </div>
 
                 ${
                 tool.moderadaEm
                     ? `
-                        <div style="margin-top:6px; font-size:0.8rem; opacity:0.8;">
-                            ${new Date(tool.moderadaEm).toLocaleString('pt-BR')}
+                        <div style="margin-top:8px; font-size:0.8rem; opacity:0.8;">
+                            Desativada em: ${new Date(tool.moderadaEm).toLocaleString('pt-BR')}
                         </div>
                         `
                     : ''
@@ -231,7 +237,7 @@ async function renderTools(tools, ownerId) {
                     <button class="action-btn"
                             title="Editar"
                             onclick="editTool(${tool.id})"
-                            ${status.expirada ? 'style="background-color: #DC2626; color: white;"' : ''}>
+                            ${status.expirada || tool.moderada ? 'style="background-color: #DC2626; color: white;"' : ''}>
                         Editar
                     </button>
                     <button class="action-btn"
@@ -400,4 +406,18 @@ function mostrarAvisoLimiteExcedido(ativas, limite, plano) {
     `;
 
     container.prepend(alertBanner);
+}
+
+
+function getMotivoModeracaoTexto(motivo) {
+    const motivos = {
+        'ITEM_PROIBIDO': 'Este item infringe nossas políticas de termos de uso e não é permitido para locação.',
+        'CATEGORIA_INCORRETA': 'A categoria selecionada não corresponde à ferramenta cadastrada.',
+        'DESCRICAO_INADEQUADA': 'A descrição do anúncio está confusa, incompleta ou possui termos não permitidos.',
+        'IMAGEM_INADEQUADA': 'A imagem enviada possui baixa qualidade, conteúdo impróprio ou não exibe claramente a ferramenta.',
+        'PRECO_ABUSIVO': 'O preço estipulado para a diária destoa completamente do padrão da plataforma.',
+        'DADOS_FALSOS': 'Foram identificadas inconsistências nas especificações técnicas fornecidas.'
+    };
+
+    return motivos[motivo] || "Foram encontradas inconformidades com as diretrizes e termos de uso da nossa comunidade.";
 }

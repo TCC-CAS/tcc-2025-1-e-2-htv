@@ -23,6 +23,6 @@ public class AdminModel {
     private boolean ativo;
 
     public AdminModel() {
-        this.ativo = true;  // Por padrão, administrador estará ativo.
+        this.ativo = true;
     }
 }
