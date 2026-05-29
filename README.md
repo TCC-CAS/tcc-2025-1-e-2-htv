@@ -66,11 +66,6 @@ A plataforma conta com um **sistema de chat interno integrado**. Antes ou durant
 ### 💳 3. Reserva, Pagamento e Fluxo de Aprovação
 O processo de locação segue um fluxo rigoroso de segurança para garantir que ninguém saia no prejuízo:
 
-<img width="1013" height="899" alt="image" src="https://github.com/user-attachments/assets/cb1f2c41-7506-4eff-8e2d-d6002e94a434" />
-
-<img width="976" height="901" alt="image" src="https://github.com/user-attachments/assets/8f5b2d4a-25a0-4792-8ed9-db55787d4613" />
-
-
 ```text
   [ Locatário escolhe as datas e faz o Pagamento via AbacatePay ]
                                  │
@@ -90,6 +85,26 @@ O processo de locação segue um fluxo rigoroso de segurança para garantir que 
                                       │     DISPONÍVEIS     │
                                       └─────────────────────┘
 ```
+
+1. **Solicitação e Garantia:** O locatário escolhe o período desejado e realiza o pagamento do valor da reserva de forma integrada via **AbacatePay**. O dinheiro fica retido na plataforma temporariamente.
+2. **Decisão do Locador:** O locador é notificado e tem a opção de **aceitar** ou **recusar** a solicitação de aluguel.
+3. **Cenário A - Pedido Aceito:** O aluguel é confirmado, as datas escolhidas são bloqueadas no calendário do anúncio e o fluxo avança para a retirada.
+4. **Cenário B - Pedido Recusado:** Se o locador recusar, o locatário recebe o **reembolso automático e integral** do valor pago pelo *AbacatePay*. As datas do anúncio **continuam totalmente disponíveis** para que outras pessoas possam reservar.
+
+<img width="1013" height="899" alt="image" src="https://github.com/user-attachments/assets/cb1f2c41-7506-4eff-8e2d-d6002e94a434" />
+<img width="976" height="901" alt="image" src="https://github.com/user-attachments/assets/8f5b2d4a-25a0-4792-8ed9-db55787d4613" />
+
+---
+
+### 🔄 4. Pós-Aprovação: Ciclo de Vida e Finalização Segura
+Assim que o pedido é aceito pelo locador, o andamento do contrato passa a ser atualizado de ponta a ponta pelos envolvidos para garantir a segurança física do item e o repasse financeiro justo:
+
+1. **Retirada & Em Uso (`IN_USE`):** O locatário busca a ferramenta no local combinado e sinaliza na plataforma que o item já está em sua posse e em uso.
+2. **Devolução (`RETURNED`):** Ao finalizar o período do aluguel, o locatário faz a entrega física do equipamento e clica em devolver no sistema. O status muda para *Devolvido (Aguardando Confirmação)*.
+3. **Garantia de Recebimento (`FINALIZED`):** O locador (dono da ferramenta) avalia se o equipamento foi entregue corretamente e sem avarias. Ao confirmar que está tudo OK, ele clica em **"Confirmar e Finalizar Locação"**. Essa etapa é obrigatória e serve como gatilho de segurança: o dinheiro retido só é liberado para o saldo do locador após essa confirmação mútua, encerrando o contrato com sucesso.
+
+
+---
 
 ## 🤝 Contribuindo
 
