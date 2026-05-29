@@ -67,6 +67,7 @@ function renderRequests(rentals) {
     container.innerHTML = rentals.map(r => {
         let footerButtons = "";
 
+        // Define os botões baseados no status
         if (r.status === "RETURNED" || r.status === "LATE_RETURNED") {
             footerButtons = `
                 <button class="btn btn-approve" style="width: 100%;" onclick="finalizeRental(${r.rentalId})">
@@ -77,9 +78,11 @@ function renderRequests(rentals) {
                 <button class="btn btn-reject" onclick="rejectRental(${r.rentalId})">Recusar</button>
                 <button class="btn btn-approve" onclick="approveRental(${r.rentalId})">Aceitar</button>
             `;
-        } else {
-            footerButtons = `<p style="color: #888; font-size: 0.85rem; margin: 0; text-align: center; width: 100%; font-style: italic;">Contrato Encerrado</p>`;
         }
+
+        const footerHtml = footerButtons
+            ? `<div class="rental-footer" style="margin-top: 15px; padding: 0; display: flex; gap: 10px;">${footerButtons}</div>`
+            : '';
 
         return `
             <article class="rental-card">
@@ -105,14 +108,13 @@ function renderRequests(rentals) {
                         </div>
                     </div>
                     
-                    <div class="rental-footer" style="margin-top: 15px; padding: 0; display: flex; gap: 10px;">
-                        ${footerButtons}
-                    </div>
+                    ${footerHtml}
                 </div>
             </article>
         `;
     }).join("");
 }
+
 function getActiveFilter() {
     return document.getElementById("statusFilter")?.value || "ACTIVE";
 }
