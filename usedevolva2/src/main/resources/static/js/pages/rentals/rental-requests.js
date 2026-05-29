@@ -82,26 +82,37 @@ function renderRequests(rentals) {
         }
 
         return `
-            <article class="request-card">
-                <div class="card-header">
+            <article class="rental-card">
+                <div class="rental-image-container">
+                    <img 
+                        src="${r.toolImage}" 
+                        class="rental-image" 
+                        alt="${r.toolName}"
+                    >
+                    <span class="badge ${getStatusBadgeClass(r.status)}">
+                        ${translateStatus(r.status)}
+                    </span>
+                </div>
+
+                <div class="rental-content" style="display: flex; flex-direction: column; justify-content: space-between; flex: 1; padding: 15px;">
                     <div>
-                        <h3>${r.toolName}</h3>
-                        <span class="date">Pedido em ${formatDate(r.startDate)}</span>
+                        <h3 class="rental-title" style="margin: 0 0 5px 0;">${r.toolName}</h3>
+                        <span class="date" style="font-size: 0.8rem; color: #888;">Pedido em ${formatDate(r.startDate)}</span>
+                        
+                        <div class="card-body" style="margin-top: 10px; padding: 0;">
+                             <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Locatário:</strong> ${r.renterName || 'Não informado'}</p>
+                             <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Valor total:</strong> ${formatCurrency(r.totalValue)}</p>
+                        </div>
                     </div>
-                    <span class="badge ${getStatusBadgeClass(r.status)}">${translateStatus(r.status)}</span>
-                </div>
-                <div class="card-body">
-                     <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Locatário:</strong> ${r.renterName || 'Não informado'}</p>
-                     <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Valor total:</strong> ${formatCurrency(r.totalValue)}</p>
-                </div>
-                <div class="card-footer">
-                    ${footerButtons}
+                    
+                    <div class="rental-footer" style="margin-top: 15px; padding: 0; display: flex; gap: 10px;">
+                        ${footerButtons}
+                    </div>
                 </div>
             </article>
         `;
     }).join("");
 }
-
 function getActiveFilter() {
     return document.getElementById("statusFilter")?.value || "ACTIVE";
 }
