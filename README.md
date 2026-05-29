@@ -68,6 +68,9 @@ O processo de locação segue um fluxo rigoroso de segurança para garantir que 
 
 <img width="1013" height="899" alt="image" src="https://github.com/user-attachments/assets/cb1f2c41-7506-4eff-8e2d-d6002e94a434" />
 
+<img width="976" height="901" alt="image" src="https://github.com/user-attachments/assets/8f5b2d4a-25a0-4792-8ed9-db55787d4613" />
+
+
 ```text
   [ Locatário escolhe as datas e faz o Pagamento via AbacatePay ]
                                  │
