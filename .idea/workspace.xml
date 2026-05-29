@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/users/my-tools.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/users/my-tools.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/web/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/web/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/create-tool.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/create-tool.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,10 +19,10 @@
       <list>
         <option value="CSS File" />
         <option value="Interface" />
-        <option value="JavaScript File" />
         <option value="HTML File" />
         <option value="Class" />
         <option value="Record" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -132,7 +134,7 @@
       <workItem from="1779480198661" duration="7440000" />
       <workItem from="1779574971157" duration="5872000" />
       <workItem from="1779839513619" duration="200000" />
-      <workItem from="1780084603275" duration="322000" />
+      <workItem from="1780084603275" duration="1076000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />

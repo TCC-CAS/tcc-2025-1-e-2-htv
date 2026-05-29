@@ -1,5 +1,8 @@
 package com.devolva.use.web;
 
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.boot.webmvc.error.ErrorController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,7 +11,7 @@ import java.util.Map;
 
 
 @Controller
-public class AuthController {
+public class AuthController implements ErrorController {
 
     @GetMapping("/")
     public String home() {
@@ -138,5 +141,34 @@ public class AuthController {
         model.addAttribute("token", token);
         return "auth/new-password";
     }
+    @RequestMapping("/error")
+    public String handleError(HttpServletRequest request, Model model) {
+        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
+        String errorTitle = "Ops! Algo deu errado.";
+        String errorMsg = "Ocorreu um erro inesperado no sistema. Por favor, tente novamente.";
+        String statusCode = "Erro";
+
+        if (status != null) {
+            Integer code = Integer.valueOf(status.toString());
+            statusCode = code.toString();
+
+            if (code == 404) {
+                errorTitle = "Página Não Encontrada";
+                errorMsg = "A página ou recurso que você está tentando acessar não existe, mudou de lugar ou foi removido.";
+            } else if (code == 500) {
+                errorTitle = "Erro Interno no Servidor";
+                errorMsg = "Nossos servidores estão enfrentando alguma instabilidade. Nossa equipe técnica já foi alertada!";
+            } else if (code == 403) {
+                errorTitle = "Acesso Negado";
+                errorMsg = "Você não tem permissão suficiente para visualizar esta área do sistema.";
+            }
+        }
+
+        model.addAttribute("status", statusCode);
+        model.addAttribute("errorTitle", errorTitle);
+        model.addAttribute("errorMsg", errorMsg);
+
+        return "error/error";
+    }
 }
