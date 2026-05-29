@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/domain/UserModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/domain/UserModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/dtos/CreateUserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/dtos/CreateUserDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/usecases/UserUsecases.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/users/usecases/UserUsecases.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/auth/register.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/auth/register.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/register.html" afterDir="false" />
-    </list>
+    <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -137,7 +130,7 @@
       <workItem from="1779480198661" duration="7440000" />
       <workItem from="1779574971157" duration="5872000" />
       <workItem from="1779839513619" duration="200000" />
-      <workItem from="1780084603275" duration="3095000" />
+      <workItem from="1780084603275" duration="2001000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />

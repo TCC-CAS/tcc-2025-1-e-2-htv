@@ -3,7 +3,7 @@ const message = document.querySelector(".form-message");
 const cpfInput = document.getElementById("cpf");
 const telefoneInput = document.getElementById("telefone");
 const nomeInput = document.getElementById("nome");
-const maiorIdadeInput = document.getElementById("declarouMaiorIdade");
+const dataNascimentoInput = document.getElementById("dataNascimento");
 const emailInput = document.getElementById("email");
 const senhaInput = document.getElementById("senha");
 const confirmarSenhaInput = document.getElementById("confirmarSenha");
@@ -27,7 +27,7 @@ form.addEventListener("submit", async function (event) {
     const nome = nomeInput.value.trim();
     const cpf = cpfInput.value.trim();
     const telefone = telefoneInput.value.trim();
-    const declarouMaior = maiorIdadeInput.checked;
+    const dataNascimento = dataNascimentoInput.value;
     const email = emailInput.value.trim();
     const senha = senhaInput.value;
     const confirmarSenha = confirmarSenhaInput.value;
@@ -54,10 +54,14 @@ form.addEventListener("submit", async function (event) {
         formValido = false;
     }
 
-    if (!declarouMaior) {
-        mostrarErro("declarouMaiorIdade", "Você precisa declarar que é maior de 18 anos.");
+    if (!dataNascimento) {
+        mostrarErro("dataNascimento", "Informe sua data de nascimento.");
+        formValido = false;
+    } else if (!validarIdade(dataNascimento)) {
+        mostrarErro("dataNascimento", "Você precisa ter pelo menos 18 anos.");
         formValido = false;
     }
+
     if (!validarEmail(email)) {
         mostrarErro("email", "Informe um e-mail válido.");
         formValido = false;
@@ -90,7 +94,7 @@ form.addEventListener("submit", async function (event) {
         nomeCompleto: nome,
         documento: cpf,
         telefone: telefone,
-        declarouMaiorIdade: declarouMaior,
+        dataNascimento: dataNascimento,
         email: email,
         senha: senha,
         aceitouTermosUso: aceitouTermos,
@@ -191,6 +195,21 @@ function validarTelefone(telefone) {
     return somenteNumeros.length === 11;
 }
 
+function validarIdade(dataNascimento) {
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento + "T00:00:00");
+
+    if (nascimento > hoje) return false;
+
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+
+    return idade >= 18;
+}
 
 function validarCPF(cpf) {
     cpf = cpf.replace(/[^\d]+/g, "");

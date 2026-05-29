@@ -8,9 +8,7 @@ public record CreateUserDto(
         String telefone,
         String senha,
         String documento,
-        boolean declarouMaiorIdade,
+        LocalDate dataNascimento,
         boolean aceitouTermosUso,
         boolean aceitouPoliticaPrivacidade
-){
-
-}
+) {}

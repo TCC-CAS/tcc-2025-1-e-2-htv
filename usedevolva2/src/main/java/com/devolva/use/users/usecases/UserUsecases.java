@@ -53,9 +53,7 @@ public class UserUsecases {
         user.setTelefone(dto.telefone().trim());
         user.setSenha(passwordEncoder.encode(dto.senha()));
         user.setDocumento(dto.documento());
-
-        user.setDeclarouMaiorIdade(dto.declarouMaiorIdade());
-
+        user.setDataNascimento(dto.dataNascimento());
         user.setVerificado(false);
         user.setAceitouTermosUso(dto.aceitouTermosUso());
         user.setAceitouPoliticaPrivacidade(dto.aceitouPoliticaPrivacidade());
@@ -281,8 +279,8 @@ public class UserUsecases {
             throw new IllegalArgumentException("Senha deve ter no mínimo 8 caracteres.");
         }
 
-        if (!dto.declarouMaiorIdade()) {
-            throw new IllegalArgumentException("Você precisa declarar que é maior de 18 anos.");
+        if (dto.dataNascimento() == null || dto.dataNascimento().isAfter(LocalDate.now().minusYears(18))) {
+            throw new IllegalArgumentException("Usuário deve ter no mínimo 18 anos.");
         }
 
         if (!dto.aceitouTermosUso()) {
