@@ -592,7 +592,10 @@ public class ToolUsecases {
                 tool.getBairro(),
                 tool.getCidade(),
                 tool.getEstado(),
-                tool.getLocalizacao()
+                tool.getLocalizacao(),
+                tool.getObservacoes(),
+                tool.getDataInicioDisponibilidade(),
+                tool.getDataFimDisponibilidade()
         );
     }
 

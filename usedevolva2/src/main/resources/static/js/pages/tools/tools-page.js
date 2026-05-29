@@ -119,15 +119,20 @@ async function loadTool() {
 
         const localizacaoFormatada = formatToolNeighborhoodCityState(tool);
 
+        const txtObservacoes = tool.observacoes || tool.observacao || "Nenhuma observação informada.";
+        const dataInicioVal = tool.dataInicioDisponibilidade || tool.data_inicio_disponibilidade;
+        const dataFimVal = tool.dataFimDisponibilidade || tool.data_fim_disponibilidade;
+
         document.getElementById("breadcrumbToolName").textContent = tool.nome || "Ferramenta";
         document.getElementById("toolName").textContent = tool.nome || "Ferramenta";
         document.getElementById("toolCategory").textContent = (tool.categoria || "Categoria").toUpperCase();
         document.getElementById("toolLocation").textContent = `Disponível em ${localizacaoFormatada}`;
         document.getElementById("toolDescription").textContent = tool.descricao || "Descrição não informada.";
-        document.getElementById("toolCondition").textContent = tool.estadoConservacao || "Estado não informado.";
-        document.getElementById("toolObservations").textContent = tool.observacoes || "Nenhuma observação informada.";
+        document.getElementById("toolCondition").textContent = tool.estadoConservacao || tool.estado_conservacao || "Estado não informado.";
+
+        document.getElementById("toolObservations").textContent = txtObservacoes;
         document.getElementById("toolAvailability").textContent = formatAvailability(tool);
-        document.getElementById("toolPrice").textContent = formatCurrency(tool.valorDiaria || 0);
+        document.getElementById("toolPrice").textContent = formatCurrency(tool.valorDiaria || tool.valor_diaria || 0);
 
         const inputInicio = document.getElementById("dataInicio");
         const inputFim = document.getElementById("dataFim");
@@ -137,16 +142,16 @@ async function loadTool() {
             const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 
             let minAllowed = todayStr;
-            if (tool.dataInicioDisponibilidade && tool.dataInicioDisponibilidade > todayStr) {
-                minAllowed = tool.dataInicioDisponibilidade;
+            if (dataInicioVal && dataInicioVal > todayStr) {
+                minAllowed = dataInicioVal;
             }
 
             inputInicio.min = minAllowed;
             inputFim.min = minAllowed;
 
-            if (tool.dataFimDisponibilidade) {
-                inputInicio.max = tool.dataFimDisponibilidade;
-                inputFim.max = tool.dataFimDisponibilidade;
+            if (dataFimVal) {
+                inputInicio.max = dataFimVal;
+                inputFim.max = dataFimVal;
             }
         }
 
@@ -454,22 +459,25 @@ function updateBookingSummary() {
 }
 
 function formatAvailability(tool) {
-    const hasStart = !!tool.dataInicioDisponibilidade;
-    const hasEnd = !!tool.dataFimDisponibilidade;
+    const dataInicio = tool.dataInicioDisponibilidade || tool.data_inicio_disponibilidade;
+    const dataFim = tool.dataFimDisponibilidade || tool.data_fim_disponibilidade;
+
+    const hasStart = !!dataInicio;
+    const hasEnd = !!dataFim;
 
     if (!hasStart && !hasEnd) {
         return "Disponibilidade não informada.";
     }
 
     if (hasStart && !hasEnd) {
-        return `Disponível a partir de ${formatDate(tool.dataInicioDisponibilidade)}.`;
+        return `Disponível a partir de ${formatDate(dataInicio)}.`;
     }
 
     if (!hasStart && hasEnd) {
-        return `Disponível até ${formatDate(tool.dataFimDisponibilidade)}.`;
+        return `Disponível até ${formatDate(dataFim)}.`;
     }
 
-    return `Disponível de ${formatDate(tool.dataInicioDisponibilidade)} até ${formatDate(tool.dataFimDisponibilidade)}.`;
+    return `Disponível de ${formatDate(dataInicio)} até ${formatDate(dataFim)}.`;
 }
 
 function formatDate(dateString) {

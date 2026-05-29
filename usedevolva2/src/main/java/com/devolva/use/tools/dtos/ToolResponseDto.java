@@ -1,6 +1,7 @@
 package com.devolva.use.tools.dtos;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public record ToolResponseDto(
         Long id,
@@ -21,5 +22,10 @@ public record ToolResponseDto(
         String bairro,
         String cidade,
         String estado,
-        String localizacao
+        String localizacao,
+
+        String observacoes,
+        LocalDate dataInicioDisponibilidade,
+        LocalDate dataFimDisponibilidade
+
 ) {}
