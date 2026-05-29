@@ -282,7 +282,7 @@ function getToolStatus(tool) {
     if (tool.moderada) {
         return {
             label: "Desativada pela Moderação",
-            className: "badge-blocked"
+            className: "badge-moderated"
         };
     }
 

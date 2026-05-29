@@ -275,3 +275,17 @@
                 justify-content: center;
             }
         }
+        .badge-blocked {
+            background-color: var(--status-blocked-bg, #6B7280);
+            color: var(--status-blocked-text, #FFFFFF);
+        }
+
+        .badge-moderated {
+            background-color: #DC2626;
+            color: #FFFFFF;
+        }
+
+        .badge-expired {
+            background-color: #EF4444;
+            color: #FFFFFF;
+        }
