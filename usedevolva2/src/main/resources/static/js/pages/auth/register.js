@@ -92,7 +92,7 @@ form.addEventListener("submit", async function (event) {
         nomeCompleto: nome,
         documento: cpf,
         telefone: telefone,
-        dataNascimento: null, 
+        dataNascimento: "2000-01-01",
         email: email,
         senha: senha,
         aceitouTermosUso: aceitouTermos,
