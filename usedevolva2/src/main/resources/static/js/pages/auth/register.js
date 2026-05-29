@@ -92,7 +92,7 @@ form.addEventListener("submit", async function (event) {
         nomeCompleto: nome,
         documento: cpf,
         telefone: telefone,
-        dataNascimento: "", // Enviado vazio para o banco conforme solicitado
+        dataNascimento: null, 
         email: email,
         senha: senha,
         aceitouTermosUso: aceitouTermos,
