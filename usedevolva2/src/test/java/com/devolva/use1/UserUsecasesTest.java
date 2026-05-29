@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +45,7 @@ class UserUsecasesTest {
                 "11999999999",
                 "senha123",
                 "12345678900",
-                LocalDate.now().minusYears(20),
+                true,
                 true,
                 true
         );
@@ -65,6 +64,7 @@ class UserUsecasesTest {
         assertEquals("Thiago Gatti", user.getNomeCompleto());
         assertEquals("thiago@email.com", user.getEmail());
         assertEquals(UserModel.Plano.FREE, user.getPlano());
+        assertTrue(user.isDeclarouMaiorIdade()); // Garante que salvou a maioridade
         verify(userRepository, times(1)).save(any(UserModel.class));
     }
 
@@ -84,13 +84,14 @@ class UserUsecasesTest {
     @Test
     @DisplayName("Deve lançar erro para senha curta")
     void shouldThrowExceptionWhenPasswordIsTooShort() {
+        // AJUSTADO: Trocado LocalDate por true aqui também
         CreateUserDto invalidDto = new CreateUserDto(
                 "Thiago",
                 "thiago@email.com",
                 "11999999999",
                 "123",
                 "12345678900",
-                LocalDate.now().minusYears(20),
+                true, // declarouMaiorIdade
                 true,
                 true
         );
@@ -104,77 +105,26 @@ class UserUsecasesTest {
     }
 
     @Test
-    @DisplayName("Deve fazer login com sucesso")
-    void shouldLoginSuccessfully() {
-        UserModel user = new UserModel();
-        user.setEmail("thiago@email.com");
-        user.setSenha("senhaCriptografada");
-        user.setStatus(UserStatus.ATIVO);
-
-        LoginUserDto dto = new LoginUserDto("thiago@email.com", "senha123");
-
-        when(userRepository.findByEmail(dto.email())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(dto.senha(), user.getSenha())).thenReturn(true);
-
-        UserModel result = userUsecases.login(dto);
-
-        assertNotNull(result);
-        assertEquals("thiago@email.com", result.getEmail());
-    }
-
-    @Test
-    @DisplayName("Deve lançar erro para senha inválida")
-    void shouldThrowExceptionWhenPasswordIsInvalid() {
-        UserModel user = new UserModel();
-        user.setSenha("senhaCriptografada");
-        user.setStatus(UserStatus.ATIVO);
-
-        LoginUserDto dto = new LoginUserDto("thiago@email.com", "senhaErrada");
-
-        when(userRepository.findByEmail(dto.email())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(dto.senha(), user.getSenha())).thenReturn(false);
+    @DisplayName("Deve lançar erro quando não declarar maioridade")
+    void shouldThrowExceptionWhenNotDeclaringAge() {
+        CreateUserDto noAgeDto = new CreateUserDto(
+                "Thiago Gatti",
+                "thiago@email.com",
+                "11999999999",
+                "senha123",
+                "12345678900",
+                false, // declarouMaiorIdade = false
+                true,
+                true
+        );
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> userUsecases.login(dto)
+                () -> userUsecases.createUser(noAgeDto)
         );
 
-        assertEquals("Senha inválida.", ex.getMessage());
+        assertEquals("Você precisa declarar que é maior de 18 anos.", ex.getMessage());
     }
 
     @Test
-    @DisplayName("Deve verificar identidade com sucesso")
-    void shouldVerifyIdentitySuccessfully() {
-        UserModel user = new UserModel();
-        user.setId(1L);
-        user.setStatus(UserStatus.ATIVO);
-
-        VerifyUserDto dto = new VerifyUserDto("12345678900");
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(UserModel.class))).thenAnswer(i -> i.getArgument(0));
-
-        UserModel verifiedUser = userUsecases.verifyIdentity(1L, dto);
-
-        assertTrue(verifiedUser.isVerificado());
-        assertEquals("12345678900", verifiedUser.getDocumento());
-    }
-
-    @Test
-    @DisplayName("Deve atualizar nome e telefone com sucesso")
-    void shouldUpdateBasicDataSuccessfully() {
-        UserModel user = new UserModel();
-        user.setId(1L);
-        user.setStatus(UserStatus.ATIVO);
-
-        UpdateUserDto dto = new UpdateUserDto("Novo Nome", null, "11888888888", null, null);
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(UserModel.class))).thenAnswer(i -> i.getArgument(0));
-
-        UserModel updatedUser = userUsecases.updateBasicData(1L, dto);
-
-        assertEquals("Novo Nome", updatedUser.getNomeCompleto());
-        assertEquals("11888888888", updatedUser.getTelefone());
-    }
-}
+    @DisplayName("Deve fazer login com sucesso

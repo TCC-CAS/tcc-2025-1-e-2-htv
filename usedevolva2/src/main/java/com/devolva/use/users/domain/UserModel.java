@@ -35,8 +35,8 @@ public class UserModel {
     @JsonIgnore
     private String senha;
     private String documento;
-    private LocalDate dataNascimento;
-    private boolean verificado;
+
+    private boolean declarouMaiorIdade;    private boolean verificado;
     private boolean aceitouTermosUso;
     private boolean aceitouPoliticaPrivacidade;
 
