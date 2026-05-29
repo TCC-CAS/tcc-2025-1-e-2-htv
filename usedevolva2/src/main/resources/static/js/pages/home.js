@@ -771,8 +771,6 @@ function setupToolsMapModal() {
     openBtn.addEventListener("click", async () => {
         openToolsMapModal();
 
-        // Tenta usar a localização do navegador. Caso o usuário negue, o mapa fica no Brasil
-        // e permite buscar manualmente por endereço, sem cair em um endereço cadastrado aleatório.
         await loadToolsMap(true);
     });
 
