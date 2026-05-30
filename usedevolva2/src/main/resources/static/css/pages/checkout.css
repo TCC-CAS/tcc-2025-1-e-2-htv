@@ -340,28 +340,3 @@ main.checkout-container {
     border-color:var(--chk-primary);
     background:rgba(82,72,179,0.05);
 }
-/* Revisão mobile */
-@media (max-width: 900px) {
-  .checkout-container,
-  .checkout-layout,
-  .payment-container {
-    grid-template-columns: 1fr !important;
-    width: 100%;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-@media (max-width: 560px) {
-  .checkout-actions,
-  .payment-actions,
-  .form-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .checkout-actions > *,
-  .payment-actions > * {
-    width: 100%;
-  }
-}

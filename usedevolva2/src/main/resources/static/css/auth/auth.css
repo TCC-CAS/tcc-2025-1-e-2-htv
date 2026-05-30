@@ -246,32 +246,3 @@ header form button:hover {
     box-shadow: none;
 }
 
-
-/* Revisão autenticação mobile */
-@media (max-width: 560px) {
-  .page-wrapper,
-  .auth-page,
-  .login-page,
-  .register-page {
-    padding: 0.75rem;
-    min-height: 100dvh;
-  }
-
-  .auth-card,
-  .login-card,
-  .register-card {
-    width: 100%;
-    padding: 1rem;
-    border-radius: 18px;
-  }
-
-  .accessibility-tools {
-    flex-wrap: wrap;
-  }
-
-  .accessibility-tools button,
-  .btn-submit,
-  .submit-btn {
-    width: 100%;
-  }
-}

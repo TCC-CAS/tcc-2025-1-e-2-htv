@@ -256,28 +256,3 @@ body {
     border-color: #dc2626 !important;
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
 }
-
-/* Revisão mobile */
-@media (max-width: 720px) {
-  .edit-profile-container,
-  .profile-edit-container,
-  .profile-form,
-  .form-card {
-    width: 100%;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .form-grid,
-  .form-row {
-    grid-template-columns: 1fr !important;
-  }
-
-  input,
-  select,
-  textarea,
-  button {
-    width: 100%;
-    min-width: 0 !important;
-  }
-}
