@@ -964,3 +964,50 @@
          justify-content: center;
      }
  }
+/* Ajustes do carrossel da Home */
+.carousel-content h1 {
+   font-size: clamp(2rem, 4vw, 3rem);
+   line-height: 1.2;
+   color: var(--color-primary, var(--cor-primaria, #5248b3));
+   margin-bottom: 14px;
+}
+
+.carousel-progress {
+   width: min(160px, 42%);
+   height: 3px;
+   margin: 12px auto 0;
+   border-radius: 999px;
+   background: rgba(82, 72, 179, 0.13);
+   overflow: hidden;
+}
+
+.carousel-progress-bar {
+   display: block;
+   width: 0%;
+   height: 100%;
+   border-radius: inherit;
+   background: var(--color-primary, var(--cor-primaria, #5248b3));
+}
+
+@media (max-width: 900px) {
+   .tools-carousel-section {
+      grid-template-columns: 1fr;
+      padding: 28px;
+      margin: 28px 16px;
+   }
+}
+
+@media (max-width: 560px) {
+   .tools-carousel-section {
+      padding: 22px;
+      border-radius: 18px;
+   }
+
+   .carousel-track img {
+      height: 220px;
+   }
+
+   .carousel-progress {
+      width: 56%;
+   }
+}
