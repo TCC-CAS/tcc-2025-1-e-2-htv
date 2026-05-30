@@ -226,8 +226,8 @@ document.addEventListener("DOMContentLoaded", async() => {
             });
 
             card.innerHTML = `
-                <div class="tool-image-wrapper" style="position: relative;">
-                    <img src="${imageUrl}" alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" class="tool-image">
+                <div class="tool-image-wrapper">
+                    <img src="${imageUrl}" alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" class="tool-image" loading="lazy" onerror="this.classList.add('is-broken'); this.closest('.tool-image-wrapper')?.classList.add('is-fallback');">
                     
                     ${tool.ownerPlano === 'OURO' ? `
                         <span class="badge-ouro" style="position: absolute; top: 10px; left: 10px; background: #fbbf24; color: #000; font-weight: bold; font-size: 11px; padding: 4px 8px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; gap: 4px;">

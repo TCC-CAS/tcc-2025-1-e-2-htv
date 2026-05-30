@@ -3,8 +3,16 @@
 
   const STORAGE_KEYS = {
     contrast: "useDevolvaAccessibilityContrast",
-    largeFont: "useDevolvaAccessibilityLargeFont",
     audio: "useDevolvaAccessibilityAudio",
+    zoom: "useDevolvaAccessibilityZoom",
+    oldLargeFont: "useDevolvaAccessibilityLargeFont",
+  };
+
+  const ZOOM = {
+    min: 90,
+    max: 120,
+    step: 10,
+    defaultValue: 100,
   };
 
   const CAROUSEL_DELAY = 5000;
@@ -14,9 +22,16 @@
   let lastSpokenSelection = "";
   let selectionTimer = null;
 
+  const escapeHtml = (value = "") => String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
   const getPageName = () => {
-    const heading = document.querySelector("h1, [aria-labelledby] h1");
-    const title = (heading?.textContent || document.title || "Use e Devolva").trim();
+    const heading = document.querySelector("h1");
+    const title = (heading?.textContent || document.title || "Use&Devolva").trim();
     return title.replace(/\s+/g, " ");
   };
 
@@ -24,12 +39,33 @@
     if (!text || !("speechSynthesis" in window)) return;
 
     window.speechSynthesis.cancel();
-
     const utterance = new SpeechSynthesisUtterance(text.trim());
     utterance.lang = "pt-BR";
     utterance.rate = options.rate || 0.95;
     utterance.pitch = options.pitch || 1;
     window.speechSynthesis.speak(utterance);
+  };
+
+  const readBoolean = (key) => localStorage.getItem(key) === "true";
+
+  const getZoomValue = () => {
+    const stored = Number(localStorage.getItem(STORAGE_KEYS.zoom));
+    if (Number.isFinite(stored)) {
+      return Math.min(Math.max(stored, ZOOM.min), ZOOM.max);
+    }
+
+    if (readBoolean(STORAGE_KEYS.oldLargeFont)) {
+      localStorage.removeItem(STORAGE_KEYS.oldLargeFont);
+      return 110;
+    }
+
+    return ZOOM.defaultValue;
+  };
+
+  const setZoomValue = (value) => {
+    const nextValue = Math.min(Math.max(value, ZOOM.min), ZOOM.max);
+    localStorage.setItem(STORAGE_KEYS.zoom, String(nextValue));
+    applyAccessibilityState();
   };
 
   const updateButtonState = (button, enabled, activeLabel, inactiveLabel) => {
@@ -43,14 +79,17 @@
   };
 
   const applyAccessibilityState = () => {
-    const contrastEnabled = localStorage.getItem(STORAGE_KEYS.contrast) === "true";
-    const largeFontEnabled = localStorage.getItem(STORAGE_KEYS.largeFont) === "true";
-    const audioEnabled = localStorage.getItem(STORAGE_KEYS.audio) === "true";
+    const contrastEnabled = readBoolean(STORAGE_KEYS.contrast);
+    const audioEnabled = readBoolean(STORAGE_KEYS.audio);
+    const zoomValue = getZoomValue();
 
     document.body.classList.toggle("high-contrast", contrastEnabled);
     document.body.classList.toggle("create-high-contrast", contrastEnabled);
-    document.body.classList.toggle("large-font", largeFontEnabled);
-    document.documentElement.classList.toggle("large-font", largeFontEnabled);
+    document.documentElement.classList.toggle("high-contrast", contrastEnabled);
+
+    document.documentElement.dataset.accessibilityZoom = String(zoomValue);
+    document.documentElement.style.setProperty("--accessibility-zoom", `${zoomValue}%`);
+    document.body.style.zoom = `${zoomValue}%`;
 
     updateButtonState(
       document.getElementById("contrastBtn"),
@@ -60,17 +99,33 @@
     );
 
     updateButtonState(
-      document.getElementById("fontBtn"),
-      largeFontEnabled,
-      "Voltar fonte ao tamanho normal",
-      "Aumentar fonte"
-    );
-
-    updateButtonState(
       document.getElementById("audioBtn"),
       audioEnabled,
       "Desativar acessibilidade de fala",
       "Ativar acessibilidade de fala"
+    );
+
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const oldFontBtn = document.getElementById("fontBtn");
+
+    if (zoomOutBtn) {
+      zoomOutBtn.disabled = zoomValue <= ZOOM.min;
+      zoomOutBtn.setAttribute("aria-label", `Diminuir zoom. Zoom atual ${zoomValue}%`);
+      zoomOutBtn.setAttribute("title", `Diminuir zoom (${zoomValue}%)`);
+    }
+
+    if (zoomInBtn) {
+      zoomInBtn.disabled = zoomValue >= ZOOM.max;
+      zoomInBtn.setAttribute("aria-label", `Aumentar zoom. Zoom atual ${zoomValue}%`);
+      zoomInBtn.setAttribute("title", `Aumentar zoom (${zoomValue}%)`);
+    }
+
+    updateButtonState(
+      oldFontBtn,
+      zoomValue > ZOOM.defaultValue,
+      "Reduzir zoom da página",
+      "Aumentar zoom da página"
     );
   };
 
@@ -81,7 +136,7 @@
   };
 
   const speakSelectedText = () => {
-    if (localStorage.getItem(STORAGE_KEYS.audio) !== "true") return;
+    if (!readBoolean(STORAGE_KEYS.audio)) return;
 
     const selectedText = getSelectedText();
     if (!selectedText || selectedText.length < 2 || selectedText === lastSpokenSelection) return;
@@ -97,25 +152,34 @@
 
   const initAccessibility = () => {
     const contrastBtn = document.getElementById("contrastBtn");
-    const fontBtn = document.getElementById("fontBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const oldFontBtn = document.getElementById("fontBtn");
     const audioBtn = document.getElementById("audioBtn");
 
     applyAccessibilityState();
 
     contrastBtn?.addEventListener("click", () => {
-      const enabled = localStorage.getItem(STORAGE_KEYS.contrast) !== "true";
+      const enabled = !readBoolean(STORAGE_KEYS.contrast);
       localStorage.setItem(STORAGE_KEYS.contrast, String(enabled));
       applyAccessibilityState();
     });
 
-    fontBtn?.addEventListener("click", () => {
-      const enabled = localStorage.getItem(STORAGE_KEYS.largeFont) !== "true";
-      localStorage.setItem(STORAGE_KEYS.largeFont, String(enabled));
-      applyAccessibilityState();
+    zoomOutBtn?.addEventListener("click", () => {
+      setZoomValue(getZoomValue() - ZOOM.step);
+    });
+
+    zoomInBtn?.addEventListener("click", () => {
+      setZoomValue(getZoomValue() + ZOOM.step);
+    });
+
+    oldFontBtn?.addEventListener("click", () => {
+      const current = getZoomValue();
+      setZoomValue(current >= 110 ? ZOOM.defaultValue : current + ZOOM.step);
     });
 
     audioBtn?.addEventListener("click", () => {
-      const enabled = localStorage.getItem(STORAGE_KEYS.audio) !== "true";
+      const enabled = !readBoolean(STORAGE_KEYS.audio);
       localStorage.setItem(STORAGE_KEYS.audio, String(enabled));
       lastSpokenSelection = "";
       applyAccessibilityState();
@@ -132,16 +196,52 @@
     document.addEventListener("keyup", scheduleSelectionSpeech);
   };
 
+  const getInitials = (user) => {
+    const name = user?.nomeCompleto || user?.nome || user?.name || user?.email || "U";
+    return String(name)
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("") || "U";
+  };
+
+  const getProfileImageUrl = (user) => {
+    return user?.profileImageUrl || user?.fotoPerfil || user?.photoUrl || user?.avatarUrl || user?.imagemPerfil || "";
+  };
+
+  const renderProfileAvatar = (user) => {
+    const profileImageUrl = getProfileImageUrl(user);
+    const safeInitials = escapeHtml(getInitials(user));
+
+    if (profileImageUrl) {
+      return `
+        <span class="profile-avatar has-image" aria-hidden="true">
+          <img src="${escapeHtml(profileImageUrl)}" alt="" loading="lazy" onerror="this.closest('.profile-avatar').classList.remove('has-image'); this.remove(); this.closest('.profile-avatar').textContent='${safeInitials}';">
+        </span>`;
+    }
+
+    return `<span class="profile-avatar" aria-hidden="true">${safeInitials}</span>`;
+  };
+
   const initHeader = () => {
     const header = document.querySelector(".site-header");
     const menuToggle = document.getElementById("headerMenuToggle");
     const userArea = document.querySelector(".user-area");
     const searchForm = document.getElementById("headerSearchForm");
     const searchInput = document.getElementById("headerSearchInput");
+    const dropdownTrigger = document.querySelector(".dropdown-trigger");
 
     menuToggle?.addEventListener("click", () => {
       const isOpen = header?.classList.toggle("is-menu-open") || false;
       menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+
+    dropdownTrigger?.addEventListener("click", () => {
+      const dropdown = dropdownTrigger.closest(".dropdown");
+      const isOpen = dropdown?.classList.toggle("is-open") || false;
+      dropdownTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
 
     searchForm?.addEventListener("submit", (event) => {
@@ -163,17 +263,11 @@
     }
 
     if (user && user.id) {
-      const initials = (user.nome || user.name || user.email || "U")
-        .trim()
-        .split(/\s+/)
-        .slice(0, 2)
-        .map((part) => part.charAt(0).toUpperCase())
-        .join("") || "U";
-
+      const displayName = user.nomeCompleto || user.nome || user.name || "Usuário";
       userArea.innerHTML = `
         <div class="user-menu">
-          <button type="button" class="profile-trigger" aria-label="Abrir menu do usuário" aria-expanded="false">
-            <span class="profile-avatar" aria-hidden="true">${initials}</span>
+          <button type="button" class="profile-trigger" aria-label="Abrir menu de ${escapeHtml(displayName)}" aria-expanded="false">
+            ${renderProfileAvatar(user)}
           </button>
           <div class="dropdown-content" role="menu">
             <a href="/users/profile" role="menuitem">Meu perfil</a>

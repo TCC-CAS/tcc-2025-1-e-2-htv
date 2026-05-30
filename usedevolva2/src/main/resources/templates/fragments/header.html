@@ -3,7 +3,7 @@
         <div class="header-shell">
             <div class="logo">
                 <a href="/home" class="logo-link" aria-label="Ir para a página inicial">
-                    <img src="/assets/logo-use-devolva.png" alt="Use Devolva" class="header-logo">
+                    <img src="/assets/logo-use-devolva.png" alt="Use&Devolva" class="header-logo">
                 </a>
             </div>
 
@@ -18,7 +18,7 @@
                     <li><a href="/home">Home</a></li>
 
                     <li class="dropdown">
-                        <button type="button" class="dropdown-trigger" aria-haspopup="true">Categorias ▾</button>
+                        <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">Categorias ▾</button>
                         <ul class="dropdown-menu">
                             <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
                             <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
@@ -40,15 +40,19 @@
 
             <div class="header-actions">
                 <section class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
-                    <button type="button" id="contrastBtn" title="Ativar alto contraste" aria-label="Ativar alto contraste" aria-pressed="false">
+                    <button type="button" id="contrastBtn" class="accessibility-btn" title="Ativar alto contraste" aria-label="Ativar alto contraste" aria-pressed="false">
                         <span class="accessibility-icon" aria-hidden="true">◐</span>
                     </button>
 
-                    <button type="button" id="fontBtn" title="Aumentar fonte" aria-label="Aumentar fonte" aria-pressed="false">
+                    <button type="button" id="zoomOutBtn" class="accessibility-btn" title="Diminuir zoom" aria-label="Diminuir zoom">
+                        <span class="accessibility-icon" aria-hidden="true">A−</span>
+                    </button>
+
+                    <button type="button" id="zoomInBtn" class="accessibility-btn" title="Aumentar zoom" aria-label="Aumentar zoom">
                         <span class="accessibility-icon" aria-hidden="true">A+</span>
                     </button>
 
-                    <button type="button" id="audioBtn" title="Ativar acessibilidade de fala" aria-label="Ativar acessibilidade de fala" aria-pressed="false">
+                    <button type="button" id="audioBtn" class="accessibility-btn" title="Ativar acessibilidade de fala" aria-label="Ativar acessibilidade de fala" aria-pressed="false">
                         <span class="accessibility-icon" aria-hidden="true">▶</span>
                     </button>
                 </section>
