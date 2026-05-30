@@ -6,21 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/home/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/home/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-list.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-page.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/tools/tools-page.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/chats.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/chats.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/create-tool.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/create-tool.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-tool.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/edit-tool.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/favorites.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/favorites.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-rentals.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-rentals.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-tools.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/my-tools.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/users/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/login.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,7 +140,7 @@
       <workItem from="1779574971157" duration="5872000" />
       <workItem from="1779839513619" duration="200000" />
       <workItem from="1780084603275" duration="2001000" />
-      <workItem from="1780095629194" duration="3114000" />
+      <workItem from="1780095629194" duration="5419000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />
