@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/deploy/deploy.zip" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/deploy/deploy.zip" afterDir="false" />
@@ -34,6 +35,9 @@
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/auth/register.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/fragments/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/fragments/header.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/security/admin-login.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/security/admin-login.html" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" afterDir="false" />
+>>>>>>> 7e7b823255f2c4cb23e8b1dad8c7c12e2519d7f1
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

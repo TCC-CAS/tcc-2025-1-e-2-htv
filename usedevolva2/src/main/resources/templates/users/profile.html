@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/pages/users/profile.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/pages/users/create-tool.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/plans.css(v=${#dates.createNow().time})}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,17 +38,7 @@
             </button>
             <input type="file" id="profilePhotoInput" accept="image/*" hidden>
         </div>
-        <section class="plan-card">
-            <div>
-                <span class="plan-label">Plano atual</span>
-                <h3 id="currentPlan">FREE</h3>
-                <p>Escolha um plano para liberar mais recursos na plataforma.</p>
-            </div>
 
-            <button type="button" id="openPlansModalBtn" class="plan-button">
-                Ver planos
-            </button>
-        </section>
 
 
         <div class="profile-info">
@@ -58,7 +49,17 @@
             </p>
         </div>
     </section>
+    <section class="plan-card">
+        <div>
+            <span class="plan-label">Plano atual</span>
+            <h3 id="currentPlan">FREE</h3>
+            <p>Escolha um plano para liberar mais recursos na plataforma.</p>
+        </div>
 
+        <button type="button" id="openPlansModalBtn" class="plan-button">
+            Ver planos
+        </button>
+    </section>
         <h3 style="margin-bottom: 1.5rem; color: var(--text-main);">Gerir Conta</h3>
 
         <!-- GRELHA DE MENUS -->
