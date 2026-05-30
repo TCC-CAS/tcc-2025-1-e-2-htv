@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Criar Conta | Use&Devolva</title>
   <link rel="stylesheet" th:href="@{/css/style.css(v=${#dates.createNow().time})}">
-  
+
 </head>
 
 <body class="create-body-root">
@@ -114,12 +114,12 @@
 
         <label>
           <input type="checkbox" id="aceitouTermosUso" name="aceitouTermosUso" required>
-          <span>Aceito os Termos de Uso e a Política de Privacidade.</span>
+          <span>Aceito os <a href="/institutional/termos-de-uso" target="_blank">Termos de Uso</a>.</span>
         </label>
 
         <label>
           <input type="checkbox" id="aceitouPoliticaPrivacidade" name="aceitouPoliticaPrivacidade" required>
-          <span>Declaro que li e aceito a Política de Privacidade.</span>
+          <span>Declaro que li e aceito a <a href="/institutional/politica-de-privacidade" target="_blank">Política de Privacidade</a>.</span>
         </label>
       </div>
 
