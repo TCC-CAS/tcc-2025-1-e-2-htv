@@ -6,13 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home - Use e Devolva</title>
 
-  <!--
-    <link rel="stylesheet" href="../../static/css/fragments/header.css">
-    <link rel="stylesheet" href="../../static/css/fragments/footer.css">
-    <link rel="stylesheet" href="../../static/css/pages/home.css">
-    <link rel="stylesheet" href="../../static/css/root.css">
-     <script src="../../static/js/main.js" defer></script>-->
-
     <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
     <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
@@ -30,9 +23,20 @@
     <main id="conteudo-principal">
 
         <section class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
-            <button type="button" id="contrastBtn">Alto contraste</button>
-            <button type="button" id="fontBtn">Aumentar fonte</button>
-            <button type="button" id="audioBtn">Ouvir página</button>
+            <button type="button" id="contrastBtn">
+                <span class="accessibility-icon" aria-hidden="true">◐</span>
+
+            </button>
+
+            <button type="button" id="fontBtn">
+                <span class="accessibility-icon" aria-hidden="true">A+</span>
+
+            </button>
+
+            <button type="button" id="audioBtn">
+                <span class="accessibility-icon" aria-hidden="true">▶</span>
+
+            </button>
         </section>
 
         <section class="tools-carousel-section" aria-labelledby="homeHeroTitle">
