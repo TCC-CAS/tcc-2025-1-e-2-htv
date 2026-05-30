@@ -24,9 +24,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserModel> createUser(@RequestBody CreateUserDto dto) {
-        UserModel user = userUsecases.createUser(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    public ResponseEntity<?> createUser(@RequestBody CreateUserDto dto) {
+        try {
+            UserModel user = userUsecases.createUser(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")

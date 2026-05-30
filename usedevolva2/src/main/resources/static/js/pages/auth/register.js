@@ -119,7 +119,7 @@ form.addEventListener("submit", async function (event) {
                 message.textContent = "Não foi possível criar a conta. Verifique os dados informados.";
             }
 
-            throw new Error(errorText || "Erro ao criar conta.");
+            return;
         }
 
         showToast("Conta criada com sucesso!");
@@ -129,10 +129,9 @@ form.addEventListener("submit", async function (event) {
         }, 1500);
 
     } catch (error) {
-        console.error(error);
-
+        console.error("Erro inesperado na requisição:", error);
         if (!message.textContent) {
-            message.textContent = "Não foi possível criar a conta. Verifique os dados informados.";
+            message.textContent = "Erro de conexão. Verifique sua internet ou tente mais tarde.";
         }
     }
 });
@@ -261,3 +260,24 @@ telefoneInput.addEventListener("input", () => {
 
     telefoneInput.value = value;
 });
+
+function showToast(message) {
+    const toast = document.createElement("div");
+    toast.className = "toast-message";
+    toast.textContent = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add("show");
+    }, 50);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        toast.classList.add("hide");
+    }, 3000);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3400);
+}

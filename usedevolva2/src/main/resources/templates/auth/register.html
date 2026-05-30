@@ -30,28 +30,13 @@
 
       <div class="form-group">
         <label for="nome">Nome completo</label>
-        <input
-                type="text"
-                id="nome"
-                name="nome"
-                placeholder="Digite seu nome completo"
-                autocomplete="name"
-                required
-        >
-        <small class="create-sr-only">Digite seu nome sem abreviações.</small>
-      </div>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+        <small id="nomeError" class="field-error" aria-live="polite"></small> </div>
 
       <div class="form-group">
         <label for="cpf">CPF</label>
-        <input
-                type="text"
-                id="cpf"
-                name="cpf"
-                placeholder="000.000.000-00"
-                required
-        >
-        <small class="create-sr-only">Informe apenas os números do seu CPF.</small>
-      </div>
+        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+        <small id="cpfError" class="field-error" aria-live="polite"></small> </div>
 
       <div class="form-group">
         <label for="telefone">Telefone</label>
@@ -71,40 +56,19 @@
 
       <div class="form-group">
         <label for="email">Endereço de e-mail</label>
-        <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="seuemail@email.com"
-                autocomplete="email"
-                required
-        >
-      </div>
+        <input type="text" id="email" name="email" placeholder="seuemail@email.com" required>
+        <small id="emailError" class="field-error" aria-live="polite"></small> </div>
 
       <div class="form-group">
         <label for="senha">Senha</label>
-        <input
-                type="password"
-                id="senha"
-                name="senha"
-                placeholder="Crie uma senha"
-                autocomplete="new-password"
-                required
-        >
-      </div>
+        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
+        <small id="senhaError" class="field-error" aria-live="polite"></small> </div>
 
       <div class="form-group">
         <label for="confirmarSenha">Confirmar senha</label>
-        <input
-                type="password"
-                id="confirmarSenha"
-                name="confirmarSenha"
-                placeholder="Confirme sua senha"
-                autocomplete="new-password"
-                required
-        >
-      </div>
-
+        <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme sua senha" required>
+        <small id="confirmarSenhaError" class="field-error" aria-live="polite"></small> </div>
+      
       <div class="terms">
         <label>
           <input type="checkbox" id="declarouMaiorIdade" name="declarouMaiorIdade" required>
