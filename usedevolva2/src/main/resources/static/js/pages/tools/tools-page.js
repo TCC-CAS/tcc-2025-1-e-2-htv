@@ -210,6 +210,31 @@ async function loadBookedPeriods() {
     }
 }
 
+
+function getImageUrl(image) {
+    return image?.filePath || image?.url || image?.secureUrl || image?.secure_url || "";
+}
+
+function renderImageFallback(container, message = "Imagem indisponível") {
+    if (!container) return;
+    container.innerHTML = `
+        <div class="tool-main-image tool-main-image-fallback">
+            <span>${escapeHtml(message)}</span>
+        </div>
+    `;
+}
+
+function attachToolImageFallback(img) {
+    if (!img) return;
+    img.addEventListener("error", () => {
+        const wrapper = img.closest(".tool-main-image");
+        if (wrapper) {
+            wrapper.classList.add("tool-main-image-fallback");
+            wrapper.innerHTML = "<span>Imagem indisponível</span>";
+        }
+    }, { once: true });
+}
+
 async function loadImages() {
     const container = document.getElementById("imageGallery");
 
@@ -217,49 +242,74 @@ async function loadImages() {
         const response = await fetch(`/tools/${TOOL_ID}/images`);
 
         if (!response.ok) {
-            container.innerHTML = "<p>Sem imagens</p>";
+            renderImageFallback(container, "Sem imagens cadastradas");
             return;
         }
 
         let images = await response.json();
+        images = Array.isArray(images)
+            ? images.filter(image => getImageUrl(image))
+            : [];
 
-        if (!images || images.length === 0) {
-            container.innerHTML = "<p>Sem imagens</p>";
+        if (images.length === 0) {
+            renderImageFallback(container, "Sem imagens cadastradas");
             return;
         }
 
-        images.sort((a, b) => Number(b.principal) - Number(a.principal));
+        images.sort((a, b) => Number(Boolean(b.principal)) - Number(Boolean(a.principal)));
 
         const mainImage = images[0];
+        const mainImageUrl = getImageUrl(mainImage);
         const thumbnails = images.slice(1);
 
         container.innerHTML = `
             <div class="tool-main-image">
-                <img id="selectedToolImage" src="${mainImage.filePath}" alt="Imagem principal da ferramenta">
+                <img id="selectedToolImage" src="${escapeHtml(mainImageUrl)}" alt="Imagem principal da ferramenta" loading="eager">
             </div>
 
             ${
-            thumbnails.length > 0
-                ? `<div class="tool-thumbs" id="toolThumbs"></div>`
-                : ""
-        }
+                thumbnails.length > 0
+                    ? `<div class="tool-thumbs" id="toolThumbs"></div>`
+                    : ""
+            }
         `;
+
+        attachToolImageFallback(document.getElementById("selectedToolImage"));
 
         const thumbs = document.getElementById("toolThumbs");
 
         if (thumbs) {
             thumbnails.forEach(image => {
+                const imageUrl = getImageUrl(image);
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "tool-thumb-btn";
+                button.setAttribute("aria-label", "Selecionar imagem da ferramenta");
 
                 button.innerHTML = `
-                    <img src="${image.filePath}" alt="Miniatura da ferramenta">
+                    <img src="${escapeHtml(imageUrl)}" alt="Miniatura da ferramenta" loading="lazy">
                 `;
 
                 button.addEventListener("click", () => {
-                    document.getElementById("selectedToolImage").src = image.filePath;
+                    const selectedImage = document.getElementById("selectedToolImage");
+                    const selectedWrapper = selectedImage?.closest(".tool-main-image");
+
+                    if (selectedWrapper?.classList.contains("tool-main-image-fallback")) {
+                        selectedWrapper.classList.remove("tool-main-image-fallback");
+                        selectedWrapper.innerHTML = `<img id="selectedToolImage" src="${escapeHtml(imageUrl)}" alt="Imagem principal da ferramenta">`;
+                        attachToolImageFallback(document.getElementById("selectedToolImage"));
+                        return;
+                    }
+
+                    if (selectedImage) {
+                        selectedImage.src = imageUrl;
+                    }
                 });
+
+                const thumbImg = button.querySelector("img");
+                if (thumbImg) {
+                    thumbImg.addEventListener("error", () => button.remove(), { once: true });
+                }
 
                 thumbs.appendChild(button);
             });
@@ -267,7 +317,7 @@ async function loadImages() {
 
     } catch (error) {
         console.error(error);
-        container.innerHTML = "<p>Erro ao carregar imagens</p>";
+        renderImageFallback(container, "Erro ao carregar imagens");
     }
 }
 

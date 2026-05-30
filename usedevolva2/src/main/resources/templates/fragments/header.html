@@ -1,61 +1,67 @@
 <div th:fragment="header">
-    <header>
-        <div class="logo">
-            <a href="/home" class="logo-link">
-                <img src="/assets/logo-use-devolva.png" alt="Use Devolva" class="header-logo">
-            </a>
-        </div>
+    <header class="site-header">
+        <div class="header-shell">
+            <div class="logo">
+                <a href="/home" class="logo-link" aria-label="Ir para a página inicial">
+                    <img src="/assets/logo-use-devolva.png" alt="Use Devolva" class="header-logo">
+                </a>
+            </div>
 
-        <nav aria-label="Menu principal">
-            <ul>
-                <li>
-                    <a href="/home">Home</a>
-                </li>
+            <button type="button" class="header-menu-toggle" id="headerMenuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mainHeaderNav">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </button>
 
-                <li class="dropdown">
-                    <span>Categorias ▾</span>
+            <nav id="mainHeaderNav" class="main-header-nav" aria-label="Menu principal">
+                <ul>
+                    <li><a href="/home">Home</a></li>
 
-                    <ul class="dropdown-menu">
-                        <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
-                        <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
-                        <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
-                        <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
-                        <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
-                    </ul>
-                </li>
+                    <li class="dropdown">
+                        <button type="button" class="dropdown-trigger" aria-haspopup="true">Categorias ▾</button>
+                        <ul class="dropdown-menu">
+                            <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                            <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                            <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                            <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                            <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                        </ul>
+                    </li>
 
-                <li>
-                    <form id="headerSearchForm" role="search" action="/tools/tools-list" method="get">
-                        <input
-                                type="text"
-                                id="headerSearchInput"
-                                name="busca"
-                                placeholder="Buscar ferramentas..."
-                        />
-                        <button type="submit">Buscar</button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
+                    <li class="header-search-item">
+                        <form id="headerSearchForm" class="header-search-form" role="search" action="/tools/tools-list" method="get">
+                            <label class="sr-only" for="headerSearchInput">Buscar ferramentas</label>
+                            <input type="text" id="headerSearchInput" name="busca" placeholder="Buscar ferramentas..." autocomplete="off" />
+                            <button type="submit">Buscar</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
 
-        <div class="header-actions">
-            <section class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
-                <button type="button" id="contrastBtn" title="Alto contraste" aria-label="Ativar alto contraste">
-                    <span class="accessibility-icon" aria-hidden="true">◐</span>
-                </button>
+            <div class="header-actions">
+                <section class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
+                    <button type="button" id="contrastBtn" title="Ativar alto contraste" aria-label="Ativar alto contraste" aria-pressed="false">
+                        <span class="accessibility-icon" aria-hidden="true">◐</span>
+                    </button>
 
-                <button type="button" id="fontBtn" title="Aumentar fonte" aria-label="Aumentar fonte">
-                    <span class="accessibility-icon" aria-hidden="true">A+</span>
-                </button>
+                    <button type="button" id="zoomDecreaseBtn" title="Diminuir zoom" aria-label="Diminuir zoom da página">
+                        <span class="accessibility-icon" aria-hidden="true">A−</span>
+                    </button>
 
-                <button type="button" id="audioBtn" title="Ouvir página" aria-label="Ouvir página">
-                    <span class="accessibility-icon" aria-hidden="true">▶</span>
-                </button>
-            </section>
-        </div>
-        <div class="user-area">
-            <a href="/auth/login" class="btn-login">Entrar</a>
-            <a href="/auth/register" class="btn-register">Criar conta</a>
+                    <button type="button" id="zoomIncreaseBtn" title="Aumentar zoom" aria-label="Aumentar zoom da página">
+                        <span class="accessibility-icon" aria-hidden="true">A+</span>
+                    </button>
+
+                    <button type="button" id="audioBtn" title="Ativar acessibilidade de fala" aria-label="Ativar acessibilidade de fala" aria-pressed="false">
+                        <span class="accessibility-icon" aria-hidden="true">▶</span>
+                    </button>
+                </section>
+
+                <div class="user-area">
+                    <a href="/auth/login" class="btn-login">Entrar</a>
+                    <a href="/auth/register" class="btn-register">Criar conta</a>
+                </div>
+            </div>
         </div>
     </header>
 

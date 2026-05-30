@@ -225,6 +225,19 @@ body {
     overflow: visible;
 }
 
+
+.tool-description,
+.info-section,
+.info-section p,
+#toolDescription,
+#toolCondition,
+#toolObservations,
+#toolAvailability,
+#toolName {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 .tool-description h1 {
     font-size: 2.2rem;
     margin: 0 0 0.5rem 0;
@@ -390,17 +403,34 @@ body {
 
 .tool-main-image {
     width: 100%;
-    height: 380px;
+    height: clamp(260px, 38vw, 430px);
     border-radius: 18px;
     overflow: hidden;
-    background: #f3f4f6;
+    background: #ffffff;
+    border: 1px solid #eef0f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tool-main-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
     display: block;
+}
+
+.tool-main-image.tool-main-image-fallback {
+    background: linear-gradient(135deg, #f6f7fb, #eef2ff);
+    color: var(--tool-primary);
+    font-weight: 700;
+    text-align: center;
+    padding: 2rem;
+}
+
+.tool-main-image.tool-main-image-fallback img {
+    display: none;
 }
 
 .tool-thumbs {
@@ -567,4 +597,24 @@ body {
     margin-bottom: 1rem;
     font-size: 0.85rem;
     color: #64748b;
+}
+
+@media (max-width: 640px) {
+    .tool-main-image {
+        height: clamp(220px, 72vw, 320px);
+        border-radius: 14px;
+    }
+
+    .tool-thumbs {
+        gap: 8px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .tool-thumb-btn {
+        width: 64px;
+        height: 64px;
+        flex: 0 0 64px;
+    }
 }

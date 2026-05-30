@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/rental-tracking.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/rental-tracking.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/rentals/rental-tracking.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/rentals/rental-tracking.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/deploy/deploy.zip" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/deploy/deploy.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/core/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/core/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/home/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/home/home.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,8 +36,8 @@
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
-  &quot;isMigrated&quot;: true
-}</component>
+    &quot;isMigrated&quot;: true
+    }</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -44,16 +46,16 @@
     </option>
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 3,
-  &quot;fromUser&quot;: false
-}</component>
+    &quot;associatedIndex&quot;: 3,
+    &quot;fromUser&quot;: false
+    }</component>
   <component name="ProjectId" id="3D39Kl9Mbb4qhFMAkkod3tVbvTK" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
+    &quot;keyToString&quot;: {
     &quot;Application.Application.executor&quot;: &quot;Run&quot;,
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
@@ -82,8 +84,8 @@
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;project.propCompiler&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-  }
-}</component>
+    }
+    }</component>
   <component name="RunManager">
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <envs>
@@ -149,7 +151,7 @@
       <workItem from="1779839513619" duration="200000" />
       <workItem from="1780084603275" duration="2001000" />
       <workItem from="1780095629194" duration="5419000" />
-      <workItem from="1780169974262" duration="4553000" />
+      <workItem from="1780169974262" duration="1683000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />
