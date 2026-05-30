@@ -818,7 +818,177 @@ a:focus {
          transform: translateY(-15px);
      }
  }
+ /* Reset básico para garantir consistência */
+ * {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ }
 
+ /* Fundo da tela inteira, centralizando o card */
+ .recovery-container {
+     min-height: 100vh;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     background-color: #f4f7f6; /* Um cinza bem claro e confortável */
+     padding: 20px;
+ }
+
+ /* O Card principal */
+ .recovery-card {
+     background: #ffffff;
+     width: 100%;
+     max-width: 420px;
+     padding: 40px 30px;
+     border-radius: 12px;
+     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); /* Sombra suave para dar profundidade */
+ }
+
+ /* Alinhamento do ícone e da barra de acessibilidade */
+ .card-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 24px;
+ }
+
+ .main-icon {
+     font-size: 2rem;
+ }
+
+ /* Botões de acessibilidade discretos mas visíveis */
+ .accessibility-bar {
+     display: flex;
+     gap: 8px;
+ }
+
+ .access-btn {
+     background: #f0f2f5;
+     border: none;
+     border-radius: 50%;
+     width: 36px;
+     height: 36px;
+     cursor: pointer;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     font-weight: bold;
+     color: #555;
+     transition: all 0.2s ease;
+ }
+
+ .access-btn:hover {
+     background: #e2e5e9;
+     color: #000;
+ }
+
+ /* Títulos e Textos */
+ .card-title {
+     font-size: 1.8rem;
+     color: #1a1a1a;
+     margin-bottom: 8px;
+     font-weight: 700;
+ }
+
+ .card-description {
+     font-size: 0.95rem;
+     color: #666666;
+     line-height: 1.5;
+     margin-bottom: 32px;
+ }
+
+ /* Formulário e Inputs */
+ .custom-form {
+     display: flex;
+     flex-direction: column;
+     gap: 20px;
+ }
+
+ .form-group {
+     display: flex;
+     flex-direction: column;
+     gap: 8px;
+ }
+
+ .form-label {
+     font-size: 0.875rem;
+     font-weight: 600;
+     color: #333333;
+ }
+
+ .form-input {
+     width: 100%;
+     padding: 12px 16px;
+     border: 1.5px solid #dcdcdc;
+     border-radius: 8px;
+     font-size: 1rem;
+     color: #333;
+     outline: none;
+     transition: border-color 0.2s ease;
+ }
+
+ /* Efeito de foco azul no input para melhorar a experiência */
+ .form-input:focus {
+     border-color: #0066cc;
+     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+ }
+
+ /* Mensagem de alerta (caso apareça via JS) */
+ .alert-message {
+     font-size: 0.875rem;
+     color: #d93025;
+     min-height: 18px; /* Evita que o layout pule quando a mensagem surgir */
+ }
+
+ /* Botão de Enviar */
+ .btn-primary {
+     background-color: #0066cc; /* Azul padrão de destaque */
+     color: #ffffff;
+     border: none;
+     padding: 14px;
+     border-radius: 8px;
+     font-size: 1rem;
+     font-weight: 600;
+     cursor: pointer;
+     transition: background-color 0.2s ease;
+     margin-top: 8px;
+ }
+
+ .btn-primary:hover {
+     background-color: #0052a3;
+ }
+
+ /* Rodapé do Card (Link de voltar) */
+ .card-navigation {
+     margin-top: 32px;
+     text-align: center;
+ }
+
+ .link-back {
+     font-size: 0.9rem;
+     color: #0066cc;
+     text-decoration: none;
+     font-weight: 500;
+     transition: text-decoration 0.2s ease;
+ }
+
+ .link-back:hover {
+     text-decoration: underline;
+ }
+
+ /* Classe utilitária para esconder texto de leitores de tela sem quebrar o layout */
+ .screen-reader-only {
+     position: absolute;
+     width: 1px;
+     height: 1px;
+     padding: 0;
+     margin: -1px;
+     overflow: hidden;
+     clip: rect(0, 0, 0, 0);
+     border: 0;
+ }
 
 
 
