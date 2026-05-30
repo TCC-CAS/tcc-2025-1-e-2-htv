@@ -60,12 +60,11 @@ nav a:hover {
     padding: 0.5rem 0;
 }
 
-.dropdown:hover {
-    color: var(--cor-primaria);
-}
-
 .dropdown-menu {
-    display: none;
+    /* Em vez de display: none, usamos opacity e visibility */
+    opacity: 0;
+    visibility: hidden;
+
     position: absolute;
     top: 100%;
     left: 0;
@@ -74,10 +73,19 @@ nav a:hover {
     border-radius: 8px;
     padding: 0.5rem 0;
     min-width: 150px;
+    display: flex;
     flex-direction: column;
     gap: 0;
     border: 1px solid var(--cor-fundo-claro);
     z-index: 1001;
+
+    transition: opacity 0.2s ease, visibility 0s linear 0.4s;
+}
+
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
 }
 
 .dropdown:hover .dropdown-menu {
@@ -251,10 +259,13 @@ header form button:hover {
     align-items: center;
     cursor: pointer;
     margin-right: 20px;
+    padding-bottom: 10px;
 }
 
 .dropdown-content {
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+
     position: absolute;
     top: 100%;
     left: 0;
@@ -265,7 +276,8 @@ header form button:hover {
     z-index: 1000;
     border-radius: 8px;
     padding: 10px;
-    margin-top: 8px;
+    margin-top: 0;
+    transition: opacity 0.2s ease, visibility 0s linear 0.4s;
 }
 
 .user-menu:hover .dropdown-content {
@@ -294,4 +306,10 @@ header form button:hover {
     color: red;
     text-decoration: none;
     margin-left: 0; 
+}
+
+.user-menu:hover .dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
 }
