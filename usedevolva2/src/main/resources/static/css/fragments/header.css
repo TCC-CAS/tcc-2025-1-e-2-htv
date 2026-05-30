@@ -137,11 +137,10 @@ header form button:hover {
 
 .accessibility-tools {
     display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 6px;
-    background: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background: #ffffff;]
+    justify-content: flex-start;
+
 }
 
 .accessibility-tools button {
@@ -153,8 +152,8 @@ header form button:hover {
     cursor: pointer;
     transition: all 0.25s ease;
     display: flex;
-    align-items: center;
-    justify-content: center;
+
+
 }
 
 .accessibility-icon {
@@ -162,8 +161,6 @@ header form button:hover {
     height: 24px;
     min-width: 24px;
     display: flex;
-    align-items: center;
-    justify-content: center;
     color: var(--cor-primaria, #33268f);
     font-size: 12px;
     font-weight: 800;
