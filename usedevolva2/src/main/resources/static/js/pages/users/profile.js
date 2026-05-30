@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const savedUser = JSON.parse(localStorage.getItem("user"));
     console.log("Saved user from localStorage:", savedUser);
-
+// --- LÓGICA DE CONTROLE DO MODAL DE PLANOS ---
     const openPlansModalBtn = document.getElementById("openPlansModalBtn");
     const plansModal = document.getElementById("plansModal");
     const closePlansModalBtn = document.getElementById("closePlansModalBtn");
 
     if (openPlansModalBtn && plansModal && closePlansModalBtn) {
+        plansModal.style.display = "none";
+
         openPlansModalBtn.addEventListener("click", () => {
-            plansModal.style.display = "flex"; 
+            plansModal.style.display = "flex";
             document.body.style.overflow = "hidden";
         });
 
