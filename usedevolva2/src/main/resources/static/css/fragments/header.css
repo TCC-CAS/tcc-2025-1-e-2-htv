@@ -185,6 +185,11 @@ header form button:hover {
     outline-offset: 2px;
 }
 
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 5rem;
+        }
 .user-area {
     display: flex;
     align-items: center;
@@ -212,32 +217,11 @@ header form button:hover {
     background-color: var(--cor-primaria-escura);
 }
 
-@media (max-width: 992px) {
+/* Responsivo */
+@media (max-width: 768px) {
     header {
         justify-content: center;
         text-align: center;
-    }
-
-    nav ul {
-        justify-content: center;
-    }
-
-    .header-actions {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-}
-
-@media (max-width: 768px) {
-    header {
-        padding: 0.8rem 5%;
-        gap: 0.8rem;
-    }
-
-    .header-logo {
-        width: 95px;
-        max-height: 35px;
     }
 
     nav ul {
@@ -254,12 +238,12 @@ header form button:hover {
         width: 180px;
     }
 
-    .accessibility-tools {
-        order: 1;
+    .user-area {
+        justify-content: center;
     }
 
-    .user-area {
-        order: 2;
-        justify-content: center;
+    .header-logo {
+        width: 75px;
+        max-height: 35px;
     }
 }
