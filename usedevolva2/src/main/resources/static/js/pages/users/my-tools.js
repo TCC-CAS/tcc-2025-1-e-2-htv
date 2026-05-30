@@ -179,8 +179,8 @@ async function renderTools(tools, ownerId) {
 
                     ${
             mainImage
-                ? `<img src="${mainImage}" alt="${tool.nome}" class="tool-image">`
-                : `<div class="tool-image-placeholder">Sem imagem</div>`
+                ? `<img src="${escapeHtml(mainImage)}" alt="${escapeHtml(tool.nome || 'Imagem da ferramenta')}" class="tool-image" loading="lazy" onerror="this.onerror=null;this.src='/assets/tool-placeholder.svg';">`
+                : `<img src="/assets/tool-placeholder.svg" alt="Sem imagem cadastrada" class="tool-image tool-image-fallback">`
         }
 
                     <span class="tool-badge ${status.className}">
@@ -420,4 +420,13 @@ function getMotivoModeracaoTexto(motivo) {
     };
 
     return motivos[motivo] || "Foram encontradas inconformidades com as diretrizes e termos de uso da nossa comunidade.";
+}
+
+function escapeHtml(value) {
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }

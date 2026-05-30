@@ -110,9 +110,11 @@ function renderRentals(rentals) {
         <div class="rental-image-container">
 
             <img
-                src="${rental.toolImage || '/images/default-tool.png'}"
+                src="${rental.toolImage || '/assets/tool-placeholder.svg'}"
                 class="rental-image"
                 alt="${rental.toolName}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='/assets/tool-placeholder.svg';"
             >
 
             <span class="badge ${getStatusBadgeClass(rental.status)}">

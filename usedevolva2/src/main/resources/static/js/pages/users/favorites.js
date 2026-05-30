@@ -56,7 +56,7 @@ async function loadFavorites(userId) {
 
             card.innerHTML = `
                 <div class="card-image-wrapper">
-                    <img src="${imageUrl}" alt="${escapeHtml(tool.nome)}" class="tool-image" style="width: 100%; height: 200px; object-fit: cover;">
+                    <img src="${imageUrl}" alt="${escapeHtml(tool.nome)}" class="tool-image" loading="lazy">
                     <span class="badge ${badgeClass}">${badgeText}</span>
                 </div>
                 
@@ -122,15 +122,15 @@ async function handleRemoveFavorite(toolId) {
 async function getMainImage(toolId) {
     try {
         const response = await fetch(`/tools/${toolId}/images`);
-        if (!response.ok) return "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
+        if (!response.ok) return "/assets/tool-placeholder.svg";
 
         const images = await response.json();
-        if (!images || images.length === 0) return "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
+        if (!images || images.length === 0) return "/assets/tool-placeholder.svg";
 
         const mainImage = images.find(image => image.principal) || images[0];
-        return mainImage.filePath || "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
+        return mainImage.filePath || "/assets/tool-placeholder.svg";
     } catch (error) {
-        return "https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem";
+        return "/assets/tool-placeholder.svg";
     }
 }
 

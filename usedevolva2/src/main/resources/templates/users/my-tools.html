@@ -4,21 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Minhas Ferramentas - Use e Devolva</title>
-</head>
 
-<link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
-<link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
-<link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
-<link rel="stylesheet" th:href="@{/css/pages/users/my-tools.css(v=${#dates.createNow().time})}">
-
-<!-- <link rel="stylesheet" href="../../static/css/fragments/header.css">
-<link rel="stylesheet" href="../../static/css/fragments/footer.css">
-<link rel="stylesheet" href="../../static/css/root.css">
-<link rel="stylesheet" href="../../static/css/pages/users/my-tools.css"> -->
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/my-tools.css(v=${#dates.createNow().time})}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
 <body>
 
 <div th:replace="fragments/header :: header"></div>
@@ -63,11 +58,7 @@
             </div>
         </section>
 
-        <section class="tools-grid">
-
-            <section class="tools-grid" id="toolsContainer"></section>
-
-        </section>
+        <section class="tools-grid" id="toolsContainer"></section>
 
     </main>
 <div th:replace="fragments/footer :: footer"></div>
