@@ -520,3 +520,17 @@ async function refreshCurrentChatSilently(chatId) {
 
     renderMessages(chat.messages || []);
 }
+
+const chatContentWrapper = document.getElementById('chatContentWrapper');
+
+function abrirChatMobile() {
+    if (window.innerWidth <= 820) {
+        chatContentWrapper.classList.remove('mobile-hidden');
+    }
+}
+
+function voltarParaLista() {
+    if (window.innerWidth <= 820) {
+        chatContentWrapper.classList.add('mobile-hidden');
+    }
+}
