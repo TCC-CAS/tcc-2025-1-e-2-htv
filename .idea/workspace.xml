@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/auth/auth.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/auth/auth.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/fragments/header.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/fragments/header.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/root.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/root.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/fragments/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/fragments/header.html" afterDir="false" />

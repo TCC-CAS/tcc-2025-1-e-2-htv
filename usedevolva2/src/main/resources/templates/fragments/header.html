@@ -38,9 +38,25 @@
             </ul>
         </nav>
 
-        <div class="user-area">
-            <a href="/auth/login" class="btn-login">Entrar</a>
-            <a href="/auth/register" class="btn-register">Criar conta</a>
+        <div class="header-actions">
+            <section class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
+                <button type="button" id="contrastBtn" title="Alto contraste" aria-label="Ativar alto contraste">
+                    <span class="accessibility-icon" aria-hidden="true">◐</span>
+                </button>
+
+                <button type="button" id="fontBtn" title="Aumentar fonte" aria-label="Aumentar fonte">
+                    <span class="accessibility-icon" aria-hidden="true">A+</span>
+                </button>
+
+                <button type="button" id="audioBtn" title="Ouvir página" aria-label="Ouvir página">
+                    <span class="accessibility-icon" aria-hidden="true">▶</span>
+                </button>
+            </section>
+
+            <div class="user-area">
+                <a href="/auth/login" class="btn-login">Entrar</a>
+                <a href="/auth/register" class="btn-register">Criar conta</a>
+            </div>
         </div>
     </header>
 
