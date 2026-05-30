@@ -1,4 +1,4 @@
-package com.devolva.use1;
+package com.devolva.use.users.usecases;
 
 import com.devolva.use.users.domain.UserModel;
 import com.devolva.use.users.domain.UserStatus;
@@ -7,7 +7,6 @@ import com.devolva.use.users.dtos.LoginUserDto;
 import com.devolva.use.users.dtos.UpdateUserDto;
 import com.devolva.use.users.dtos.VerifyUserDto;
 import com.devolva.use.users.repository.UserRepository;
-import com.devolva.use.users.usecases.UserUsecases;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -177,4 +176,180 @@ class UserUsecasesTest {
         assertEquals("Novo Nome", updatedUser.getNomeCompleto());
         assertEquals("11888888888", updatedUser.getTelefone());
     }
+
+    @Test
+    void shouldThrowWhenUserNotFound() {
+        LoginUserDto dto = new LoginUserDto("teste@email.com", "12345678");
+
+        when(userRepository.findByEmail(dto.email()))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userUsecases.login(dto)
+        );
+
+        assertEquals("Usuário não encontrado.", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenUserBlocked() {
+
+        UserModel user = new UserModel();
+        user.setEmail("teste@email.com");
+        user.setSenha("senha");
+        user.setStatus(UserStatus.BLOQUEADO);
+
+        when(userRepository.findByEmail(user.getEmail()))
+                .thenReturn(Optional.of(user));
+
+        when(passwordEncoder.matches(any(), any()))
+                .thenReturn(true);
+
+        IllegalStateException ex = assertThrows(
+                IllegalStateException.class,
+                () -> userUsecases.login(
+                        new LoginUserDto(user.getEmail(), "12345678")
+                )
+        );
+
+        assertTrue(ex.getMessage().contains("bloqueada"));
+    }
+
+    @Test
+    void shouldThrowWhenVerifyIdentityWithoutDocument() {
+
+        UserModel user = new UserModel();
+        user.setStatus(UserStatus.ATIVO);
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+
+        VerifyUserDto dto = new VerifyUserDto("");
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userUsecases.verifyIdentity(1L, dto)
+        );
+
+        assertEquals("Documento é obrigatório.", ex.getMessage());
+    }
+    @Test
+    void shouldThrowWhenEmailAlreadyExistsOnUpdate() {
+
+        UserModel user = new UserModel();
+        user.setStatus(UserStatus.ATIVO);
+        user.setEmail("atual@email.com");
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+
+        when(userRepository.existsByEmail("novo@email.com"))
+                .thenReturn(true);
+
+        UpdateUserDto dto =
+                new UpdateUserDto(
+                        null,
+                        "novo@email.com",
+                        null,
+                        null,
+                        null
+                );
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userUsecases.updateBasicData(1L, dto)
+        );
+
+        assertEquals("E-mail já cadastrado.", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenCurrentPasswordIsInvalid() {
+
+        UserModel user = new UserModel();
+        user.setStatus(UserStatus.ATIVO);
+        user.setSenha("hash");
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+
+        when(passwordEncoder.matches("senhaErrada", "hash"))
+                .thenReturn(false);
+
+        UpdateUserDto dto =
+                new UpdateUserDto(
+                        null,
+                        null,
+                        null,
+                        "senhaErrada",
+                        "novaSenha123"
+                );
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userUsecases.updateBasicData(1L, dto)
+        );
+
+        assertEquals("Senha atual inválida.", ex.getMessage());
+    }
+    @Test
+    void shouldThrowWhenFindByIdNotFound() {
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userUsecases.findById(1L)
+        );
+
+        assertEquals("Usuário não encontrado.", ex.getMessage());
+    }
+    @Test
+    void shouldBlockUserSuccessfully() {
+
+        UserModel user = new UserModel();
+        user.setStatus(UserStatus.ATIVO);
+
+        when(userRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+
+        when(userRepository.save(any()))
+                .thenAnswer(i -> i.getArgument(0));
+
+        UserModel result = userUsecases.blockUser(1L);
+
+        assertEquals(UserStatus.BLOQUEADO, result.getStatus());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void shouldThrowWhenUserIsUnder18() {
+
+        CreateUserDto dto = new CreateUserDto(
+                "Thiago",
+                "teste@email.com",
+                "11999999999",
+                "senha123",
+                "12345678900",
+                LocalDate.now().minusYears(17),
+                true,
+                true
+        );
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> userUsecases.createUser(dto)
+        );
+
+        assertEquals(
+                "Usuário deve ter no mínimo 18 anos.",
+                ex.getMessage()
+        );
+    }
+
+
+
 }
