@@ -992,3 +992,27 @@ a:focus {
 
 
 
+
+/* Estado visual unificado dos botões de acessibilidade */
+.accessibility-tools button.is-active,
+.accessibility-tools button[aria-pressed="true"],
+.access-btn.is-active,
+.access-btn[aria-pressed="true"] {
+    background: var(--cor-primaria, #5248b3) !important;
+    color: #ffffff !important;
+    border-color: var(--cor-primaria, #5248b3) !important;
+}
+
+html.large-font,
+body.large-font {
+    font-size: 112.5%;
+}
+
+/* Zoom de acessibilidade aplicado de forma global */
+html {
+  --accessibility-zoom: 1;
+}
+
+body {
+  zoom: var(--accessibility-zoom);
+}
