@@ -171,92 +171,105 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (user && user.id) {
     userArea.innerHTML = `
-            <a href="/users/profile">Meu perfil</a>
-            <a href="/users/my-rentals">Meus aluguéis</a>
-            <a href="/users/my-tools">Minhas ferramentas</a>
-            <a href="/favorites">❤️</a>
-            <a href="#" id="logoutBtn">Sair</a>
-        `;
+        <div class="user-menu">
+            <a href="/users/profile" class="profile-trigger">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </a>
+            
+            <div class="dropdown-content">
+                <a href="/users/my-rentals">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    Meus aluguéis
+                </a>
+                <a href="/users/my-tools">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    Minhas ferramentas
+                </a>
+                <a href="/favorites">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    Favoritos
+                </a>
+            </div>
+        </div>
 
-    const logoutBtn = document.getElementById("logoutBtn");
+        <a href="#" id="logoutBtn" class="logout-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+    `;
 
-    logoutBtn.addEventListener("click", (event) => {
+    document.getElementById("logoutBtn").addEventListener("click", (event) => {
       event.preventDefault();
       localStorage.removeItem("user");
       window.location.href = "/auth/login";
     });
-  } else {
-    userArea.innerHTML = `
-            <a href="/auth/login" class="btn-login">Entrar</a>
-            <a href="/auth/register" class="btn-register">Criar conta</a>
-        `;
+  }
+
+
+  function showToast(message) {
+    const toast = document.createElement("div");
+    toast.className = "toast-message";
+    toast.textContent = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add("show");
+    }, 50);
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+      toast.classList.add("hide");
+    }, 3000);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 3400);
   }
 });
 
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.className = "toast-message";
-  toast.textContent = message;
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Alternar Alto Contraste
+    const contrastBtn = document.getElementById('contrastBtn');
+    contrastBtn?.addEventListener('click', () => {
+      // Aplica a classe "create-high-contrast" no body
+      document.body.classList.toggle('create-high-contrast');
 
-  document.body.appendChild(toast);
+      const isEnabled = document.body.classList.contains('create-high-contrast');
+      localStorage.setItem('createContrastPref', isEnabled);
+    });
 
-  setTimeout(() => {
-    toast.classList.add("show");
-  }, 50);
+    // 2. Gerenciar Tamanho da Fonte
+    const fontBtn = document.getElementById('fontBtn');
+    let currentScale = 100;
 
-  setTimeout(() => {
-    toast.classList.remove("show");
-    toast.classList.add("hide");
-  }, 3000);
+    fontBtn?.addEventListener('click', () => {
+      currentScale += 10;
+      if (currentScale > 150) currentScale = 100; // Reseta ao chegar no limite
 
-  setTimeout(() => {
-    toast.remove();
-  }, 3400);
-}
+      document.documentElement.style.fontSize = `${currentScale}%`;
+    });
 
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. Alternar Alto Contraste
-  const contrastBtn = document.getElementById('contrastBtn');
-  contrastBtn?.addEventListener('click', () => {
-    // Aplica a classe "create-high-contrast" no body
-    document.body.classList.toggle('create-high-contrast');
-    
-    const isEnabled = document.body.classList.contains('create-high-contrast');
-    localStorage.setItem('createContrastPref', isEnabled);
-  });
+    // 3. Função "Ouvir Tela" (Text-to-Speech)
+    const audioBtn = document.getElementById('audioBtn');
+    audioBtn?.addEventListener('click', () => {
+      // Seleciona o conteúdo principal para ler
+      const content = document.querySelector('.register-page').innerText;
 
-  // 2. Gerenciar Tamanho da Fonte
-  const fontBtn = document.getElementById('fontBtn');
-  let currentScale = 100;
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        return;
+      }
 
-  fontBtn?.addEventListener('click', () => {
-    currentScale += 10;
-    if (currentScale > 150) currentScale = 100; // Reseta ao chegar no limite
-    
-    document.documentElement.style.fontSize = `${currentScale}%`;
-  });
+      const utterance = new SpeechSynthesisUtterance(content);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.0;
 
-  // 3. Função "Ouvir Tela" (Text-to-Speech)
-  const audioBtn = document.getElementById('audioBtn');
-  audioBtn?.addEventListener('click', () => {
-    // Seleciona o conteúdo principal para ler
-    const content = document.querySelector('.register-page').innerText;
-    
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel();
-      return;
+      window.speechSynthesis.speak(utterance);
+    });
+
+    // Persistência: Verifica se o usuário já usava alto contraste antes
+    if (localStorage.getItem('createContrastPref') === 'true') {
+      document.body.classList.add('create-high-contrast');
     }
-
-    const utterance = new SpeechSynthesisUtterance(content);
-    utterance.lang = 'pt-BR';
-    utterance.rate = 1.0;
-    
-    window.speechSynthesis.speak(utterance);
   });
-
-  // Persistência: Verifica se o usuário já usava alto contraste antes
-  if (localStorage.getItem('createContrastPref') === 'true') {
-    document.body.classList.add('create-high-contrast');
-  }
-});
 
