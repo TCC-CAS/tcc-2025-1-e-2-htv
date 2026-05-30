@@ -73,3 +73,21 @@
             max-width: 800px;
             margin-bottom: 10px;
         }
+
+/* Revisão mobile */
+@media (max-width: 700px) {
+  footer,
+  .footer,
+  .footer-content {
+    text-align: center;
+  }
+
+  .footer-content,
+  .footer-grid,
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+}

@@ -257,3 +257,24 @@ main {
 .btn-rental-chat:hover {
     filter: brightness(0.95);
 }
+/* Revisão mobile */
+@media (max-width: 640px) {
+  .tracking-container,
+  .page-container {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .tracking-grid,
+  .detail-grid,
+  .timeline-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tracking-actions,
+  .status-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

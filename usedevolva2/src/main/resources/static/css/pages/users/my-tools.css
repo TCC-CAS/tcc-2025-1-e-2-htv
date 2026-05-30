@@ -289,3 +289,32 @@
             background-color: #EF4444;
             color: #FFFFFF;
         }
+
+/* Revisão mobile */
+.tools-grid,
+.my-tools-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+@media (max-width: 640px) {
+  .page-container,
+  .my-tools-container,
+  .dashboard-container {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .stats-grid,
+  .tools-grid,
+  .my-tools-grid,
+  .tool-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tool-actions,
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

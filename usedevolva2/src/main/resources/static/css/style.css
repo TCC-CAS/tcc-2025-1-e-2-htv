@@ -1410,3 +1410,97 @@ a:focus {
   border-color: #dc2626 !important;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
 }
+
+/* =========================================================
+   REVISÃO AUTENTICAÇÃO - mobile
+   ========================================================= */
+@media (max-width: 768px) {
+  .page {
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    padding: 1rem;
+  }
+
+  .header {
+    padding: 1rem;
+    flex-direction: column;
+  }
+
+  .header__logo img {
+    width: 180px;
+  }
+
+  .search {
+    width: 100%;
+    max-width: none;
+  }
+
+  .hero {
+    min-height: auto;
+    margin: 0;
+    padding: 2rem 1rem;
+    border-radius: 18px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  .register-page,
+  .login-page {
+    min-height: 100dvh;
+    padding: 1rem;
+  }
+
+  .register-card,
+  .login-card {
+    width: min(100%, 480px);
+    padding: 1.25rem;
+    border-radius: 18px;
+  }
+
+  .register-form,
+  .login-form,
+  .form-group,
+  .terms {
+    width: 100%;
+  }
+
+  .accessibility-tools {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 440px) {
+  .register-page,
+  .login-page {
+    padding: 0.75rem;
+  }
+
+  .register-card,
+  .login-card {
+    padding: 1rem;
+  }
+
+  .register-header h1,
+  .login-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .login-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .create-btn-tool,
+  .accessibility-tools button {
+    width: 100%;
+  }
+}

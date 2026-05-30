@@ -406,3 +406,30 @@
         .main-image {
             border: 2px solid #22c55e;
         }
+/* Revisão mobile */
+@media (max-width: 640px) {
+  .container,
+  .form-container,
+  .edit-tool-container {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .form-grid,
+  .image-grid,
+  .row,
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .image-upload-area,
+  .upload-box,
+  textarea,
+  input,
+  select,
+  button {
+    width: 100%;
+    min-width: 0 !important;
+  }
+}

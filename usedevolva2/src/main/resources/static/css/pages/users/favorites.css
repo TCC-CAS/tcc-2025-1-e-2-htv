@@ -246,3 +246,23 @@
                 gap: 1rem;
             }
         }
+/* Revisão mobile */
+.favorites-grid,
+.tools-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+@media (max-width: 640px) {
+  .favorites-container,
+  .page-container {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .favorites-header,
+  .tool-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

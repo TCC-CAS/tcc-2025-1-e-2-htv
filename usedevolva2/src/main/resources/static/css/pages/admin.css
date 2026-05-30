@@ -377,3 +377,28 @@
         background-color: var(--cor-branco);
     }
 }
+/* Revisão mobile */
+@media (max-width: 968px) {
+  .admin-container,
+  .admin-layout,
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-container,
+  .admin-main,
+  .admin-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .admin-header,
+  .admin-actions,
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

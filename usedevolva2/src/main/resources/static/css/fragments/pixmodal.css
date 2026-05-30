@@ -106,3 +106,19 @@
 
     font-size: 1.3rem;
 }
+/* Revisão mobile */
+@media (max-width: 560px) {
+  .pix-modal,
+  .pix-modal-content,
+  .modal-content {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    padding: 1rem;
+  }
+
+  .pix-actions,
+  .modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

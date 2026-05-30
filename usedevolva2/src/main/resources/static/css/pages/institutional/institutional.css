@@ -354,3 +354,18 @@
             .terms-card { padding: 1.5rem; }
             h1 { font-size: 1.8rem; }
         }
+/* Revisão mobile */
+@media (max-width: 640px) {
+  .institutional-container,
+  .content-container,
+  .faq-container {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .institutional-card,
+  .faq-item {
+    border-radius: 16px;
+  }
+}
