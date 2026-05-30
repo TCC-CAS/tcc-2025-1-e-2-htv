@@ -1410,3 +1410,42 @@ a:focus {
   border-color: #dc2626 !important;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
 }
+
+/* Acessibilidade unificada */
+.accessibility-tools button.is-active,
+.accessibility-tools button[aria-pressed="true"] {
+  background: var(--color-primary, var(--cor-primaria, #5248b3));
+  color: #ffffff;
+  border-color: var(--color-primary, var(--cor-primaria, #5248b3));
+}
+
+html.large-font,
+body.large-font {
+  font-size: 112.5%;
+}
+
+body.high-contrast,
+body.create-high-contrast {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .register-card,
+body.high-contrast .login-card,
+body.create-high-contrast .register-card,
+body.create-high-contrast .login-card {
+  background: #000000 !important;
+  border: 1px solid #ffffff !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast input,
+body.high-contrast textarea,
+body.high-contrast select,
+body.create-high-contrast input,
+body.create-high-contrast textarea,
+body.create-high-contrast select {
+  background: #111111 !important;
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+}
