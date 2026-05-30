@@ -8,23 +8,58 @@
 
       <div class="plans-grid">
         <div class="plan-option">
-          <h3>Prata</h3>
-          <strong>R$ 29,90</strong>
-          <ul>
-            <li>Mais visibilidade nas ferramentas</li>
-            <li>Mais recursos para anunciar</li>
-            <li>Ideal para usuários frequentes</li>
+          <div class="plan-header">
+            <h3>Gratuito</h3>
+            <span class="plan-badge current">Plano Inicial</span>
+          </div>
+          <div class="plan-price">
+            <span class="currency">R$</span>
+            <span class="amount">0,00</span>
+            <span class="period">/mês</span>
+          </div>
+          <ul class="plan-features">
+            <li><strong>Até 3</strong> ferramentas ativas</li>
+            <li>Taxa de serviço de <strong>7%</strong> por locação</li>
+            <li>Suporte padrão da plataforma</li>
+            <li>Sem prioridade de busca</li>
+          </ul>
+          <button type="button" class="btn-plan disabled" disabled>Plano Ativo</button>
+        </div>
+
+        <div class="plan-option recommended">
+          <div class="plan-header">
+            <h3>Prata</h3>
+            <span class="plan-badge">Mais Popular</span>
+          </div>
+          <div class="plan-price">
+            <span class="currency">R$</span>
+            <span class="amount">29,90</span>
+            <span class="period">/mês</span>
+          </div>
+          <ul class="plan-features">
+            <li><strong>Até 30</strong> ferramentas ativas</li>
+            <li>Taxa de serviço de <strong>7%</strong> por locação</li>
+            <li>Mais capacidade para seus anúncios</li>
+            <li>Ideal para usuários recorrentes</li>
           </ul>
           <button type="button" onclick="createCheckout('PRATA')">Assinar Prata</button>
         </div>
 
         <div class="plan-option featured">
-          <h3>Ouro</h3>
-          <strong>R$ 79,90</strong>
-          <ul>
-            <li>Todos os benefícios do Prata</li>
-            <li>Destaque maior na plataforma</li>
-            <li>Mais vantagens para locadores</li>
+          <div class="plan-header">
+            <h3>Ouro</h3>
+            <span class="plan-badge gold">Melhor Retorno</span>
+          </div>
+          <div class="plan-price">
+            <span class="currency">R$</span>
+            <span class="amount">79,90</span>
+            <span class="period">/mês</span>
+          </div>
+          <ul class="plan-features">
+            <li><strong>Até 100</strong> ferramentas ativas</li>
+            <li>Taxa reduzida de <strong>5%</strong> por locação</li>
+            <li><strong>Destaque automático</strong> na Home</li>
+            <li><strong>Prioridade máxima</strong> nos resultados de busca</li>
           </ul>
           <button type="button" onclick="createCheckout('OURO')">Assinar Ouro</button>
         </div>
