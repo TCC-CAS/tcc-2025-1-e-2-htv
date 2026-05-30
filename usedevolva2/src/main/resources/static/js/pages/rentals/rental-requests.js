@@ -59,55 +59,79 @@ function renderStats(rentals) {
 
 function renderRequests(rentals) {
     const container = document.getElementById("requestsGrid");
+    if (!container) return;
+
     if (!rentals.length) {
         container.innerHTML = `<div class="empty-message">Nenhuma solicitação encontrada para este filtro.</div>`;
         return;
     }
 
     container.innerHTML = rentals.map(r => {
+        const statusText = translateStatus(r.status);
+        const imageUrl = r.toolImage || "/images/default-tool.png";
         let footerButtons = "";
 
-        // Define os botões baseados no status
         if (r.status === "RETURNED" || r.status === "LATE_RETURNED") {
             footerButtons = `
-                <button class="btn btn-approve" style="width: 100%;" onclick="finalizeRental(${r.rentalId})">
-                    Confirmar e Finalizar Locação
+                <button type="button" class="rental-action-btn approve full" onclick="finalizeRental(${r.rentalId})">
+                    <span class="action-icon">✓</span>
+                    Confirmar e finalizar
                 </button>`;
         } else if (r.status === "PENDING" || r.status === "PAID") {
             footerButtons = `
-                <button class="btn btn-reject" onclick="rejectRental(${r.rentalId})">Recusar</button>
-                <button class="btn btn-approve" onclick="approveRental(${r.rentalId})">Aceitar</button>
+                <button type="button" class="rental-action-btn reject" onclick="rejectRental(${r.rentalId})">
+                    <span class="action-icon">×</span>
+                    Recusar
+                </button>
+                <button type="button" class="rental-action-btn approve" onclick="approveRental(${r.rentalId})">
+                    <span class="action-icon">✓</span>
+                    Aceitar
+                </button>
             `;
         }
 
         const footerHtml = footerButtons
-            ? `<div class="rental-footer" style="margin-top: 15px; padding: 0; display: flex; gap: 10px;">${footerButtons}</div>`
-            : '';
+            ? `<div class="rental-request-actions">${footerButtons}</div>`
+            : `<div class="rental-request-actions muted">Nenhuma ação disponível para este status.</div>`;
+
+        const messageHtml = r.message
+            ? `<p class="request-message"><strong>Mensagem:</strong> ${escapeHtml(r.message)}</p>`
+            : "";
 
         return `
-            <article class="rental-card">
-                <div class="rental-image-container">
-                    <img 
-                        src="${r.toolImage}" 
-                        class="rental-image" 
-                        alt="${r.toolName}"
+            <article class="rental-card rental-request-card">
+                <div class="rental-image-container request-image-container">
+                    <img
+                        src="${escapeHtml(imageUrl)}"
+                        class="rental-image request-image"
+                        alt="${escapeHtml(r.toolName || 'Ferramenta')}"
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='/images/default-tool.png';this.classList.add('image-fallback');"
                     >
-                    <span class="badge ${getStatusBadgeClass(r.status)}">
-                        ${translateStatus(r.status)}
+                    <span class="badge status-badge ${getStatusBadgeClass(r.status)}">
+                        ${escapeHtml(statusText)}
                     </span>
                 </div>
 
-                <div class="rental-content" style="display: flex; flex-direction: column; justify-content: space-between; flex: 1; padding: 15px;">
-                    <div>
-                        <h3 class="rental-title" style="margin: 0 0 5px 0;">${r.toolName}</h3>
-                        <span class="date" style="font-size: 0.8rem; color: #888;">Pedido em ${formatDate(r.startDate)}</span>
-                        
-                        <div class="card-body" style="margin-top: 10px; padding: 0;">
-                             <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Locatário:</strong> ${r.renterName || 'Não informado'}</p>
-                             <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #555;"><strong>Valor total:</strong> ${formatCurrency(r.totalValue)}</p>
+                <div class="rental-content request-content">
+                    <div class="request-main-info">
+                        <h3 class="rental-title request-title">${escapeHtml(r.toolName || 'Ferramenta sem nome')}</h3>
+                        <p class="request-date">Pedido em ${formatDate(r.startDate)}</p>
+
+                        <div class="request-info-grid">
+                            <div class="request-info-item">
+                                <span>Locatário</span>
+                                <strong>${escapeHtml(r.renterName || 'Não informado')}</strong>
+                            </div>
+                            <div class="request-info-item">
+                                <span>Valor total</span>
+                                <strong>${formatCurrency(r.totalValue)}</strong>
+                            </div>
                         </div>
+
+                        ${messageHtml}
                     </div>
-                    
+
                     ${footerHtml}
                 </div>
             </article>
@@ -196,6 +220,15 @@ function getStatusBadgeClass(status) {
         CANCELLED: "badge-rejected"
     };
     return map[status] || "badge-default";
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 function formatDate(date) {

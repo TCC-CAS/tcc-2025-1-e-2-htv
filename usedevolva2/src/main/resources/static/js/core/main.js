@@ -3,14 +3,9 @@
 
   const STORAGE_KEYS = {
     contrast: "useDevolvaAccessibilityContrast",
-    zoom: "useDevolvaAccessibilityZoom",
+    largeFont: "useDevolvaAccessibilityLargeFont",
     audio: "useDevolvaAccessibilityAudio",
   };
-
-  const ZOOM_MIN = 90;
-  const ZOOM_MAX = 120;
-  const ZOOM_STEP = 10;
-  const ZOOM_DEFAULT = 100;
 
   const CAROUSEL_DELAY = 5000;
   let carouselTimer = null;
@@ -24,36 +19,6 @@
     const title = (heading?.textContent || document.title || "Use e Devolva").trim();
     return title.replace(/\s+/g, " ");
   };
-
-  const clampZoom = (value) => {
-    const parsed = Number.parseInt(value, 10);
-    if (Number.isNaN(parsed)) return ZOOM_DEFAULT;
-    return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, parsed));
-  };
-
-  const getCurrentZoom = () => clampZoom(localStorage.getItem(STORAGE_KEYS.zoom) || ZOOM_DEFAULT);
-
-  const setCurrentZoom = (value) => {
-    const zoom = clampZoom(value);
-    localStorage.setItem(STORAGE_KEYS.zoom, String(zoom));
-    applyAccessibilityState();
-  };
-
-  const getFirstFilledValue = (source, keys) => {
-    if (!source || typeof source !== "object") return "";
-    for (const key of keys) {
-      const value = source[key];
-      if (typeof value === "string" && value.trim()) return value.trim();
-    }
-    return "";
-  };
-
-  const escapeHtml = (value) => String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 
   const speak = (text, options = {}) => {
     if (!text || !("speechSynthesis" in window)) return;
@@ -79,15 +44,13 @@
 
   const applyAccessibilityState = () => {
     const contrastEnabled = localStorage.getItem(STORAGE_KEYS.contrast) === "true";
-    const zoom = getCurrentZoom();
+    const largeFontEnabled = localStorage.getItem(STORAGE_KEYS.largeFont) === "true";
     const audioEnabled = localStorage.getItem(STORAGE_KEYS.audio) === "true";
 
     document.body.classList.toggle("high-contrast", contrastEnabled);
     document.body.classList.toggle("create-high-contrast", contrastEnabled);
-    document.body.classList.remove("large-font");
-    document.documentElement.classList.remove("large-font");
-    document.documentElement.style.setProperty("--accessibility-zoom", `${zoom / 100}`);
-    document.documentElement.dataset.accessibilityZoom = String(zoom);
+    document.body.classList.toggle("large-font", largeFontEnabled);
+    document.documentElement.classList.toggle("large-font", largeFontEnabled);
 
     updateButtonState(
       document.getElementById("contrastBtn"),
@@ -96,28 +59,12 @@
       "Ativar alto contraste"
     );
 
-    const decreaseBtn = document.getElementById("zoomDecreaseBtn");
-    const increaseBtn = document.getElementById("zoomIncreaseBtn");
-    const legacyFontBtn = document.getElementById("fontBtn");
-
-    if (decreaseBtn) {
-      decreaseBtn.disabled = zoom <= ZOOM_MIN;
-      decreaseBtn.setAttribute("aria-label", `Diminuir zoom da página. Zoom atual ${zoom}%`);
-      decreaseBtn.setAttribute("title", `Diminuir zoom (${zoom}%)`);
-    }
-
-    if (increaseBtn) {
-      increaseBtn.disabled = zoom >= ZOOM_MAX;
-      increaseBtn.setAttribute("aria-label", `Aumentar zoom da página. Zoom atual ${zoom}%`);
-      increaseBtn.setAttribute("title", `Aumentar zoom (${zoom}%)`);
-    }
-
-    if (legacyFontBtn) {
-      legacyFontBtn.setAttribute("aria-label", `Aumentar zoom da página. Zoom atual ${zoom}%`);
-      legacyFontBtn.setAttribute("title", `Aumentar zoom (${zoom}%)`);
-      legacyFontBtn.classList.toggle("is-active", zoom > ZOOM_DEFAULT);
-      legacyFontBtn.setAttribute("aria-pressed", zoom > ZOOM_DEFAULT ? "true" : "false");
-    }
+    updateButtonState(
+      document.getElementById("fontBtn"),
+      largeFontEnabled,
+      "Voltar fonte ao tamanho normal",
+      "Aumentar fonte"
+    );
 
     updateButtonState(
       document.getElementById("audioBtn"),
@@ -150,9 +97,7 @@
 
   const initAccessibility = () => {
     const contrastBtn = document.getElementById("contrastBtn");
-    const zoomDecreaseBtn = document.getElementById("zoomDecreaseBtn");
-    const zoomIncreaseBtn = document.getElementById("zoomIncreaseBtn");
-    const legacyFontBtn = document.getElementById("fontBtn");
+    const fontBtn = document.getElementById("fontBtn");
     const audioBtn = document.getElementById("audioBtn");
 
     applyAccessibilityState();
@@ -163,17 +108,10 @@
       applyAccessibilityState();
     });
 
-    zoomDecreaseBtn?.addEventListener("click", () => {
-      setCurrentZoom(getCurrentZoom() - ZOOM_STEP);
-    });
-
-    zoomIncreaseBtn?.addEventListener("click", () => {
-      setCurrentZoom(getCurrentZoom() + ZOOM_STEP);
-    });
-
-    legacyFontBtn?.addEventListener("click", () => {
-      const current = getCurrentZoom();
-      setCurrentZoom(current >= ZOOM_MAX ? ZOOM_DEFAULT : current + ZOOM_STEP);
+    fontBtn?.addEventListener("click", () => {
+      const enabled = localStorage.getItem(STORAGE_KEYS.largeFont) !== "true";
+      localStorage.setItem(STORAGE_KEYS.largeFont, String(enabled));
+      applyAccessibilityState();
     });
 
     audioBtn?.addEventListener("click", () => {
@@ -225,31 +163,17 @@
     }
 
     if (user && user.id) {
-      const initials = (user.nome || user.nomeCompleto || user.name || user.email || "U")
+      const initials = (user.nome || user.name || user.email || "U")
         .trim()
         .split(/\s+/)
         .slice(0, 2)
         .map((part) => part.charAt(0).toUpperCase())
         .join("") || "U";
 
-      const profileImageUrl = getFirstFilledValue(user, [
-        "profileImageUrl",
-        "fotoPerfil",
-        "fotoPerfilUrl",
-        "photoUrl",
-        "avatarUrl",
-        "imagemPerfil",
-        "imagemPerfilUrl"
-      ]);
-
-      const avatarHtml = profileImageUrl
-        ? `<span class="profile-avatar has-image" aria-hidden="true"><img src="${escapeHtml(profileImageUrl)}" alt=""></span>`
-        : `<span class="profile-avatar" aria-hidden="true">${escapeHtml(initials)}</span>`;
-
       userArea.innerHTML = `
         <div class="user-menu">
           <button type="button" class="profile-trigger" aria-label="Abrir menu do usuário" aria-expanded="false">
-            ${avatarHtml}
+            <span class="profile-avatar" aria-hidden="true">${initials}</span>
           </button>
           <div class="dropdown-content" role="menu">
             <a href="/users/profile" role="menuitem">Meu perfil</a>

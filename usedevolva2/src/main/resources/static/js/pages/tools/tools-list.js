@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             card.innerHTML = `
                 <div class="tool-image-wrapper" style="position: relative;">
-                    <img src="${imageUrl}" alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" class="tool-image" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x300/EAEAEA/676767?text=Sem+Imagem';">
+                    <img src="${imageUrl}" alt="${escapeHtml(tool.nome || "Imagem da ferramenta")}" class="tool-image">
                     
                     ${tool.ownerPlano === 'OURO' ? `
                         <span class="badge-ouro" style="position: absolute; top: 10px; left: 10px; background: #fbbf24; color: #000; font-weight: bold; font-size: 11px; padding: 4px 8px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; gap: 4px;">
