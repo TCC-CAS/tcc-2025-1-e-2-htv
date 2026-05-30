@@ -421,18 +421,13 @@ function filterToolsByHomeLocation(tools) {
         const toolLocalizacao = normalizeHomeText(tool.localizacao);
 
         if (mode === "estado") {
-            return (
-                !estadoFiltro ||
-                toolEstado === estadoFiltro ||
-                toolLocalizacao.includes(estadoFiltro)
-            );
+            return !estadoFiltro || toolEstado === estadoFiltro;
         }
 
         if (mode === "cidade") {
             const matchEstado =
                 !estadoFiltro ||
-                toolEstado === estadoFiltro ||
-                toolLocalizacao.includes(estadoFiltro);
+                toolEstado === estadoFiltro;
 
             const matchCidade =
                 !cidadeFiltro ||
