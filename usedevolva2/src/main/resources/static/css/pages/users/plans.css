@@ -38,6 +38,11 @@
     }
 }
 
+strong {
+    padding: 4px !important;
+}
+
+
 .plans-close {
     position: absolute;
     top: 1.25rem;
@@ -193,12 +198,6 @@
 
 .plan-features li:last-child {
     border-bottom: none;
-}
-
-.plan-features li strong {
-    color: #0f172a;
-    font-weight: 600;
-    margin-right: 0.25rem;
 }
 
 .plan-features li::before {
