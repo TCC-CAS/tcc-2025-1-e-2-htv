@@ -238,21 +238,18 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem('createContrastPref', isEnabled);
     });
 
-    // 2. Gerenciar Tamanho da Fonte
     const fontBtn = document.getElementById('fontBtn');
     let currentScale = 100;
 
     fontBtn?.addEventListener('click', () => {
       currentScale += 10;
-      if (currentScale > 150) currentScale = 100; // Reseta ao chegar no limite
+      if (currentScale > 150) currentScale = 100;
 
       document.documentElement.style.fontSize = `${currentScale}%`;
     });
 
-    // 3. Função "Ouvir Tela" (Text-to-Speech)
     const audioBtn = document.getElementById('audioBtn');
     audioBtn?.addEventListener('click', () => {
-      // Seleciona o conteúdo principal para ler
       const content = document.querySelector('.register-page').innerText;
 
       if (window.speechSynthesis.speaking) {
@@ -267,7 +264,6 @@ document.addEventListener("DOMContentLoaded", () => {
       window.speechSynthesis.speak(utterance);
     });
 
-    // Persistência: Verifica se o usuário já usava alto contraste antes
     if (localStorage.getItem('createContrastPref') === 'true') {
       document.body.classList.add('create-high-contrast');
     }
