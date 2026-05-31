@@ -48,6 +48,16 @@
 
   const readBoolean = (key) => localStorage.getItem(key) === "true";
 
+  const syncContrastClasses = (enabled) => {
+    document.documentElement.classList.toggle("high-contrast", enabled);
+    document.documentElement.classList.toggle("create-high-contrast", enabled);
+
+    if (document.body) {
+      document.body.classList.toggle("high-contrast", enabled);
+      document.body.classList.toggle("create-high-contrast", enabled);
+    }
+  };
+
   const getZoomValue = () => {
     const stored = Number(localStorage.getItem(STORAGE_KEYS.zoom));
     if (Number.isFinite(stored)) {
@@ -83,27 +93,29 @@
     const audioEnabled = readBoolean(STORAGE_KEYS.audio);
     const zoomValue = getZoomValue();
 
-    document.body.classList.toggle("high-contrast", contrastEnabled);
-    document.body.classList.toggle("create-high-contrast", contrastEnabled);
-    document.documentElement.classList.toggle("high-contrast", contrastEnabled);
+    syncContrastClasses(contrastEnabled);
 
     document.documentElement.dataset.accessibilityZoom = String(zoomValue);
     document.documentElement.style.setProperty("--accessibility-zoom", `${zoomValue}%`);
     document.body.style.zoom = `${zoomValue}%`;
 
-    updateButtonState(
-      document.getElementById("contrastBtn"),
-      contrastEnabled,
-      "Desativar alto contraste",
-      "Ativar alto contraste"
-    );
+    document.querySelectorAll("#contrastBtn, [data-accessibility-contrast]").forEach((button) => {
+      updateButtonState(
+        button,
+        contrastEnabled,
+        "Desativar alto contraste",
+        "Ativar alto contraste"
+      );
+    });
 
-    updateButtonState(
-      document.getElementById("audioBtn"),
-      audioEnabled,
-      "Desativar acessibilidade de fala",
-      "Ativar acessibilidade de fala"
-    );
+    document.querySelectorAll("#audioBtn, [data-accessibility-audio]").forEach((button) => {
+      updateButtonState(
+        button,
+        audioEnabled,
+        "Desativar acessibilidade de fala",
+        "Ativar acessibilidade de fala"
+      );
+    });
 
     const zoomOutBtn = document.getElementById("zoomOutBtn");
     const zoomInBtn = document.getElementById("zoomInBtn");
@@ -151,7 +163,6 @@
   };
 
   const initAccessibility = () => {
-    const contrastBtn = document.getElementById("contrastBtn");
     const zoomOutBtn = document.getElementById("zoomOutBtn");
     const zoomInBtn = document.getElementById("zoomInBtn");
     const oldFontBtn = document.getElementById("fontBtn");
@@ -159,10 +170,12 @@
 
     applyAccessibilityState();
 
-    contrastBtn?.addEventListener("click", () => {
-      const enabled = !readBoolean(STORAGE_KEYS.contrast);
-      localStorage.setItem(STORAGE_KEYS.contrast, String(enabled));
-      applyAccessibilityState();
+    document.querySelectorAll("#contrastBtn, [data-accessibility-contrast]").forEach((contrastBtn) => {
+      contrastBtn.addEventListener("click", () => {
+        const enabled = !readBoolean(STORAGE_KEYS.contrast);
+        localStorage.setItem(STORAGE_KEYS.contrast, String(enabled));
+        applyAccessibilityState();
+      });
     });
 
     zoomOutBtn?.addEventListener("click", () => {
@@ -454,6 +467,8 @@
       });
     });
   };
+
+  syncContrastClasses(readBoolean(STORAGE_KEYS.contrast));
 
   document.addEventListener("DOMContentLoaded", () => {
     initAccessibility();
