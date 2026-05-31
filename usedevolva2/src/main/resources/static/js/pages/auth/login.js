@@ -81,7 +81,10 @@ if (recoveryForm) {
         try {
             const response = await fetch('/auth/request-recovery', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json, text/plain, */*'
+                },
                 body: JSON.stringify({ email })
             });
 
