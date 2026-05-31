@@ -8,6 +8,15 @@
     box-shadow: 0 8px 24px rgba(31, 41, 55, 0.06);
 }
 
+* {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+body {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+
 .header-shell {
     width: min(1280px, calc(100% - 32px));
     min-height: 76px;

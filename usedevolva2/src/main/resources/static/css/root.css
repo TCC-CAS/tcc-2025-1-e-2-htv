@@ -1,3 +1,4 @@
+
  :root {
      --cor-primaria-escura: #302885;
      --cor-primaria: #5248B3;
@@ -95,6 +96,14 @@
      --status-active-text: #1E40AF;
      --status-done-bg: #D1FAE5;
      --status-done-text: #065F46;
+ }
+
+ * {
+     font-family: 'Poppins', sans-serif !important;
+ }
+
+ body {
+     font-family: 'Poppins', sans-serif !important;
  }
 
 
