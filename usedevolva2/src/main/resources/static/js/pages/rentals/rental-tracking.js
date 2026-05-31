@@ -189,7 +189,7 @@ startBtn.onclick = () => handleAction(`/rentals/${idLocacao}/start`, { ownerId: 
 
         const cancelHelpBtn = document.createElement("button");
         cancelHelpBtn.className = "btn-pagamento btn-cancelar-locacao";
-        cancelHelpBtn.textContent = "Preciso de ajuda / Cancelar locação";
+        cancelHelpBtn.textContent = "Cancelar locação";
         cancelHelpBtn.type = "button";
 
         cancelHelpBtn.onclick = async () => {

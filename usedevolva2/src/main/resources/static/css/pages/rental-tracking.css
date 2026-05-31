@@ -250,4 +250,102 @@ body {
         text-align: left;
         max-width: none;
     }
+
+
+
+
+}
+
+.tracking-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.tracking-actions button,
+.tracking-actions .btn-pagamento,
+.tracking-actions .btn-rental-chat,
+.tracking-actions .btn-cancelar-locacao {
+    min-width: 210px;
+    min-height: 48px;
+    padding: 0.85rem 1.25rem;
+    border: none;
+    border-radius: 12px;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Botão de chat */
+.tracking-actions .btn-rental-chat {
+    background-color: #ffffff;
+    color: var(--cor-primaria, #302885);
+    border: 2px solid var(--cor-primaria, #302885);
+}
+
+.tracking-actions .btn-rental-chat:hover {
+    background-color: var(--cor-primaria, #302885);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* Botão principal: confirmar retirada */
+.tracking-actions .btn-pagamento:not(.btn-rental-chat):not(.btn-cancelar-locacao) {
+    background-color: var(--cor-primaria, #302885);
+    color: #ffffff;
+}
+
+.tracking-actions .btn-pagamento:not(.btn-rental-chat):not(.btn-cancelar-locacao):hover {
+    background-color: #221c68;
+    transform: translateY(-2px);
+}
+
+/* Botão de cancelamento */
+.tracking-actions .btn-cancelar-locacao {
+    background-color: #fff4f4;
+    color: #b42318;
+    border: 2px solid #f3b4b0;
+}
+
+.tracking-actions .btn-cancelar-locacao:hover {
+    background-color: #b42318;
+    color: #ffffff;
+    border-color: #b42318;
+    transform: translateY(-2px);
+}
+
+/* Efeito ao clicar */
+.tracking-actions button:active {
+    transform: scale(0.97);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Acessibilidade no foco pelo TAB */
+.tracking-actions button:focus-visible {
+    outline: 3px solid #ffdd57;
+    outline-offset: 4px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .tracking-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tracking-actions button,
+    .tracking-actions .btn-pagamento,
+    .tracking-actions .btn-rental-chat,
+    .tracking-actions .btn-cancelar-locacao {
+        width: 100%;
+        min-width: unset;
+    }
 }
