@@ -233,10 +233,16 @@
     const searchInput = document.getElementById("headerSearchInput");
     const dropdownTrigger = document.querySelector(".dropdown-trigger");
     const categoryDropdown = dropdownTrigger?.closest(".dropdown");
+    const mobileHeaderQuery = window.matchMedia("(max-width: 1160px)");
 
     const closeCategoryDropdown = () => {
       categoryDropdown?.classList.remove("is-open");
       dropdownTrigger?.setAttribute("aria-expanded", "false");
+    };
+
+    const openCategoryDropdown = () => {
+      categoryDropdown?.classList.add("is-open");
+      dropdownTrigger?.setAttribute("aria-expanded", "true");
     };
 
     const closeHeaderMenu = () => {
@@ -245,16 +251,26 @@
       closeCategoryDropdown();
     };
 
+    closeCategoryDropdown();
+
     menuToggle?.addEventListener("click", () => {
       const isOpen = header?.classList.toggle("is-menu-open") || false;
       menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      closeCategoryDropdown();
     });
 
     dropdownTrigger?.addEventListener("click", (event) => {
+      event.preventDefault();
       event.stopPropagation();
-      const isOpen = categoryDropdown?.classList.toggle("is-open") || false;
-      dropdownTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+      if (categoryDropdown?.classList.contains("is-open")) {
+        closeCategoryDropdown();
+      } else {
+        openCategoryDropdown();
+      }
     });
+
+    mobileHeaderQuery.addEventListener?.("change", closeCategoryDropdown);
 
     document.addEventListener("click", (event) => {
       if (!categoryDropdown || categoryDropdown.contains(event.target)) return;
@@ -270,7 +286,7 @@
 
     document.querySelectorAll(".main-header-nav a").forEach((link) => {
       link.addEventListener("click", () => {
-        if (window.matchMedia("(max-width: 1160px)").matches) {
+        if (mobileHeaderQuery.matches) {
           closeHeaderMenu();
         } else {
           closeCategoryDropdown();

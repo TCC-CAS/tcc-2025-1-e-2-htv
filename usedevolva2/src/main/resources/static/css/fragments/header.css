@@ -72,11 +72,11 @@
 }
 
 .main-header-nav,
-.main-header-nav ul {
+.main-header-nav > ul {
     min-width: 0;
 }
 
-.main-header-nav ul {
+.main-header-nav > ul {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -119,6 +119,8 @@
     display: flex;
     flex-direction: column;
     gap: 0 !important;
+    list-style: none;
+    margin: 0;
     padding: 8px;
     background: #ffffff;
     border: 1px solid rgba(82, 72, 179, 0.12);
@@ -126,6 +128,7 @@
     box-shadow: 0 16px 36px rgba(31, 41, 55, 0.14);
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
     transform: translateY(8px);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
     z-index: 1002;
@@ -136,6 +139,7 @@
 .dropdown.is-open .dropdown-menu {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
     transform: translateY(0);
 }
 
@@ -479,7 +483,7 @@ body.create-high-contrast .accessibility-tools button.is-active {
         animation: headerMobileReveal 0.18s ease both;
     }
 
-    .main-header-nav ul {
+    .main-header-nav > ul {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
@@ -503,25 +507,34 @@ body.create-high-contrast .accessibility-tools button.is-active {
 
     .dropdown-menu {
         position: static;
-        display: none;
+        display: none !important;
         width: 100%;
         min-width: 100%;
         opacity: 1;
         visibility: visible;
+        pointer-events: none;
         transform: none;
         box-shadow: none;
-        margin-top: 6px;
-        padding: 6px;
+        margin: 0;
+        padding: 0;
+        border-width: 0;
         border-radius: 12px;
+        overflow: hidden;
     }
 
     .dropdown:hover .dropdown-menu,
-    .dropdown:focus-within .dropdown-menu {
-        display: none;
+    .dropdown:focus-within .dropdown-menu,
+    .dropdown:not(.is-open) > .dropdown-menu {
+        display: none !important;
+        pointer-events: none;
     }
 
-    .dropdown.is-open .dropdown-menu {
-        display: flex;
+    .dropdown.is-open > .dropdown-menu {
+        display: flex !important;
+        pointer-events: auto;
+        margin-top: 6px;
+        padding: 6px;
+        border-width: 1px;
     }
 
     .header-search-item {
