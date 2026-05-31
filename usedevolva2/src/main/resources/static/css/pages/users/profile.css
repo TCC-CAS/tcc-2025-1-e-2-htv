@@ -134,8 +134,21 @@
             color: inherit;
             transition: all 0.2s ease;
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            width: 100%;
+            text-align: left;
+            font: inherit;
+
         }
 
+        button.menu-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        
         .menu-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
