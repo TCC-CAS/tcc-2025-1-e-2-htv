@@ -835,7 +835,6 @@ a:focus {
      display: flex;
      justify-content: center;
      align-items: center;
-     background-color: #f4f7f6; /* Um cinza bem claro e confortável */
      padding: 20px;
  }
 
