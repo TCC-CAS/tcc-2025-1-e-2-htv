@@ -179,13 +179,44 @@ function renderActionButtons(rental, currentUserId) {
     container.appendChild(chatBtn);
 
     if (rental.status === "ACCEPTED" && rental.isRenter) {
-        const btn = document.createElement("button");
-        btn.className = "btn-pagamento";
-        btn.textContent = "Confirmar Retirada da Ferramenta";
+        const startBtn = document.createElement("button");
+        startBtn.className = "btn-pagamento";
+        startBtn.textContent = "Confirmar Retirada da Ferramenta";
+        startBtn.type = "button";
 
-        btn.onclick = () => handleAction(`/rentals/${idLocacao}/start`, { ownerId: rental.ownerId });
-        container.appendChild(btn);
-    }
+startBtn.onclick = () => handleAction(`/rentals/${idLocacao}/start`, { ownerId: rental.ownerId });
+        container.appendChild(startBtn);
+
+        const cancelHelpBtn = document.createElement("button");
+        cancelHelpBtn.className = "btn-pagamento btn-cancelar-locacao";
+        cancelHelpBtn.textContent = "Preciso de ajuda / Cancelar locação";
+        cancelHelpBtn.type = "button";
+
+        cancelHelpBtn.onclick = async () => {
+            const confirmCancel = confirm(
+                "Você só deve cancelar se não conseguiu combinar local ou horário de retirada com o dono da ferramenta. Deseja continuar?"
+            );
+
+            if (!confirmCancel) return;
+
+            const reason = prompt(
+                "Descreva brevemente o motivo do cancelamento:",
+                "Não consegui combinar local ou horário de retirada com o proprietário."
+            );
+
+            if (reason === null) return;
+
+            await handleAction(`/rentals/${idLocacao}/cancel-accepted`, {
+                renterId: currentUserId,
+                reason: reason
+            });
+        };
+
+        container.appendChild(cancelHelpBtn);
+
+}
+
+
     else if (rental.status === "IN_USE" && rental.isRenter) {
         const btn = document.createElement("button");
         btn.className = "btn-pagamento";

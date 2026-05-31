@@ -95,4 +95,13 @@ public class RentalController {
         return rentalUsecases.finalizeRental(rentalId, dto);
     }
 
+    @PutMapping("/{rentalId}/cancel-accepted")
+    public RentalModel cancelAcceptedRentalByRenter(
+            @PathVariable Long rentalId,
+            @RequestBody CancelAcceptedRentalDto dto
+    ) {
+        return rentalUsecases.cancelAcceptedRentalByRenter(rentalId, dto);
+    }
+
+
 }

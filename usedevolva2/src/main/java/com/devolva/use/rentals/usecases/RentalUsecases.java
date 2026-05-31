@@ -522,6 +522,38 @@ public class RentalUsecases {
         };
     }
 
+    public RentalModel cancelAcceptedRentalByRenter(Long rentalId, CancelAcceptedRentalDto dto) {
+        RentalModel rental = findRentalOrThrow(rentalId);
+
+
+        if (!rental.getRenterId().equals(dto.renterId())) {
+            throw new RuntimeException("Somente o locatário pode cancelar esta locação.");
+        }
+
+        if (rental.getStatus() != RentalStatus.ACCEPTED) {
+            throw new RuntimeException("A locação só pode ser cancelada pelo locatário enquanto estiver aceita e antes da retirada.");
+        }
+
+        rental.setStatus(RentalStatus.CANCELLED);
+
+        RentalModel savedRental = rentalRepository.save(rental);
+
+        String reason = dto.reason() != null && !dto.reason().isBlank()
+                ? dto.reason()
+                : "O locatário cancelou a locação porque não conseguiu combinar local ou horário de retirada com o proprietário.";
+
+        chatUsecases.addRentalSystemMessage(
+                savedRental.getId(),
+                chatUsecases.buildStatusMessage("Locação cancelada pelo locatário. Motivo: " + reason),
+                savedRental.getOwnerId()
+        );
+
+        emailNotificationService.notifyBothParties(savedRental, translateStatus(savedRental.getStatus()));
+
+        return savedRental;
+
+
+    }
 
 }
 
