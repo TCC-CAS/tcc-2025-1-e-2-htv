@@ -63,41 +63,52 @@ if (loginForm) {
     });
 }
 
-const recoveryForm = document.querySelector('.auth-form');
+
+const recoveryForm = document.getElementById('recoveryForm');
 
 if (recoveryForm) {
     recoveryForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById('email').value.trim();
-        const messageEl = document.querySelector('.form-message');
+        const emailInput = document.getElementById('email');
+        const messageEl = document.getElementById('recoveryMessage');
+
+        if (!emailInput || !messageEl) {
+            console.error("Elementos do formulário de recuperação não foram localizados no HTML.");
+            return;
+        }
+
+        const email = emailInput.value.trim();
 
         if (!email) {
-            messageEl.style.color = 'red';
+            messageEl.style.color = '#dc3545';
             messageEl.textContent = 'Informe o e-mail cadastrado.';
             return;
         }
 
         try {
+            messageEl.style.color = '#6c757d';
+            messageEl.textContent = 'Processando requisição...';
+
             const response = await fetch('/auth/request-recovery', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json, text/plain, */*'
                 },
-                body: JSON.stringify({ email })
+                body: JSON.stringify({ email: email })
             });
 
             const responseText = await response.text();
 
             if (response.ok) {
-                messageEl.style.color = 'green';
+                messageEl.style.color = '#28a745'; // Verde de sucesso
                 messageEl.textContent = 'Verifique sua caixa de entrada, enviamos o link de recuperação!';
             } else {
                 throw new Error(responseText || 'E-mail não encontrado ou erro no servidor.');
             }
         } catch (err) {
-            messageEl.style.color = 'red';
+            messageEl.style.color = '#dc3545';
             messageEl.textContent = err.message;
         }
     });
