@@ -1490,3 +1490,90 @@ body.create-high-contrast select {
     border: 2px solid #ffffff !important;
     box-shadow: none;
 }
+
+/* Alto contraste extra para paginas que carregam apenas style.css */
+html.high-contrast,
+body.high-contrast,
+body.create-high-contrast {
+  --color-primary: #ffff00;
+  --color-primary-dark: #ffff00;
+  --color-white: #000000;
+  --color-black: #ffffff;
+  color-scheme: dark;
+}
+
+body.high-contrast,
+body.create-high-contrast {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast *,
+body.create-high-contrast * {
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+body.high-contrast :where(.login-page, .register-page, .admin-login-page, .login-card, .register-card, .page, .auth, .auth-card, form, section, main, div),
+body.create-high-contrast :where(.login-page, .register-page, .admin-login-page, .login-card, .register-card, .page, .auth, .auth-card, form, section, main, div) {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+body.high-contrast :where(h1, h2, h3, h4, h5, h6, a),
+body.create-high-contrast :where(h1, h2, h3, h4, h5, h6, a) {
+  color: #ffff00 !important;
+}
+
+body.high-contrast :where(p, label, span, small, strong, li),
+body.create-high-contrast :where(p, label, span, small, strong, li) {
+  color: #ffffff !important;
+}
+
+body.high-contrast :where(input, textarea, select),
+body.create-high-contrast :where(input, textarea, select) {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+body.high-contrast :where(input::placeholder, textarea::placeholder),
+body.create-high-contrast :where(input::placeholder, textarea::placeholder) {
+  color: #d6d6d6 !important;
+  opacity: 1 !important;
+}
+
+body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"]),
+body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"]) {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 2px solid #ffff00 !important;
+}
+
+body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button) *,
+body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button) * {
+  color: #000000 !important;
+}
+
+
+
+/* Hotfix final de alto contraste para paginas que carregam style.css. */
+body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]),
+body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]) {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 2px solid #ffff00 !important;
+}
+
+body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]) *,
+body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]) * {
+  color: #000000 !important;
+}
+
+body.high-contrast :where(input, textarea, select),
+body.create-high-contrast :where(input, textarea, select) {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}

@@ -795,3 +795,242 @@ body.create-high-contrast .accessibility-tools button.is-active {
         transform: translateY(0);
     }
 }
+
+/* Alto contraste especifico do header e dropdowns */
+body.high-contrast .site-header,
+body.create-high-contrast .site-header {
+    background: #000000 !important;
+    border-bottom: 2px solid #ffffff !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast .header-menu-toggle,
+body.create-high-contrast .header-menu-toggle,
+body.high-contrast .profile-trigger,
+body.create-high-contrast .profile-trigger {
+    background: #000000 !important;
+    color: #ffff00 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast .header-menu-toggle span,
+body.create-high-contrast .header-menu-toggle span {
+    background: #ffff00 !important;
+}
+
+body.high-contrast .main-header-nav a,
+body.high-contrast .dropdown-trigger,
+body.create-high-contrast .main-header-nav a,
+body.create-high-contrast .dropdown-trigger {
+    color: #ffff00 !important;
+}
+
+body.high-contrast .dropdown-menu a,
+body.high-contrast .dropdown-content a,
+body.create-high-contrast .dropdown-menu a,
+body.create-high-contrast .dropdown-content a {
+    color: #ffff00 !important;
+    background: #000000 !important;
+}
+
+body.high-contrast .dropdown-menu a:hover,
+body.high-contrast .dropdown-content a:hover,
+body.create-high-contrast .dropdown-menu a:hover,
+body.create-high-contrast .dropdown-content a:hover {
+    background: #ffff00 !important;
+    color: #000000 !important;
+}
+
+body.high-contrast .accessibility-tools,
+body.create-high-contrast .accessibility-tools {
+    background: #000000 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast .accessibility-tools button,
+body.high-contrast .accessibility-btn,
+body.create-high-contrast .accessibility-tools button,
+body.create-high-contrast .accessibility-btn {
+    background: #000000 !important;
+    color: #ffff00 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast .accessibility-tools button.is-active,
+body.high-contrast .accessibility-btn.is-active,
+body.high-contrast .accessibility-tools button[aria-pressed="true"],
+body.create-high-contrast .accessibility-tools button.is-active,
+body.create-high-contrast .accessibility-btn.is-active,
+body.create-high-contrast .accessibility-tools button[aria-pressed="true"] {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border-color: #ffff00 !important;
+}
+
+body.high-contrast .profile-avatar,
+body.create-high-contrast .profile-avatar {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff !important;
+}
+
+
+
+/* Hotfix final: alto contraste do header sem botoes invisiveis. */
+body.high-contrast .site-header,
+body.create-high-contrast .site-header {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #ffffff !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast .logo-link,
+body.create-high-contrast .logo-link {
+    background: #ffffff !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 12px !important;
+    padding: 4px 6px !important;
+}
+
+body.high-contrast .header-logo,
+body.create-high-contrast .header-logo {
+    filter: none !important;
+}
+
+body.high-contrast .main-header-nav a,
+body.high-contrast .dropdown-trigger,
+body.create-high-contrast .main-header-nav a,
+body.create-high-contrast .dropdown-trigger {
+    color: #ffff00 !important;
+    background: transparent !important;
+}
+
+body.high-contrast .dropdown-menu,
+body.high-contrast .dropdown-content,
+body.create-high-contrast .dropdown-menu,
+body.create-high-contrast .dropdown-content {
+    background: #000000 !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast .dropdown-menu a,
+body.high-contrast .dropdown-content a,
+body.create-high-contrast .dropdown-menu a,
+body.create-high-contrast .dropdown-content a {
+    color: #ffff00 !important;
+    background: #000000 !important;
+}
+
+body.high-contrast .dropdown-menu a:hover,
+body.high-contrast .dropdown-content a:hover,
+body.create-high-contrast .dropdown-menu a:hover,
+body.create-high-contrast .dropdown-content a:hover {
+    background: #ffff00 !important;
+    color: #000000 !important;
+}
+
+body.high-contrast .header-search-form input,
+body.create-high-contrast .header-search-form input {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+    caret-color: #ffff00 !important;
+}
+
+body.high-contrast .header-search-form input::placeholder,
+body.create-high-contrast .header-search-form input::placeholder {
+    color: #d6d6d6 !important;
+    opacity: 1 !important;
+}
+
+body.high-contrast .header-search-form button,
+body.high-contrast .btn-register,
+body.high-contrast .logout-btn,
+body.create-high-contrast .header-search-form button,
+body.create-high-contrast .btn-register,
+body.create-high-contrast .logout-btn {
+    background: #ffff00 !important;
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+body.high-contrast .header-search-form button *,
+body.high-contrast .btn-register *,
+body.high-contrast .logout-btn *,
+body.create-high-contrast .header-search-form button *,
+body.create-high-contrast .btn-register *,
+body.create-high-contrast .logout-btn * {
+    color: #000000 !important;
+}
+
+body.high-contrast .btn-login,
+body.create-high-contrast .btn-login {
+    background: #000000 !important;
+    color: #ffff00 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+body.high-contrast .accessibility-tools,
+body.create-high-contrast .accessibility-tools {
+    background: #000000 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast .accessibility-tools button,
+body.high-contrast .accessibility-btn,
+body.create-high-contrast .accessibility-tools button,
+body.create-high-contrast .accessibility-btn {
+    background: #ffff00 !important;
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast .accessibility-tools button.is-active,
+body.high-contrast .accessibility-btn.is-active,
+body.high-contrast .accessibility-tools button[aria-pressed="true"],
+body.create-high-contrast .accessibility-tools button.is-active,
+body.create-high-contrast .accessibility-btn.is-active,
+body.create-high-contrast .accessibility-tools button[aria-pressed="true"] {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #ffff00 !important;
+}
+
+body.high-contrast .accessibility-tools button *,
+body.high-contrast .accessibility-btn *,
+body.create-high-contrast .accessibility-tools button *,
+body.create-high-contrast .accessibility-btn * {
+    color: #000000 !important;
+}
+
+body.high-contrast .header-menu-toggle,
+body.create-high-contrast .header-menu-toggle,
+body.high-contrast .profile-trigger,
+body.create-high-contrast .profile-trigger {
+    background: #000000 !important;
+    color: #ffff00 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast .header-menu-toggle span,
+body.create-high-contrast .header-menu-toggle span {
+    background: #ffff00 !important;
+}
+
+body.high-contrast .profile-trigger::before,
+body.high-contrast .profile-trigger::after,
+body.create-high-contrast .profile-trigger::before,
+body.create-high-contrast .profile-trigger::after {
+    color: #ffff00 !important;
+}
+
+body.high-contrast .profile-avatar,
+body.create-high-contrast .profile-avatar {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff !important;
+}

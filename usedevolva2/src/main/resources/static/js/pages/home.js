@@ -749,6 +749,7 @@ let toolsMapUserLocation = null;
 let toolsMapLocationSource = null;
 let toolsMapManualLocation = null;
 let toolsMapRadiusKm = 10;
+let toolsMapPreviousBodyZoom = null;
 
 const TOOLS_MAP_MIN_RADIUS_KM = 5;
 const TOOLS_MAP_MAX_RADIUS_KM = 30;
@@ -802,6 +803,11 @@ function setupToolsMapModal() {
     }
 
     updateToolsMapRadiusLabel();
+
+    window.addEventListener("resize", requestToolsMapResize);
+    window.addEventListener("orientationchange", () => {
+        setTimeout(requestToolsMapResize, 250);
+    });
 }
 
 function openToolsMapModal() {
@@ -809,14 +815,26 @@ function openToolsMapModal() {
 
     if (!modal) return;
 
+    toolsMapPreviousBodyZoom = document.body.style.zoom || "";
+
+    if (window.matchMedia("(max-width: 820px)").matches) {
+        // O zoom por acessibilidade aplicado no body pode fazer o Leaflet
+        // ultrapassar a largura do celular. Durante o modal, mantemos o
+        // mapa em 100% e restauramos o zoom ao fechar.
+        document.body.style.zoom = "100%";
+    }
+
+    document.documentElement.classList.add("tools-map-lock");
+    document.body.classList.add("tools-map-lock");
     modal.classList.add("active");
     modal.setAttribute("aria-hidden", "false");
 
-    setTimeout(() => {
-        if (toolsMapInstance) {
-            toolsMapInstance.invalidateSize();
-        }
-    }, 150);
+    const dialog = modal.querySelector(".tools-map-dialog");
+    if (dialog) {
+        dialog.scrollTop = 0;
+    }
+
+    requestToolsMapResize();
 }
 
 function closeToolsMapModal() {
@@ -826,6 +844,30 @@ function closeToolsMapModal() {
 
     modal.classList.remove("active");
     modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("tools-map-lock");
+    document.documentElement.classList.remove("tools-map-lock");
+
+    if (toolsMapPreviousBodyZoom !== null) {
+        document.body.style.zoom = toolsMapPreviousBodyZoom;
+        toolsMapPreviousBodyZoom = null;
+    }
+}
+
+function requestToolsMapResize() {
+    if (!toolsMapInstance) {
+        return;
+    }
+
+    const invalidate = () => {
+        const mapElement = document.getElementById("toolsMap");
+        if (!mapElement || !mapElement.offsetParent) return;
+        toolsMapInstance.invalidateSize();
+    };
+
+    requestAnimationFrame(invalidate);
+    [80, 180, 360, 650].forEach(delay => {
+        setTimeout(invalidate, delay);
+    });
 }
 
 function updateToolsMapRadius(delta) {
@@ -880,6 +922,7 @@ async function loadToolsMap(forceReload = false) {
 
     if (toolsMapLoaded && !forceReload) {
         renderToolsMapGroups(getToolsMapGroupsInsideRadius());
+        requestToolsMapResize();
         return;
     }
 
@@ -953,6 +996,7 @@ async function loadToolsMap(forceReload = false) {
         toolsMapLoaded = true;
 
         renderToolsMapGroups(getToolsMapGroupsInsideRadius());
+        requestToolsMapResize();
 
     } catch (error) {
         console.error(error);
@@ -1173,6 +1217,7 @@ function initToolsMap() {
     }).addTo(toolsMapInstance);
 
     toolsMapMarkersLayer = L.layerGroup().addTo(toolsMapInstance);
+    requestToolsMapResize();
 }
 
 function groupToolsByLocation(tools) {
@@ -1629,6 +1674,7 @@ function renderToolsMapGroups(groups) {
             toolsMapInstance.setView([-14.235, -51.9253], 4);
         }
 
+        requestToolsMapResize();
         return;
     }
 
@@ -1652,11 +1698,14 @@ function renderToolsMapGroups(groups) {
     });
 
     if (bounds.length > 0) {
+        const mobilePadding = window.matchMedia("(max-width: 820px)").matches;
         toolsMapInstance.fitBounds(bounds, {
-            padding: [40, 40],
+            padding: mobilePadding ? [58, 34] : [40, 40],
             maxZoom: 14
         });
     }
+
+    requestToolsMapResize();
 
     if (sideTitle) {
         sideTitle.textContent = "Selecione um ponto no mapa";

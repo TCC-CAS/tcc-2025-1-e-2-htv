@@ -1018,3 +1018,222 @@ html.large-font,
 body.large-font {
     font-size: 112.5%;
 }
+
+/* ==========================================================
+   Acessibilidade - alto contraste global
+   Mantem o contraste consistente entre home, usuario, chat,
+   ferramentas, alugueis, paginas institucionais e formularios.
+   ========================================================== */
+html.high-contrast,
+body.high-contrast,
+body.create-high-contrast {
+    --cor-primaria-escura: #ffff00;
+    --cor-primaria: #ffff00;
+    --cor-texto-escuro: #ffffff;
+    --cor-texto-medio: #ffffff;
+    --cor-texto-claro: #e5e5e5;
+    --cor-fundo-claro: #ffffff;
+    --cor-branco: #000000;
+    --color-primary: #ffff00;
+    --color-primary-dark: #ffff00;
+    --color-white: #000000;
+    --color-black: #ffffff;
+    --bg-color: #000000;
+    --card-bg: #000000;
+    --text-main: #ffffff;
+    --text-muted: #e5e5e5;
+    --border-color: #ffffff;
+    --tool-bg: #000000;
+    --tool-card: #000000;
+    --tool-text: #ffffff;
+    --tool-text-light: #e5e5e5;
+    --tool-border: #ffffff;
+    --faq-bg: #000000;
+    --faq-card: #000000;
+    --faq-text: #ffffff;
+    --faq-text-light: #e5e5e5;
+    --faq-border: #ffffff;
+    --privacy-bg: #000000;
+    --privacy-card: #000000;
+    --privacy-text: #ffffff;
+    --privacy-text-light: #e5e5e5;
+    --privacy-border: #ffffff;
+    --terms-bg: #000000;
+    --terms-card: #000000;
+    --terms-text: #ffffff;
+    --terms-text-light: #e5e5e5;
+    --terms-border: #ffffff;
+    color-scheme: dark;
+}
+
+body.high-contrast,
+body.create-high-contrast {
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+
+body.high-contrast *,
+body.create-high-contrast * {
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast :where(main, section, article, aside, nav, header, footer, form, table, thead, tbody, tr, td, th),
+body.create-high-contrast :where(main, section, article, aside, nav, header, footer, form, table, thead, tbody, tr, td, th),
+body.high-contrast :where(.page, .page-wrapper, .container, .content, .card, .card-body, .card-header, .card-section, .auth-card, .login-card, .register-card, .form-card, .tool-card, .tools-card, .rental-card, .request-card, .profile-card, .profile-section, .chats-card, .chats-sidebar, .chat-content, .chat-conversation, .chat-conversation-header, .chat-messages, .chat-input-form, .chat-list-item, .modal, .modal-content, .dialog, .dropdown-menu, .dropdown-content, .faq-section, .faq-item, .support-cta, .policy-container, .policy-section, .contact-box, .terms-container, .terms-section, .terms-card, .tools-map-dialog, .tools-map-side, .tools-map-tool, .tools-map-location),
+body.create-high-contrast :where(.page, .page-wrapper, .container, .content, .card, .card-body, .card-header, .card-section, .auth-card, .login-card, .register-card, .form-card, .tool-card, .tools-card, .rental-card, .request-card, .profile-card, .profile-section, .chats-card, .chats-sidebar, .chat-content, .chat-conversation, .chat-conversation-header, .chat-messages, .chat-input-form, .chat-list-item, .modal, .modal-content, .dialog, .dropdown-menu, .dropdown-content, .faq-section, .faq-item, .support-cta, .policy-container, .policy-section, .contact-box, .terms-container, .terms-section, .terms-card, .tools-map-dialog, .tools-map-side, .tools-map-tool, .tools-map-location) {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+body.high-contrast :where(h1, h2, h3, h4, h5, h6),
+body.create-high-contrast :where(h1, h2, h3, h4, h5, h6) {
+    color: #ffff00 !important;
+}
+
+body.high-contrast :where(p, li, label, small, span, strong, em, blockquote, figcaption, td, th),
+body.create-high-contrast :where(p, li, label, small, span, strong, em, blockquote, figcaption, td, th) {
+    color: #ffffff !important;
+}
+
+body.high-contrast :where(a):not(.btn):not(.button):not(.btn-action):not(.btn-details):not(.btn-login):not(.btn-register):not(.logout-btn),
+body.create-high-contrast :where(a):not(.btn):not(.button):not(.btn-action):not(.btn-details):not(.btn-login):not(.btn-register):not(.logout-btn) {
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 0.18em;
+}
+
+body.high-contrast :where(input, textarea, select),
+body.create-high-contrast :where(input, textarea, select) {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+    caret-color: #ffff00 !important;
+}
+
+body.high-contrast :where(input::placeholder, textarea::placeholder),
+body.create-high-contrast :where(input::placeholder, textarea::placeholder) {
+    color: #d6d6d6 !important;
+    opacity: 1 !important;
+}
+
+body.high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn, input[type="button"], input[type="submit"], input[type="reset"]),
+body.create-high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn, input[type="button"], input[type="submit"], input[type="reset"]) {
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+body.high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn) *,
+body.create-high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn) * {
+    color: #000000 !important;
+}
+
+body.high-contrast :where(button:disabled, .btn:disabled, input[type="submit"]:disabled),
+body.create-high-contrast :where(button:disabled, .btn:disabled, input[type="submit"]:disabled) {
+    background-color: #3a3a3a !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+body.high-contrast :where(button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible),
+body.create-high-contrast :where(button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible) {
+    outline: 3px solid #ffff00 !important;
+    outline-offset: 3px !important;
+}
+
+body.high-contrast :where(.badge, .status, [class*="status"], .toast-message, .field-error, .alert-message),
+body.create-high-contrast :where(.badge, .status, [class*="status"], .toast-message, .field-error, .alert-message) {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast :where(img, video, canvas, iframe),
+body.create-high-contrast :where(img, video, canvas, iframe) {
+    opacity: 1 !important;
+}
+
+body.high-contrast .sr-only,
+body.create-high-contrast .sr-only,
+body.high-contrast .screen-reader-only,
+body.create-high-contrast .screen-reader-only {
+    background: transparent !important;
+    color: inherit !important;
+    border: 0 !important;
+}
+
+/* Cobertura extra para componentes com estilos inline ou classes novas */
+body.high-contrast :where(div:not(.leaflet-pane):not(.leaflet-layer):not(.leaflet-map-pane):not(.leaflet-tile-container):not(.leaflet-marker-pane):not(.leaflet-overlay-pane):not(.leaflet-shadow-pane):not(.leaflet-tooltip-pane):not(.leaflet-popup-pane)),
+body.create-high-contrast :where(div:not(.leaflet-pane):not(.leaflet-layer):not(.leaflet-map-pane):not(.leaflet-tile-container):not(.leaflet-marker-pane):not(.leaflet-overlay-pane):not(.leaflet-shadow-pane):not(.leaflet-tooltip-pane):not(.leaflet-popup-pane)) {
+    background-color: #000000 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+body.high-contrast :where([style]),
+body.create-high-contrast :where([style]) {
+    color: inherit !important;
+    border-color: #ffffff !important;
+}
+
+
+
+/* ==========================================================
+   Hotfix final de alto contraste: evita texto amarelo sobre
+   botao amarelo e botoes pretos desaparecendo em fundo preto.
+   ========================================================== */
+html.high-contrast,
+html.create-high-contrast,
+body.high-contrast,
+body.create-high-contrast {
+    --cor-primaria: #ffff00 !important;
+    --cor-primaria-escura: #ffff00 !important;
+    --color-primary: #ffff00 !important;
+    --color-primary-dark: #ffff00 !important;
+    --cor-branco: #000000 !important;
+    --color-white: #000000 !important;
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+
+body.high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, input[type="button"], input[type="submit"], input[type="reset"]),
+body.create-high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, input[type="button"], input[type="submit"], input[type="reset"]) {
+    background: #ffff00 !important;
+    background-color: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+body.high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, input[type="button"], input[type="submit"], input[type="reset"]) *,
+body.create-high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-submit, .submit-btn, .create-btn-tool, input[type="button"], input[type="submit"], input[type="reset"]) * {
+    color: #000000 !important;
+}
+
+body.high-contrast :where(button:disabled, .btn:disabled, input[type="submit"]:disabled),
+body.create-high-contrast :where(button:disabled, .btn:disabled, input[type="submit"]:disabled) {
+    background: #333333 !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+body.high-contrast :where(a, .link, .back-link):not(.btn):not(.button):not(.btn-action):not(.btn-details):not(.btn-primary):not(.btn-submit):not(.submit-btn):not(.create-btn-tool),
+body.create-high-contrast :where(a, .link, .back-link):not(.btn):not(.button):not(.btn-action):not(.btn-details):not(.btn-primary):not(.btn-submit):not(.submit-btn):not(.create-btn-tool) {
+    color: #ffff00 !important;
+}
+
+body.high-contrast :where(input, textarea, select),
+body.create-high-contrast :where(input, textarea, select) {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast :where(input::placeholder, textarea::placeholder),
+body.create-high-contrast :where(input::placeholder, textarea::placeholder) {
+    color: #d6d6d6 !important;
+    opacity: 1 !important;
+}
