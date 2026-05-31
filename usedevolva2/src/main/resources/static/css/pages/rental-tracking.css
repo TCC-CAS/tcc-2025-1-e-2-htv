@@ -234,6 +234,7 @@ body {
 
     .caminho-linha-progresso {
         width: 4px !important;
+        height: calc((100% - 42px) * 0.4) !important;
         left: 36px;
         top: 21px;
     }

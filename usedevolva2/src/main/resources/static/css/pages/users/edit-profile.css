@@ -256,3 +256,17 @@ body {
     border-color: #dc2626 !important;
     box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
 }
+
+
+/* Alto contraste: corrige apenas botoes secundarios que ficavam claros com texto claro. */
+body.high-contrast .edit-profile-page .btn-secondary,
+body.create-high-contrast .edit-profile-page .btn-secondary,
+body.high-contrast .edit-profile-page label.btn-secondary,
+body.create-high-contrast .edit-profile-page label.btn-secondary,
+body.high-contrast .edit-profile-page a.btn-secondary,
+body.create-high-contrast .edit-profile-page a.btn-secondary {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+    text-decoration: none !important;
+}

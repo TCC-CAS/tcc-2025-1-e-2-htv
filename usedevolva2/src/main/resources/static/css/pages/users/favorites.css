@@ -278,3 +278,15 @@
                 height: 200px;
             }
         }
+
+
+/* Alto contraste: CTA do estado vazio continua legivel sem mexer no estado normal. */
+body.high-contrast .empty-results .btn-primary,
+body.create-high-contrast .empty-results .btn-primary,
+body.high-contrast .favorites-grid a.btn-primary,
+body.create-high-contrast .favorites-grid a.btn-primary {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+    text-decoration: none !important;
+}

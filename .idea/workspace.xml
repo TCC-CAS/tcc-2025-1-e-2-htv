@@ -5,24 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d0a4835-e5be-4f91-acde-addc9d18c006" name="Changes" comment="Fix GitHub Actions YAML">
-<<<<<<< Updated upstream
-      <change beforePath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" beforeDir="false" afterPath="$PROJECT_DIR$/Documentação/TCC 2 - GRUPO 15 - ENTREGA 4 - FINAL.docx" afterDir="false" />
-=======
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/deploy/app.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/deploy/deploy.zip" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/deploy/deploy.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/pasta pra zipar/app.jar" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/pasta pra zipar/app.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/pasta pra zipar/usedevolvav2.zip" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/pasta pra zipar/usedevolvav2.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/emails/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/java/com/devolva/use/emails/EmailService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/fragments/header.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/fragments/header.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/pages/home.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/root.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/root.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/core/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/core/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/home.js" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/static/js/pages/home.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/security/admin-dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/usedevolva2/src/main/resources/templates/security/admin-dashboard.html" afterDir="false" />
->>>>>>> Stashed changes
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,10 +22,10 @@
       <list>
         <option value="CSS File" />
         <option value="Interface" />
+        <option value="Class" />
         <option value="Record" />
         <option value="JavaScript File" />
         <option value="HTML File" />
-        <option value="Class" />
       </list>
     </option>
   </component>
@@ -67,50 +52,8 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-<<<<<<< Updated upstream
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Application.executor": "Run",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Spring Boot.Application.executor": "Run",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/TCC/tcc-2025-1-e-2-htv/Documentação",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "project.propCompiler",
-    "vue.rearranger.settings.migration": "true"
-  }
-}]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\TCC\tcc-2025-1-e-2-htv\Documentação" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\TCC\tcc-2025-1-e-2-htv\Documentação\Diagramas" />
-    </key>
-  </component>
-=======
   <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
+    &quot;keyToString&quot;: {
     &quot;Application.Application.executor&quot;: &quot;Run&quot;,
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
@@ -139,9 +82,8 @@
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;project.propCompiler&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-  }
-}</component>
->>>>>>> Stashed changes
+    }
+    }</component>
   <component name="RunManager">
     <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <envs>
@@ -208,9 +150,6 @@
       <workItem from="1780084603275" duration="2001000" />
       <workItem from="1780095629194" duration="5419000" />
       <workItem from="1780169974262" duration="1683000" />
-      <workItem from="1780188482117" duration="2491000" />
-      <workItem from="1780191527348" duration="1439000" />
-      <workItem from="1780203637662" duration="14486000" />
     </task>
     <task id="LOCAL-00001" summary="Fix GitHub Actions YAML">
       <option name="closed" value="true" />

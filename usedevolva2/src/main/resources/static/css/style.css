@@ -1521,8 +1521,13 @@ body.create-high-contrast :where(.login-page, .register-page, .admin-login-page,
   border-color: #ffffff !important;
 }
 
-body.high-contrast :where(h1, h2, h3, h4, h5, h6, a),
-body.create-high-contrast :where(h1, h2, h3, h4, h5, h6, a) {
+body.high-contrast :where(h1, h2, h3, h4, h5, h6),
+body.create-high-contrast :where(h1, h2, h3, h4, h5, h6) {
+  color: #ffff00 !important;
+}
+
+body.high-contrast :where(a):not(.btn):not(.button):not(.btn-action):not(.btn-details):not(.btn-primary):not(.btn-secondary):not(.btn-danger):not(.btn-plan):not(.plan-button):not(.btn-remove):not(.btn-login):not(.btn-register):not(.logout-btn):not(.submit-btn):not(.btn-submit):not(.create-btn-tool),
+body.create-high-contrast :where(a):not(.btn):not(.button):not(.btn-action):not(.btn-details):not(.btn-primary):not(.btn-secondary):not(.btn-danger):not(.btn-plan):not(.plan-button):not(.btn-remove):not(.btn-login):not(.btn-register):not(.logout-btn):not(.submit-btn):not(.btn-submit):not(.create-btn-tool) {
   color: #ffff00 !important;
 }
 
@@ -1544,36 +1549,15 @@ body.create-high-contrast :where(input::placeholder, textarea::placeholder) {
   opacity: 1 !important;
 }
 
-body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"]),
-body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"]) {
+body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .button, input[type="submit"]),
+body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .button, input[type="submit"]) {
   background: #ffff00 !important;
   color: #000000 !important;
   border: 2px solid #ffff00 !important;
 }
 
-body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button) *,
-body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button) * {
+body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .button) *,
+body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .button) * {
   color: #000000 !important;
 }
 
-
-
-/* Hotfix final de alto contraste para paginas que carregam style.css. */
-body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]),
-body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]) {
-  background: #ffff00 !important;
-  color: #000000 !important;
-  border: 2px solid #ffff00 !important;
-}
-
-body.high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]) *,
-body.create-high-contrast :where(button, .submit-btn, .create-btn-tool, .btn-primary, .button, input[type="submit"], input[type="button"]) * {
-  color: #000000 !important;
-}
-
-body.high-contrast :where(input, textarea, select),
-body.create-high-contrast :where(input, textarea, select) {
-  background: #000000 !important;
-  color: #ffffff !important;
-  border: 2px solid #ffffff !important;
-}
