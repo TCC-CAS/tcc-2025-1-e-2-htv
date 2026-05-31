@@ -325,7 +325,7 @@
             <a href="/users/profile" role="menuitem">Meu perfil</a>
             <a href="/users/my-rentals" role="menuitem">Meus aluguéis</a>
             <a href="/users/my-tools" role="menuitem">Minhas ferramentas</a>
-            <a href="/users/favorites" role="menuitem">Favoritos</a>
+            <a href="/favorites" role="menuitem">Favoritos</a>
           </div>
         </div>
         <a href="#" id="logoutBtn" class="logout-btn" aria-label="Sair da conta">Sair</a>

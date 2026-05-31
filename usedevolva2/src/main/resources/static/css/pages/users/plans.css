@@ -180,35 +180,39 @@
     margin: 0 0 2.25rem 0;
     flex: 1;
 }
-
 .plan-features li {
     padding: 0.75rem 0;
     font-size: 0.95rem;
     color: #475569;
     border-bottom: 1px dashed #e2e8f0;
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
     line-height: 1.4;
+    width: 100%;
 }
-
 .plan-features li:last-child {
     border-bottom: none;
 }
 
 .plan-features li strong {
     color: #0f172a;
-    font-weight: 600;
-    margin-right: 0.25rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin: 0;
+    letter-spacing: -0.2px;
 }
 
 .plan-features li::before {
+    content: "✓";
+    color: #10b981;
     font-weight: 700;
-    margin-right: 0.75rem;
     font-size: 1.1rem;
     flex-shrink: 0;
     display: inline-block;
+    margin-right: 0.4rem;
 }
-
 .plan-features li::before {
     content: "✓";
     color: #10b981;
@@ -312,4 +316,28 @@
     .plan-price .amount {
         font-size: 2.4rem;
     }
+}
+
+.plans-modal-overlay {
+    display: none;
+
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+.plans-modal-overlay.active {
+    display: flex;
 }

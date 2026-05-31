@@ -72,7 +72,38 @@ document.addEventListener("DOMContentLoaded", async () => {
                 planButton.textContent = "Atualizar Plano";
             }
         }
+// ==========================================================================
+        // CONTROLE DO MODAL DE PLANOS (ABRIR E FECHAR)
+        // ==========================================================================
+        const plansModal = document.getElementById("plansModal");
+        const openPlansModalBtn = document.getElementById("openPlansModalBtn");
+        const closePlansModalBtn = document.getElementById("closePlansModalBtn");
 
+        // Função para abrir o modal de planos
+        if (openPlansModalBtn && plansModal) {
+            openPlansModalBtn.addEventListener("click", () => {
+                plansModal.classList.add("active");
+            });
+        }
+
+        // Função para fechar o modal ao clicar no botão "×"
+        if (closePlansModalBtn && plansModal) {
+            closePlansModalBtn.addEventListener("click", () => {
+                plansModal.classList.remove("active");
+            });
+        }
+
+        // Função para fechar o modal ao clicar na área escura de fora
+        if (plansModal) {
+            plansModal.addEventListener("click", (event) => {
+                if (event.target.id === "plansModal") {
+                    plansModal.classList.remove("active");
+                }
+            });
+        }
+        // ==========================================================================
+
+        renderProfileAvatar(user); // <--- Essa linha já existe no seu código, serve como ponto de referência.
         renderProfileAvatar(user);
         setupProfilePhotoUpload(user);
 
