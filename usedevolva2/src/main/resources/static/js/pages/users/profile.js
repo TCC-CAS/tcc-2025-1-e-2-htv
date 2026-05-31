@@ -135,7 +135,7 @@ function setupProfilePhotoUpload(user) {
             return;
         }
 
-        if (file.size > 5 * 1024 * 1024) {
+        if (file.size > 30 * 1024 * 1024) {
             showProfileToast("A imagem deve ter no máximo 5 MB.", "error");
             input.value = "";
             return;
