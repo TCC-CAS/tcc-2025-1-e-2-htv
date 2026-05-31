@@ -1116,10 +1116,10 @@ body.create-high-contrast :where(button, .btn, .button, .btn-action, .btn-detail
     border: 2px solid #ffff00 !important;
 }
 
-body.high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn) *,
-body.create-high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn) * {
-    color: #000000 !important;
-}
+/*body.high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn) *,*/
+/*body.create-high-contrast :where(button, .btn, .button, .btn-action, .btn-details, .btn-primary, .btn-secondary, .btn-danger, .btn-plan, .plan-button, .btn-remove, .btn-submit, .submit-btn, .create-btn-tool, .btn-login, .btn-register, .logout-btn) * {*/
+/*    color: #000000 !important;*/
+/*}*/
 
 body.high-contrast :where(button:disabled, .btn:disabled, input[type="submit"]:disabled),
 body.create-high-contrast :where(button:disabled, .btn:disabled, input[type="submit"]:disabled) {

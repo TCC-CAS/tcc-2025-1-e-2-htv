@@ -860,7 +860,7 @@ body.create-high-contrast .accessibility-tools button[aria-pressed="true"] {
 
 body.high-contrast .profile-avatar,
 body.create-high-contrast .profile-avatar {
-    background: #ffff00 !important;
+    background: #000000 !important;
     color: #000000 !important;
     border: 2px solid #ffffff !important;
 }
@@ -871,4 +871,58 @@ body.create-high-contrast .profile-avatar {
 body.high-contrast .header-logo,
 body.create-high-contrast .header-logo {
     filter: brightness(1.55) contrast(1.18) saturate(1.35) drop-shadow(0 0 1px #ffffff) !important;
+}
+
+/* Correção pontual do header em alto contraste: evita botão de Categorias virar um bloco amarelo sem texto. */
+body.high-contrast .site-header .dropdown-trigger,
+body.create-high-contrast .site-header .dropdown-trigger {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #ffff00 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast .site-header .dropdown-trigger:hover,
+body.high-contrast .site-header .dropdown-trigger:focus,
+body.create-high-contrast .site-header .dropdown-trigger:hover,
+body.create-high-contrast .site-header .dropdown-trigger:focus {
+    background: #000000 !important;
+    color: #ffff00 !important;
+    text-decoration: underline !important;
+}
+
+body.high-contrast .site-header .header-search-form input,
+body.create-high-contrast .site-header .header-search-form input {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+    border-right: 0 !important;
+}
+
+body.high-contrast .site-header .header-search-form button,
+body.create-high-contrast .site-header .header-search-form button {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+    font-weight: 900 !important;
+}
+
+body.high-contrast .site-header .header-search-form button:hover,
+body.create-high-contrast .site-header .header-search-form button:hover {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #ffffff !important;
+}
+
+body.high-contrast .site-header .accessibility-icon,
+body.create-high-contrast .site-header .accessibility-icon,
+body.high-contrast .site-header .profile-avatar,
+body.create-high-contrast .site-header .profile-avatar {
+    color: inherit !important;
+}
+
+body.high-contrast .site-header .header-logo,
+body.create-high-contrast .site-header .header-logo {
+    filter: brightness(2) contrast(1.28) saturate(1.45) drop-shadow(0 0 2px #ffffff) !important;
 }
