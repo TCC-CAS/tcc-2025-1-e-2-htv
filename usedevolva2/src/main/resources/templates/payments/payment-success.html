@@ -92,6 +92,32 @@
             background: #e5e7eb;
             color: #111827;
         }
+
+        .verify-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 170px;
+            transition: all 0.2s ease;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .secondary-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 170px;
+            transition: all 0.2s ease;
+        }
+
+        .secondary-btn:hover {
+            transform: translateY(-2px);
+        }
+
     </style>
 </head>
 <body>
@@ -107,20 +133,22 @@
         <p>
             Recebemos a confirmação do pagamento. Aguarde alguns segundos enquanto atualizamos seu plano no sistema.
         </p>
-
-        <button type="button" class="primary-btn" onclick="syncPaymentNow()">
-            Verificar agora
-        </button>
-        
         <div class="payment-status" id="paymentStatusMessage">
             Verificando pagamento em 30 segundos...
         </div>
-
         <div class="payment-success-actions">
+
+            <button
+                    type="button"
+                    class="primary-btn verify-btn"
+                    onclick="syncPaymentNow()">
+                Verificar agora
+            </button>
 
             <a href="/users/profile" class="secondary-btn">
                 Voltar ao perfil
             </a>
+
         </div>
     </section>
 </main>
