@@ -108,7 +108,74 @@ Assim que o pedido é aceito pelo locador, o andamento do contrato passa a ser a
 > O ecossistema possui um *backoffice* exclusivo para administradores centralizado na rota `/admin`. Através deste painel, a equipe de suporte consegue gerenciar a plataforma, auditar transações e aplicar moderações diretamente sobre **denúncias (reports)** de usuários, comportamentos inadequados ou disputas financeiras, fechando o ciclo de segurança e confiabilidade do aplicativo.
 > 
 <img width="1822" height="500" alt="image" src="https://github.com/user-attachments/assets/f6a6c74b-3884-4a8c-956d-d9c5508e3730" />
+---
+## Pré-requisitos e Instalação (Deployment)
 
+Esta seção apresenta o passo a passo para baixar, configurar e executar o projeto Use & Devolva em ambiente local.
+
+### Pré-requisitos
+
+Antes de iniciar, é necessário ter instalado na máquina:
+
+- Java JDK 21 ou superior
+- Maven
+- Git
+- PostgreSQL
+- Uma IDE de desenvolvimento, como IntelliJ IDEA, Eclipse ou VS Code
+
+### 1. Clonar o repositório
+
+Abra o terminal na pasta onde deseja salvar o projeto e execute:
+
+```bash
+git clone https://github.com/TCC-CAS/tcc-2025-1-e-2-htv.git
+```
+### 2. Configurar as variáveis de ambiente
+
+Após clonar o projeto, é necessário configurar as variáveis de ambiente no arquivo:
+```bash
+src/main/resources/application.properties
+```
+Nesse arquivo, devem ser adicionadas as informações necessárias para o funcionamento da aplicação, como dados de conexão com o banco de dados, credenciais de serviços externos e demais configurações utilizadas pelo sistema.
+```
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+cloudinary.cloud_name=${CLOUDINARY_CLOUD_NAME}
+cloudinary.api_key=${CLOUDINARY_API_KEY}
+cloudinary.api_secret=${CLOUDINARY_API_SECRET}
+app.crypto.secret-key=${APP_CRYPTO_SECRET_KEY}
+spring.devtools.livereload.enabled=true
+spring.web.resources.static-locations=classpath:/static/
+spring.thymeleaf.cache=false
+spring.web.resources.cache.period=0
+spring.web.resources.chain.cache=false
+abacate.api.url=https://api.abacatepay.com/v1
+spring.servlet.multipart.max-file-size=30MB
+spring.servlet.multipart.max-request-size=30MB
+server.port=5000
+spring.mail.host=${MAIL_HOST}
+spring.mail.port=${MAIL_PORT}
+spring.mail.username=${MAIL_USERNAME}
+spring.mail.password=${MAIL_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+### Executar o projeto
+
+Com as configurações preenchidas, execute o projeto pela IDE ou pelo terminal com o Maven
+
+### Acessar a aplicação
+
+Após iniciar o projeto, a aplicação estará disponível no navegador pelo endereço:
+```
+http://localhost:5000
+```
 ---
 
 ## 🤝 Contribuindo
