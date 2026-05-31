@@ -307,3 +307,34 @@
     font-family: inherit;
     cursor: pointer;
 }
+
+
+/* Alto contraste: mantem os cards de menu como cards, sem transformar botões-card em CTAs amarelos. */
+body.high-contrast .menu-card,
+body.create-high-contrast .menu-card,
+body.high-contrast button.menu-card,
+body.create-high-contrast button.menu-card {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff !important;
+    text-decoration: none !important;
+}
+
+body.high-contrast .menu-card .menu-icon,
+body.create-high-contrast .menu-card .menu-icon,
+body.high-contrast .menu-card .menu-content,
+body.create-high-contrast .menu-card .menu-content {
+    background: transparent !important;
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+body.high-contrast .menu-card h3,
+body.create-high-contrast .menu-card h3 {
+    color: #ffff00 !important;
+}
+
+body.high-contrast .menu-card p,
+body.create-high-contrast .menu-card p {
+    color: #ffffff !important;
+}

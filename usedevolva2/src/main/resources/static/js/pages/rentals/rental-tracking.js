@@ -87,28 +87,21 @@ function renderRental(rental) {
 }
 
 function updateProgress(status) {
-    const steps = document.querySelectorAll(".etapa");
-    const progress = document.getElementById("linhaProgresso");
 
-    const currentIndex = getCurrentStepIndex(status);
+    const steps = document.querySelectorAll(".etapa");
+
+    const completed = getCompletedSteps(status);
 
     steps.forEach((step, index) => {
-        step.classList.remove("completada", "atual");
-
-        if (index < currentIndex) {
-            step.classList.add("completada");
-        } else if (index === currentIndex) {
-            step.classList.add("atual");
-        }
+        step.classList.toggle("ativa", index < completed);
     });
 
-    const totalIntervals = steps.length - 1;
-    const progressRatio = currentIndex / totalIntervals;
+    const progress = document.getElementById("linhaProgresso");
 
-    if (progress) {
-        progress.style.width = `calc(100% * 10 / 12 * ${progressRatio})`;
-        progress.style.height = "";
-    }
+    const percentage =
+        (completed / steps.length) * 100;
+
+    progress.style.width = `${percentage}%`;
 }
 
 function translateStatus(status) {
@@ -162,24 +155,12 @@ const FLOW = [
     "FINALIZED"
 ];
 
-function getCurrentStepIndex(status) {
-    const statusMap = {
-        PENDING: 0,
-        AWAITING_PAYMENT: 0,
+function getCompletedSteps(status) {
+    if (status === "LATE_RETURNED") status = "RETURNED";
+    if (status === "AWAITING_PAYMENT") status = "PENDING";
 
-        PAID: 1,
-
-        ACCEPTED: 2,
-
-        IN_USE: 3,
-
-        RETURNED: 4,
-        LATE_RETURNED: 4,
-
-        FINALIZED: 5
-    };
-
-    return statusMap[status] ?? 0;
+    const index = FLOW.indexOf(status);
+    return index === -1 ? 0 : index + 1;
 }
 
 function renderActionButtons(rental, currentUserId) {

@@ -341,3 +341,15 @@
 .plans-modal-overlay.active {
     display: flex;
 }
+
+/* Alto contraste: badges pequenos dos planos com texto escuro sobre amarelo. */
+body.high-contrast .plans-modal .plan-badge,
+body.create-high-contrast .plans-modal .plan-badge,
+body.high-contrast .plans-modal .plan-option.recommended .plan-badge,
+body.create-high-contrast .plans-modal .plan-option.recommended .plan-badge,
+body.high-contrast .plans-modal .plan-option.featured .plan-badge.gold,
+body.create-high-contrast .plans-modal .plan-option.featured .plan-badge.gold {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+}
