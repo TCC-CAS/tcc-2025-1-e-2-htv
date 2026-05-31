@@ -25,9 +25,14 @@ jobs:
 
       - name: Preparar deploy
         run: |
+          rm -rf deploy
           mkdir deploy
+
           cp usedevolva2/target/app.jar deploy/app.jar
           cp usedevolva2/Procfile deploy/Procfile
+
+          cp -r usedevolva2/.platform deploy/.platform
+
           cd deploy
           zip -r deploy.zip .
 
