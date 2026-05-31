@@ -7,6 +7,18 @@ let lastRenderedMessageSignature = "";
 let currentChatDetails = null;
 let isReportModeActive = false;
 
+function getChatsCard() {
+    return document.querySelector(".chats-card");
+}
+
+function setMobileChatOpen(isOpen) {
+    const chatsCard = getChatsCard();
+    if (!chatsCard) return;
+    chatsCard.classList.toggle("chat-open", Boolean(isOpen));
+    chatsCard.classList.toggle("chat-is-open", Boolean(isOpen));
+}
+
+
 document.addEventListener("DOMContentLoaded", async () => {
     currentUser = JSON.parse(localStorage.getItem("user"));
 
@@ -27,6 +39,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const form = document.getElementById("chatMessageForm");
     const input = document.getElementById("chatMessageInput");
+
+    const backToChatsBtn = document.getElementById("backToChatsBtn");
+    if (backToChatsBtn) {
+        backToChatsBtn.addEventListener("click", () => {
+            setMobileChatOpen(false);
+            document.querySelector(".chat-list-item.active")?.focus();
+        });
+    }
 
     if (form) {
         form.addEventListener("submit", async (event) => {
@@ -55,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!isReportModeActive) {
                 isReportModeActive = true;
                 btnReportChat.innerText = "✨ Confirmar Seleção";
-                btnReportChat.className = "btn btn-primary";
+                btnReportChat.className = "btn btn-primary chat-report-btn";
 
                 // Força re-renderização das mensagens aplicando os Checkboxes na tela
                 lastRenderedMessageSignature = "";
@@ -77,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (btnReportChat) {
             btnReportChat.innerText = "⚠️ Denunciar";
-            btnReportChat.className = "btn btn-danger";
+            btnReportChat.className = "btn btn-danger chat-report-btn";
         }
 
         if (currentChatDetails) {
@@ -199,12 +219,12 @@ async function loadChats(showLoading = true) {
 
                     <div class="chat-list-body">
                         <div class="chat-list-title-row">
-                            <span class="chat-list-title">${chat.otherUserName || "Usuário"}</span>
+                            <span class="chat-list-title">${escapeHtml(chat.otherUserName || "Usuário")}</span>
                             <span class="chat-list-time">${formatChatDate(chat.updatedAt)}</span>
                         </div>
 
-                        <div class="chat-list-tool">${chat.toolName || "Ferramenta"}</div>
-                        <div class="chat-list-last">${chat.lastMessage || ""}</div>
+                        <div class="chat-list-tool">${escapeHtml(chat.toolName || "Ferramenta")}</div>
+                        <div class="chat-list-last">${escapeHtml(chat.lastMessage || "")}</div>
                         ${unreadBadge}
                     </div>
                 </button>
@@ -227,7 +247,7 @@ async function loadChats(showLoading = true) {
 async function openChat(chatId) {
     try {
         currentChatId = chatId;
-
+        setMobileChatOpen(true);
         document.querySelectorAll(".chat-list-item").forEach(item => {
             item.classList.toggle("active", Number(item.dataset.chatId) === Number(chatId));
         });

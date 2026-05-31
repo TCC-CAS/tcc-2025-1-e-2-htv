@@ -2,6 +2,7 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus chats - Use e Devolva</title>
 
     <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
@@ -34,12 +35,19 @@
             </div>
 
             <div id="chatConversation" class="chat-conversation hidden">
-                <header class="chat-conversation-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <div>
-                        <h2 id="chatTitle">Chat</h2>
-                        <p id="chatSubtitle"></p>
+                <header class="chat-conversation-header">
+                    <div class="chat-conversation-title-row">
+                        <button type="button" id="backToChatsBtn" class="chat-back-btn" aria-label="Voltar para lista de conversas">
+                            ‹
+                        </button>
+
+                        <div class="chat-conversation-copy">
+                            <h2 id="chatTitle">Chat</h2>
+                            <p id="chatSubtitle"></p>
+                        </div>
                     </div>
-                    <button type="button" id="btnReportChat" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem; display: none;">
+
+                    <button type="button" id="btnReportChat" class="btn btn-danger chat-report-btn">
                         ⚠️ Denunciar
                     </button>
                 </header>

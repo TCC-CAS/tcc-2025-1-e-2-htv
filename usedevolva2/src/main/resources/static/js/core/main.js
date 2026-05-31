@@ -232,16 +232,50 @@
     const searchForm = document.getElementById("headerSearchForm");
     const searchInput = document.getElementById("headerSearchInput");
     const dropdownTrigger = document.querySelector(".dropdown-trigger");
+    const categoryDropdown = dropdownTrigger?.closest(".dropdown");
+
+    const closeCategoryDropdown = () => {
+      categoryDropdown?.classList.remove("is-open");
+      dropdownTrigger?.setAttribute("aria-expanded", "false");
+    };
+
+    const closeHeaderMenu = () => {
+      header?.classList.remove("is-menu-open");
+      menuToggle?.setAttribute("aria-expanded", "false");
+      closeCategoryDropdown();
+    };
 
     menuToggle?.addEventListener("click", () => {
       const isOpen = header?.classList.toggle("is-menu-open") || false;
       menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
 
-    dropdownTrigger?.addEventListener("click", () => {
-      const dropdown = dropdownTrigger.closest(".dropdown");
-      const isOpen = dropdown?.classList.toggle("is-open") || false;
+    dropdownTrigger?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const isOpen = categoryDropdown?.classList.toggle("is-open") || false;
       dropdownTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!categoryDropdown || categoryDropdown.contains(event.target)) return;
+      closeCategoryDropdown();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeCategoryDropdown();
+        closeHeaderMenu();
+      }
+    });
+
+    document.querySelectorAll(".main-header-nav a").forEach((link) => {
+      link.addEventListener("click", () => {
+        if (window.matchMedia("(max-width: 1160px)").matches) {
+          closeHeaderMenu();
+        } else {
+          closeCategoryDropdown();
+        }
+      });
     });
 
     searchForm?.addEventListener("submit", (event) => {
@@ -262,14 +296,16 @@
       localStorage.removeItem("user");
     }
 
+    userArea.classList.toggle("is-authenticated", Boolean(user && user.id));
+
     if (user && user.id) {
       const displayName = user.nomeCompleto || user.nome || user.name || "Usuário";
       userArea.innerHTML = `
         <div class="user-menu">
-          <button type="button" class="profile-trigger" aria-label="Abrir menu de ${escapeHtml(displayName)}" aria-expanded="false">
+          <button type="button" class="profile-trigger" aria-label="Abrir menu de ${escapeHtml(displayName)}" aria-expanded="false" aria-controls="userDropdownMenu">
             ${renderProfileAvatar(user)}
           </button>
-          <div class="dropdown-content" role="menu">
+          <div id="userDropdownMenu" class="dropdown-content" role="menu">
             <a href="/users/profile" role="menuitem">Meu perfil</a>
             <a href="/users/my-rentals" role="menuitem">Meus aluguéis</a>
             <a href="/users/my-tools" role="menuitem">Minhas ferramentas</a>
@@ -282,15 +318,28 @@
       const profileTrigger = userArea.querySelector(".profile-trigger");
       const userMenu = userArea.querySelector(".user-menu");
 
-      profileTrigger?.addEventListener("click", () => {
+      const closeUserMenu = () => {
+        userMenu?.classList.remove("is-open");
+        profileTrigger?.setAttribute("aria-expanded", "false");
+      };
+
+      profileTrigger?.addEventListener("click", (event) => {
+        event.stopPropagation();
         const isOpen = userMenu?.classList.toggle("is-open") || false;
         profileTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
       });
 
       document.addEventListener("click", (event) => {
         if (!userMenu || userMenu.contains(event.target)) return;
-        userMenu.classList.remove("is-open");
-        profileTrigger?.setAttribute("aria-expanded", "false");
+        closeUserMenu();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeUserMenu();
+      });
+
+      userMenu?.querySelectorAll(".dropdown-content a").forEach((link) => {
+        link.addEventListener("click", closeUserMenu);
       });
 
       document.getElementById("logoutBtn")?.addEventListener("click", (event) => {

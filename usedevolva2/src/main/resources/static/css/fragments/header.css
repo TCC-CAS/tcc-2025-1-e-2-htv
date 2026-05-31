@@ -265,7 +265,8 @@
 .header-menu-toggle:focus-visible,
 .profile-trigger:focus-visible,
 .header-search-form input:focus-visible,
-.header-search-form button:focus-visible {
+.header-search-form button:focus-visible,
+.dropdown-trigger:focus-visible {
     outline: 3px solid rgba(82, 72, 179, 0.24);
     outline-offset: 2px;
 }
@@ -276,6 +277,7 @@
     justify-content: flex-end;
     gap: 10px;
     white-space: nowrap;
+    min-width: 0;
 }
 
 .user-area a {
@@ -302,6 +304,7 @@
 
 .user-menu {
     position: relative;
+    min-width: 0;
 }
 
 .profile-trigger {
@@ -330,6 +333,7 @@
     font-weight: 900;
     letter-spacing: 0.02em;
     box-shadow: 0 10px 24px rgba(82, 72, 179, 0.20);
+    flex: 0 0 auto;
 }
 
 .profile-avatar img {
@@ -344,6 +348,7 @@
     top: calc(100% + 10px);
     right: 0;
     min-width: 210px;
+    max-width: calc(100vw - 24px);
     padding: 8px;
     background: #ffffff;
     border: 1px solid rgba(82, 72, 179, 0.12);
@@ -444,9 +449,16 @@ body.create-high-contrast .accessibility-tools button.is-active {
 
 @media (max-width: 1160px) {
     .header-shell {
-        grid-template-columns: auto auto;
+        grid-template-columns: minmax(0, 1fr) auto;
         gap: 14px;
         padding: 12px 0;
+    }
+
+    .site-header.is-menu-open .header-shell {
+        max-height: calc(100dvh - 12px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
     }
 
     .header-menu-toggle {
@@ -464,32 +476,52 @@ body.create-high-contrast .accessibility-tools button.is-active {
     .site-header.is-menu-open .main-header-nav,
     .site-header.is-menu-open .header-actions {
         display: flex;
+        animation: headerMobileReveal 0.18s ease both;
     }
 
     .main-header-nav ul {
         width: 100%;
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
+        justify-content: flex-start;
+        gap: 8px;
         padding-top: 10px;
+        margin-bottom: 0;
     }
 
     .main-header-nav a,
     .dropdown-trigger {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
         width: 100%;
+        min-height: 42px;
         text-align: left;
-        padding: 10px 0;
+        padding: 9px 0;
     }
 
     .dropdown-menu {
         position: static;
+        display: none;
+        width: 100%;
         min-width: 100%;
         opacity: 1;
         visibility: visible;
         transform: none;
         box-shadow: none;
         margin-top: 6px;
+        padding: 6px;
+        border-radius: 12px;
+    }
+
+    .dropdown:hover .dropdown-menu,
+    .dropdown:focus-within .dropdown-menu {
+        display: none;
+    }
+
+    .dropdown.is-open .dropdown-menu {
+        display: flex;
     }
 
     .header-search-item {
@@ -498,22 +530,163 @@ body.create-high-contrast .accessibility-tools button.is-active {
     }
 
     .header-actions {
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
         gap: 12px;
         padding-top: 10px;
         border-top: 1px solid rgba(82, 72, 179, 0.1);
     }
 
+    .accessibility-tools {
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .accessibility-tools button,
+    .accessibility-btn {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 auto;
+    }
+
     .user-area {
+        width: 100%;
+        white-space: normal;
+        align-items: stretch;
+        justify-content: stretch;
+        gap: 10px;
         flex-wrap: wrap;
+    }
+
+    .user-area a {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .btn-login,
+    .btn-register {
+        flex: 1 1 150px;
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+
+    .btn-login {
+        border: 1px solid rgba(82, 72, 179, 0.16);
+        background: #ffffff;
+    }
+
+    .user-area.is-authenticated {
+        flex-direction: column;
+    }
+
+    .user-area.is-authenticated .user-menu,
+    .user-area.is-authenticated .logout-btn {
+        width: 100%;
+    }
+
+    .user-menu {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .profile-trigger {
+        width: 100%;
+        height: auto;
+        min-height: 48px;
+        justify-content: flex-start;
+        gap: 10px;
+        padding: 8px 12px;
+        border: 1px solid rgba(82, 72, 179, 0.14);
+        border-radius: 14px;
+        background: #ffffff;
+        text-align: left;
+    }
+
+    .profile-trigger::after {
+        content: "Minha conta";
+        color: var(--cor-texto-escuro, #323232);
+        font-weight: 800;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .profile-trigger::before {
+        content: "▾";
+        order: 3;
+        margin-left: auto;
+        color: var(--cor-primaria, #5248b3);
+        font-weight: 900;
+        transition: transform 0.2s ease;
+    }
+
+    .user-menu.is-open .profile-trigger::before {
+        transform: rotate(180deg);
+    }
+
+    .profile-avatar {
+        width: 36px;
+        height: 36px;
+        box-shadow: 0 6px 16px rgba(82, 72, 179, 0.16);
+    }
+
+    .dropdown-content {
+        position: static;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin-top: 8px;
+        padding: 8px;
+        display: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .user-menu:hover .dropdown-content,
+    .user-menu:focus-within .dropdown-content {
+        display: none;
+    }
+
+    .user-menu.is-open .dropdown-content {
+        display: block;
+    }
+
+    .dropdown-content a {
+        min-height: 42px;
+        justify-content: flex-start;
+        padding: 12px 14px;
+    }
+
+    .logout-btn {
+        min-height: 44px;
+        padding: 10px 14px;
+        border: 1px solid rgba(220, 38, 38, 0.18);
+        border-radius: 14px;
+        background: #fff5f5;
     }
 }
 
 @media (max-width: 560px) {
+    .site-header {
+        max-width: 100vw;
+    }
+
     .header-shell {
         width: min(100% - 24px, 1280px);
         min-height: 64px;
+        padding: 10px 0;
     }
 
     .header-logo {
@@ -522,13 +695,22 @@ body.create-high-contrast .accessibility-tools button.is-active {
     }
 
     .header-actions {
-        flex-direction: column;
-        align-items: stretch;
+        gap: 10px;
     }
 
-    .accessibility-tools,
-    .user-area {
-        justify-content: center;
+    .accessibility-tools {
+        padding: 5px;
+        gap: 5px;
+        border-radius: 18px;
+    }
+
+    .accessibility-tools button,
+    .accessibility-btn {
+        width: 34px;
+        height: 34px;
+        flex: 1 1 0;
+        min-width: 34px;
+        max-width: 54px;
     }
 
     .header-search-form {
@@ -543,10 +725,51 @@ body.create-high-contrast .accessibility-tools button.is-active {
         border: 1px solid rgba(82, 72, 179, 0.16);
     }
 
+    .user-area {
+        flex-direction: column;
+    }
+
     .btn-login,
     .btn-register,
     .logout-btn {
-        flex: 1 1 auto;
+        width: 100%;
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         text-align: center;
+    }
+}
+
+@media (max-width: 380px) {
+    .header-shell {
+        width: min(100% - 18px, 1280px);
+    }
+
+    .header-logo {
+        width: 104px;
+    }
+
+    .accessibility-tools button,
+    .accessibility-btn {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+    }
+
+    .accessibility-icon {
+        font-size: 0.72rem;
+    }
+}
+
+@keyframes headerMobileReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
