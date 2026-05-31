@@ -31,6 +31,10 @@ jobs:
           cd deploy
           zip -r deploy.zip .
 
+      - name: Mostrar conteúdo do deploy
+        run: |
+          unzip -l deploy/deploy.zip
+
       - name: Deploy para Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
         with:
