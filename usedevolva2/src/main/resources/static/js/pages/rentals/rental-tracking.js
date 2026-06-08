@@ -87,21 +87,39 @@ function renderRental(rental) {
 }
 
 function updateProgress(status) {
+    if (status === "LATE_RETURNED") status = "RETURNED";
+    if (status === "AWAITING_PAYMENT") status = "PENDING";
 
     const steps = document.querySelectorAll(".etapa");
-
-    const completed = getCompletedSteps(status);
-
-    steps.forEach((step, index) => {
-        step.classList.toggle("ativa", index < completed);
-    });
-
     const progress = document.getElementById("linhaProgresso");
 
-    const percentage =
-        (completed / steps.length) * 100;
+    let currentIndex = FLOW.indexOf(status);
 
-    progress.style.width = `${percentage}%`;
+    if (currentIndex === -1) {
+        currentIndex = 0;
+    }
+
+    steps.forEach((step, index) => {
+        step.classList.remove("completada", "atual", "ativa");
+
+        if (status === "FINALIZED") {
+            step.classList.add("completada");
+            return;
+        }
+
+        if (index < currentIndex) {
+            step.classList.add("completada");
+        } else if (index === currentIndex) {
+            step.classList.add("atual");
+        }
+    });
+
+    const percentage =
+        status === "FINALIZED"
+            ? 100
+            : (currentIndex / (steps.length - 1)) * 100;
+
+    progress.style.width = `calc(100% * 10 / 12 * ${percentage / 100})`;
 }
 
 function translateStatus(status) {
