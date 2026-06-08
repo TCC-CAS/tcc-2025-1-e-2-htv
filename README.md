@@ -1,11 +1,225 @@
-# Desenvolvimento_TCC
-Repositório padrão para inicio do desenvovimento de TCC
+# 🛠️ Use & Devolva
 
-Ênfase no acompanhamento e desenvolvimento do projeto de TCC 1 (proposta) e 2 (aplicação.
+> **Plataforma Peer-to-Peer (P2P) de compartilhamento e locação de ferramentas.** Uma solução inteligente que promove a sustentabilidade, economia circular e o consumo consciente, conectando quem precisa de uma ferramenta a quem tem uma parada em casa.
 
-Prezado alunos(as), Tudo bem?
+---
 
-A partir de agora o acompanhamento do desenvolvimento de seu TCC 1 ou 2 será tanto em sala de aula como aqui, com o uso deste recurso. Vocês devem fazer um desenvolvimento contínuo, respeitando as datas das entregas previstas por seu professor.
+## 🚀 Link da Aplicação em Produção
 
-## Atenção!
-Este arquivo deve ser alterado no decorrer do desenvolvimento de seu TCC.
+O projeto está totalmente configurado e rodando na nuvem com **Deploy Automático**! Você não precisa configurar nada localmente para testar:
+
+🌍 **Acesse agora:** [Use & Devolva - AWS Elastic Beanstalk](http://usedevolva.sa-east-1.elasticbeanstalk.com/)
+
+---
+
+## 🛠️ Technologies & Frameworks
+
+A aplicação utiliza uma stack robusta, unindo a segurança do ecossistema Java no Back-end com a agilidade do desenvolvimento web nativo no Front-end.
+
+### **Back-end & Infraestrutura**
+* ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white) — Linguagem principal (Java 21)
+* ![Spring Boot](https://img.shields.io/badge/Spring_Boot-F2F4F9?style=for-the-badge&logo=spring-boot) — Framework de desenvolvimento da API REST e MVC
+* ![Spring Security](https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white) — Autenticação e criptografia de senhas com BCrypt
+* ![Spring Mail](https://img.shields.io/badge/Spring_Mail-6DB33F?style=for-the-badge&logo=Spring&logoColor=white) — Disparo automático de notificações por e-mail
+* ![AWS](https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white) — Hospedagem via **Elastic Beanstalk** com CI/CD
+* ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) — Banco de dados relacional integrado à infraestrutura AWS
+
+### **Front-end & Integrações**
+* ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white) — Estrutura semântica e acessível
+* ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white) — Estilização modularizada e responsiva
+* ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) — Validações dinâmicas, máscaras e requisições assíncronas (Fetch API)
+* ![Thymeleaf](https://img.shields.io/badge/Thymeleaf-005F0F?style=for-the-badge&logo=thymeleaf&logoColor=white) — Engine de renderização de templates HTML dinâmicos
+
+### **APIs e Frameworks Especializados**
+* **AbacatePay:** Gateway responsável por processar os pagamentos e transações de aluguel de forma segura.
+* **Cloudinary:** Armazenamento em nuvem de imagens das ferramentas e perfil. Conta com **validação automática por IA** contra imagens impróprias antes do salvamento.
+* **Leaflet.js:** Biblioteca interativa de mapas para geolocalização e visualização das ferramentas disponíveis na região.
+* **ViaCEP:** Integração de API para busca e autopreenchimento de endereços a partir do CEP informado.
+
+---
+
+## 👥 Como a Plataforma Funciona (Fluxo do Ecossistema)
+
+No **Use & Devolva**, não existem contas separadas para quem aluga e quem disponibiliza: **uma única conta unificada** permite que qualquer usuário atue como Locador e Locatário simultaneamente, alternando entre os papéis de forma fluida.
+
+---
+
+### 🔍 1. Descoberta Inteligente e Busca Avançada
+O usuário pode encontrar as ferramentas de duas formas integradas:
+* **Busca por Nome e Filtros:** Digitando o nome do produto e refinando a pesquisa por faixa de preço, proximidade e categorias.
+* **Busca Geográfica Interativa:** Visualizando as ferramentas diretamente no mapa interativo (*Leaflet.js*), identificando com precisão o que está disponível na sua região.
+
+<img width="1163" height="740" alt="image" src="https://github.com/user-attachments/assets/be053edd-09a4-4be8-8402-f2593f9e204e" />
+
+---
+
+### 💬 2. Negociação e Chat Nativo
+A plataforma conta com um **sistema de chat interno integrado**. Antes ou durante o processo de reserva, os usuários podem conversar diretamente pela plataforma para:
+* Tirar dúvidas sobre o estado de conservação da ferramenta.
+* Alinhar pontos de entrega e devolução.
+* Combinar detalhes de uso do equipamento.
+
+<img width="685" height="809" alt="image" src="https://github.com/user-attachments/assets/8ebc7137-79d7-4f59-ad8c-14d0db4764a5" />
+
+---
+
+### 💳 3. Reserva, Pagamento e Fluxo de Aprovação
+O processo de locação segue um fluxo rigoroso de segurança para garantir que ninguém saia no prejuízo:
+
+```text
+  [ Locatário escolhe as datas e faz o Pagamento via AbacatePay ]
+                                 │
+                                 ▼
+                   [ Locador recebe a notificação ]
+                                 │
+                 ┌───────────────┴───────────────┐
+                 ▼                               ▼
+            [ ACEITAR ]                     [ RECUSAR ]
+                 │                               │
+                 ▼                               ▼
+      ┌─────────────────────┐         ┌─────────────────────┐
+      │ Reserva Confirmada! │         │ Estorno Automático  │
+      │ (Datas bloqueadas   │         │    (AbacatePay)     │
+      │    no calendário)   │         │          +          │
+      └─────────────────────┘         │   Datas continuam   │
+                                      │     DISPONÍVEIS     │
+                                      └─────────────────────┘
+```
+
+1. **Solicitação e Garantia:** O locatário escolhe o período desejado e realiza o pagamento do valor da reserva de forma integrada via **AbacatePay**. O dinheiro fica retido na plataforma temporariamente.
+2. **Decisão do Locador:** O locador é notificado e tem a opção de **aceitar** ou **recusar** a solicitação de aluguel.
+3. **Cenário A - Pedido Aceito:** O aluguel é confirmado, as datas escolhidas são bloqueadas no calendário do anúncio e o fluxo avança para a retirada.
+4. **Cenário B - Pedido Recusado:** Se o locador recusar, o locatário recebe o **reembolso automático e integral** do valor pago pelo *AbacatePay*. As datas do anúncio **continuam totalmente disponíveis** para que outras pessoas possam reservar.
+
+<img width="1013" height="899" alt="image" src="https://github.com/user-attachments/assets/cb1f2c41-7506-4eff-8e2d-d6002e94a434" />
+<img width="976" height="901" alt="image" src="https://github.com/user-attachments/assets/8f5b2d4a-25a0-4792-8ed9-db55787d4613" />
+
+---
+
+### 🔄 4. Pós-Aprovação: Ciclo de Vida e Finalização Segura
+Assim que o pedido é aceito pelo locador, o andamento do contrato passa a ser atualizado de ponta a ponta pelos envolvidos para garantir a segurança física do item e o repasse financeiro justo:
+
+1. **Retirada & Em Uso (`IN_USE`):** O locatário busca a ferramenta no local combinado e sinaliza na plataforma que o item já está em sua posse e em uso.
+2. **Devolução (`RETURNED`):** Ao finalizar o período do aluguel, o locatário faz a entrega física do equipamento e clica em devolver no sistema. O status muda para *Devolvido (Aguardando Confirmação)*.
+3. **Garantia de Recebimento (`FINALIZED`):** O locador (dono da ferramenta) avalia se o equipamento foi entregue corretamente e sem avarias. Ao confirmar que está tudo OK, ele clica em **"Confirmar e Finalizar Locação"**. Essa etapa é obrigatória e serve como gatilho de segurança: o dinheiro retido só é liberado para o saldo do locador após essa confirmação mútua, encerrando o contrato com sucesso.
+
+> [!IMPORTANT]
+> 🛡️ **Painel Administrativo e Moderação (`/admin`)**
+> O ecossistema possui um *backoffice* exclusivo para administradores centralizado na rota `/admin`. Através deste painel, a equipe de suporte consegue gerenciar a plataforma, auditar transações e aplicar moderações diretamente sobre **denúncias (reports)** de usuários, comportamentos inadequados ou disputas financeiras, fechando o ciclo de segurança e confiabilidade do aplicativo.
+> 
+<img width="1822" height="500" alt="image" src="https://github.com/user-attachments/assets/f6a6c74b-3884-4a8c-956d-d9c5508e3730" />
+---
+## Pré-requisitos e Instalação (Deployment)
+
+Esta seção apresenta o passo a passo para baixar, configurar e executar o projeto Use & Devolva em ambiente local.
+
+### Pré-requisitos
+
+Antes de iniciar, é necessário ter instalado na máquina:
+
+- Java JDK 21 ou superior
+- Maven
+- Git
+- PostgreSQL
+- Uma IDE de desenvolvimento, como IntelliJ IDEA, Eclipse ou VS Code
+
+### 1. Clonar o repositório
+
+Abra o terminal na pasta onde deseja salvar o projeto e execute:
+
+```bash
+git clone https://github.com/TCC-CAS/tcc-2025-1-e-2-htv.git
+```
+### 2. Configurar as variáveis de ambiente
+
+Após clonar o projeto, é necessário configurar as variáveis de ambiente no arquivo:
+```bash
+src/main/resources/application.properties
+```
+Nesse arquivo, devem ser adicionadas as informações necessárias para o funcionamento da aplicação, como dados de conexão com o banco de dados, credenciais de serviços externos e demais configurações utilizadas pelo sistema.
+```
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
+cloudinary.cloud_name=${CLOUDINARY_CLOUD_NAME}
+cloudinary.api_key=${CLOUDINARY_API_KEY}
+cloudinary.api_secret=${CLOUDINARY_API_SECRET}
+app.crypto.secret-key=${APP_CRYPTO_SECRET_KEY}
+spring.devtools.livereload.enabled=true
+spring.web.resources.static-locations=classpath:/static/
+spring.thymeleaf.cache=false
+spring.web.resources.cache.period=0
+spring.web.resources.chain.cache=false
+abacate.api.url=https://api.abacatepay.com/v1
+spring.servlet.multipart.max-file-size=30MB
+spring.servlet.multipart.max-request-size=30MB
+server.port=5000
+spring.mail.host=${MAIL_HOST}
+spring.mail.port=${MAIL_PORT}
+spring.mail.username=${MAIL_USERNAME}
+spring.mail.password=${MAIL_PASSWORD}
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+```
+
+### Executar o projeto
+
+Com as configurações preenchidas, execute o projeto pela IDE ou pelo terminal com o Maven
+
+### Acessar a aplicação
+
+Após iniciar o projeto, a aplicação estará disponível no navegador pelo endereço:
+```
+http://localhost:5000
+```
+---
+
+## 🤝 Contribuindo
+
+Por se tratar de um projeto voltado para um **Trabalho de Conclusão de Curso (TCC)**, o núcleo do desenvolvimento é gerenciado estritamente pelos integrantes do grupo. No entanto, feedbacks, sugestões de melhorias e relatórios de bugs são extremamente bem-vindos para enriquecer o ecossistema!
+
+Se você deseja colaborar com o aprendizado ou evolução da plataforma:
+
+1. **Reporte Bugs ou Ideias:** Encontrou alguma falha de validação ou instabilidade na AWS? Abra uma [Issue no GitHub](https://github.com/TCC-CAS/tcc-2025-1-e-2-htv/issues).
+2. **Análise de Arquitetura:** Críticas construtivas sobre a estrutura do Spring Boot, DTOs ou testes automatizados são ótimas para nossa evolução acadêmica.
+
+Caso queira clonar para fins de estudo ou propor um Pull Request no futuro, siga o fluxo padrão:
+* Faça um **Fork** do repositório.
+* Crie uma Branch descritiva (`git checkout -b feature/SuaMelhoria`).
+* Enviar um **Pull Request** detalhando as alterações propostas.
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a MIT License.
+
+A Licença MIT permite o uso, cópia, modificação, distribuição e publicação do código, inclusive para fins de estudo e adaptação, desde que o aviso de copyright e os termos da licença sejam mantidos nas cópias ou partes substanciais do software.
+
+MIT License
+
+Copyright (c) 2025 TCC-CAS
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Para ler os termos completos, consulte o arquivo [LICENSE](https://github.com/TCC-CAS/tcc-2025-1-e-2-htv/blob/main/LICENSE) na raiz do repositório.

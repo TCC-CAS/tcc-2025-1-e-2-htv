@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buscar Ferramentas - Use e Devolva</title>
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/tools.css(v=${#dates.createNow().time})}">
+
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="search-container">
+
+    <section class="search-header">
+        <h1>Buscar ferramentas</h1>
+        <p id="searchSummary">Carregando ferramentas disponíveis...</p>
+    </section>
+
+    <aside class="search-filters">
+        <div class="filter-group">
+            <h3>Refinar busca</h3>
+        </div>
+
+        <div class="filter-group">
+            <label for="categoria">Categoria</label>
+            <select id="categoria">
+                <option value="">Todas as categorias</option>
+                <option value="construcao">Construção</option>
+                <option value="jardinagem">Jardinagem</option>
+                <option value="eletrica">Elétrica</option>
+                <option value="limpeza">Limpeza</option>
+                <option value="marcenaria">Marcenaria</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="ordenacao">Ordenar por</label>
+            <select id="ordenacao">
+                <option value="recente">Mais Recentes</option>
+                <option value="precoAsc">Menor Preço</option>
+                <option value="precoDesc">Maior Preço</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="estadoConservacao">Estado de conservação</label>
+            <select id="estadoConservacao">
+                <option value="">Todos</option>
+                <option value="Novo">Novo</option>
+                <option value="Ótimo estado">Ótimo estado</option>
+                <option value="Bom estado">Bom estado</option>
+                <option value="Usado com marcas de uso">Usado com marcas de uso</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="localizacaoModo">Localização</label>
+            <select id="localizacaoModo">
+                <option value="brasil">Todo o Brasil</option>
+                <option value="estado">Por estado</option>
+                <option value="cidade">Por cidade</option>
+            </select>
+        </div>
+
+        <div class="filter-group" id="filtroEstadoGrupo">
+            <label for="filtroEstado">Estado</label>
+            <select id="filtroEstado">
+                <option value="">Todos os estados</option>
+                <option value="AC">AC</option>
+                <option value="AL">AL</option>
+                <option value="AP">AP</option>
+                <option value="AM">AM</option>
+                <option value="BA">BA</option>
+                <option value="CE">CE</option>
+                <option value="DF">DF</option>
+                <option value="ES">ES</option>
+                <option value="GO">GO</option>
+                <option value="MA">MA</option>
+                <option value="MT">MT</option>
+                <option value="MS">MS</option>
+                <option value="MG">MG</option>
+                <option value="PA">PA</option>
+                <option value="PB">PB</option>
+                <option value="PR">PR</option>
+                <option value="PE">PE</option>
+                <option value="PI">PI</option>
+                <option value="RJ">RJ</option>
+                <option value="RN">RN</option>
+                <option value="RS">RS</option>
+                <option value="RO">RO</option>
+                <option value="RR">RR</option>
+                <option value="SC">SC</option>
+                <option value="SP">SP</option>
+                <option value="SE">SE</option>
+                <option value="TO">TO</option>
+            </select>
+        </div>
+
+        <div class="filter-group" id="filtroCidadeGrupo">
+            <label for="filtroCidade">Cidade</label>
+            <input type="text" id="filtroCidade" placeholder="Ex: São Paulo">
+        </div>
+        <p id="localizacaoDetectadaTexto" class="location-detected-text"></p>
+
+        <div class="filter-group">
+            <label for="valorMinimo">Preço mínimo (dia)</label>
+            <input type="number" id="valorMinimo" placeholder="R$ 0,00" min="0">
+        </div>
+
+        <div class="filter-group">
+            <label for="valorMaximo">Preço máximo (dia)</label>
+            <input type="number" id="valorMaximo" placeholder="R$ 100,00" min="0">
+        </div>
+
+        <div class="filter-actions">
+            <button id="applyFiltersBtn" type="button">Aplicar filtros</button>
+            <button id="clearFiltersBtn" type="button">Limpar</button>
+        </div>
+    </aside>
+
+    <main class="results-grid" id="resultsGrid">
+        <div class="loading-message">Carregando ferramentas...</div>
+    </main>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="/js/core/main.js" defer></script>
+
+
+<script src="/js/pages/tools/tools-list.js?v=endereco-bairro-2"></script>
+
+</body>
+</html>

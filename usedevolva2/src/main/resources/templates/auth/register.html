@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Conta | Use&Devolva</title>
+  <link rel="stylesheet" th:href="@{/css/style.css(v=${#dates.createNow().time})}">
+
+</head>
+
+<body class="create-body-root">
+
+<main class="register-page">
+  <section class="register-card" aria-labelledby="registerTitle">
+
+    <div class="register-header">
+      <h1 id="registerTitle">Criar conta</h1>
+      <p>Cadastre-se para alugar ou disponibilizar ferramentas com segurança.</p>
+    </div>
+
+    <br>
+    <button type="button" id="contrastBtn" class="create-btn-tool">Alto contraste</button>
+    <button type="button" id="fontBtn" class="create-btn-tool">Aumentar fonte</button>
+    <button type="button" id="audioBtn" class="create-btn-tool">Ouvir tela</button>
+    <br>
+    <br>
+
+    <form class="register-form" id="registerForm" novalidate>
+
+      <div class="form-group">
+        <label for="nome">Nome completo</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+        <small id="nomeError" class="field-error" aria-live="polite"></small> </div>
+
+      <div class="form-group">
+        <label for="cpf">CPF</label>
+        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+        <small id="cpfError" class="field-error" aria-live="polite"></small> </div>
+
+      <div class="form-group">
+        <label for="telefone">Telefone</label>
+        <input
+                type="tel"
+                id="telefone"
+                name="telefone"
+                placeholder="(00) 00000-0000"
+                autocomplete="tel"
+                inputmode="numeric"
+                maxlength="15"
+                pattern="\(\d{2}\) \d{5}-\d{4}"
+                required
+        >
+        <small id="telefoneError" class="field-error" aria-live="polite"></small>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Endereço de e-mail</label>
+        <input type="text" id="email" name="email" placeholder="seuemail@email.com" required>
+        <small id="emailError" class="field-error" aria-live="polite"></small> </div>
+
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
+        <small id="senhaError" class="field-error" aria-live="polite"></small> </div>
+
+      <div class="form-group">
+        <label for="confirmarSenha">Confirmar senha</label>
+        <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme sua senha" required>
+        <small id="confirmarSenhaError" class="field-error" aria-live="polite"></small> </div>
+      
+      <div class="terms">
+        <label>
+          <input type="checkbox" id="declarouMaiorIdade" name="declarouMaiorIdade" required>
+          <span>Declaro que sou maior de 18 anos.</span>
+        </label>
+        <small id="declarouMaiorIdadeError" class="field-error" aria-live="polite"></small>
+
+        <label>
+          <input type="checkbox" id="aceitouTermosUso" name="aceitouTermosUso" required>
+          <span>Aceito os <a href="/institutional/termos-de-uso" target="_blank">Termos de Uso</a>.</span>
+        </label>
+
+        <label>
+          <input type="checkbox" id="aceitouPoliticaPrivacidade" name="aceitouPoliticaPrivacidade" required>
+          <span>Declaro que li e aceito a <a href="/institutional/politica-de-privacidade" target="_blank">Política de Privacidade</a>.</span>
+        </label>
+      </div>
+
+      <p class="form-message create-status-msg"></p>
+
+      <button type="submit" class="submit-btn create-main-action">
+        Criar conta
+      </button>
+
+      <p class="login-text">
+        Já possui conta?
+        <a href="/auth/login">Entrar agora</a>
+      </p>
+    </form>
+  </section>
+</main>
+
+<script src="/js/core/main.js" defer></script>
+<script src="/js/core/api.js" defer></script>
+<script src="/js/pages/auth/register.js" defer></script>
+
+</body>
+</html>

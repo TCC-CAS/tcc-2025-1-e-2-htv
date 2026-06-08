@@ -1,0 +1,71 @@
+<div th:fragment="header">
+    <header class="site-header">
+        <div class="header-shell">
+            <div class="logo">
+                <a href="/home" class="logo-link" aria-label="Ir para a página inicial">
+                    <img src="/assets/logo-use-devolva.png" alt="Use&Devolva" class="header-logo">
+                </a>
+            </div>
+
+            <button type="button" class="header-menu-toggle" id="headerMenuToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mainHeaderNav">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </button>
+
+            <nav id="mainHeaderNav" class="main-header-nav" aria-label="Menu principal">
+                <ul>
+                    <li><a href="/home">Home</a></li>
+
+                    <li class="dropdown">
+                        <button type="button" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="categoryDropdownMenu">Categorias ▾</button>
+                        <ul id="categoryDropdownMenu" class="dropdown-menu" aria-label="Categorias">
+                            <li><a href="/tools/tools-list?categoria=construcao">Construção</a></li>
+                            <li><a href="/tools/tools-list?categoria=jardinagem">Jardinagem</a></li>
+                            <li><a href="/tools/tools-list?categoria=eletrica">Elétrica</a></li>
+                            <li><a href="/tools/tools-list?categoria=limpeza">Limpeza</a></li>
+                            <li><a href="/tools/tools-list?categoria=marcenaria">Marcenaria</a></li>
+                            <li><a href="/tools/tools-list?categoria=outros">Outros</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="header-search-item">
+                        <form id="headerSearchForm" class="header-search-form" role="search" action="/tools/tools-list" method="get">
+                            <label class="sr-only" for="headerSearchInput">Buscar ferramentas</label>
+                            <input type="text" id="headerSearchInput" name="busca" placeholder="Buscar ferramentas..." autocomplete="off" />
+                            <button type="submit">Buscar</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <section class="accessibility-tools" aria-label="Ferramentas de acessibilidade">
+                    <button type="button" id="contrastBtn" class="accessibility-btn" title="Ativar alto contraste" aria-label="Ativar alto contraste" aria-pressed="false">
+                        <span class="accessibility-icon" aria-hidden="true">◐</span>
+                    </button>
+
+                    <button type="button" id="zoomOutBtn" class="accessibility-btn" title="Diminuir zoom" aria-label="Diminuir zoom">
+                        <span class="accessibility-icon" aria-hidden="true">A−</span>
+                    </button>
+
+                    <button type="button" id="zoomInBtn" class="accessibility-btn" title="Aumentar zoom" aria-label="Aumentar zoom">
+                        <span class="accessibility-icon" aria-hidden="true">A+</span>
+                    </button>
+
+                    <button type="button" id="audioBtn" class="accessibility-btn" title="Ativar acessibilidade de fala" aria-label="Ativar acessibilidade de fala" aria-pressed="false">
+                        <span class="accessibility-icon" aria-hidden="true">▶</span>
+                    </button>
+                </section>
+
+                <div class="user-area">
+                    <a href="/auth/login" class="btn-login">Entrar</a>
+                    <a href="/auth/register" class="btn-register">Criar conta</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <script src="/js/components/chat-widget.js" defer></script>
+</div>

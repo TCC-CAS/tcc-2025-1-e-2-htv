@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minhas Ferramentas - Use e Devolva</title>
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/my-tools.css(v=${#dates.createNow().time})}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+    <main>
+        
+        <div class="page-header">
+            <div class="page-title">
+                <h2>Minhas Ferramentas</h2>
+                <p>Faça a gestão do seu inventário e acompanhe a disponibilidade.</p>
+            </div>
+            <a href="/users/create-tool" class="btn-primary">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Adicionar Ferramenta
+            </a>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Total de Ferramentas</div>
+                <div class="stat-value">
+                    <span id="totalTools">0</span><span id="planLimit" style="font-size: 1.2rem; color: var(--text-muted); font-weight: 400;"> / 0</span>
+                </div>
+                <div id="planBadge" style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; margin-top: 0.5rem; color: var(--text-muted);">
+                    Plano: -
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">Disponíveis</div>
+                <div class="stat-value" id="availableTools" style="color: #059669;">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">Alugadas</div>
+                <div class="stat-value" id="rentedTools" style="color: #2563EB;">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">Bloqueadas / Manutenção</div>
+                <div class="stat-value" id="blockedTools" style="color: #6B7280;">0</div>
+            </div>
+        </section>
+
+        <section class="tools-grid" id="toolsContainer"></section>
+
+    </main>
+<div th:replace="fragments/footer :: footer"></div>
+
+<script src="/js/core/main.js" defer></script>
+<script src="/js/pages/users/my-tools.js" defer></script>
+
+</body>
+</html>

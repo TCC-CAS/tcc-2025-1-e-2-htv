@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus chats - Use e Devolva</title>
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/chats.css(v=${#dates.createNow().time})}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="chats-page">
+    <section class="chats-card">
+        <aside class="chats-sidebar">
+            <div class="chats-sidebar-header">
+                <h1>Meus chats</h1>
+                <p>Converse sobre ferramentas e locações.</p>
+            </div>
+
+            <div id="chatsList" class="chats-list">
+                <p class="chats-loading">Carregando conversas...</p>
+            </div>
+        </aside>
+
+        <section class="chat-content">
+            <div id="chatEmptyState" class="chat-empty-state">
+                <div class="chat-empty-icon">💬</div>
+                <h2>Selecione uma conversa</h2>
+                <p>Escolha um chat para visualizar e enviar mensagens.</p>
+            </div>
+
+            <div id="chatConversation" class="chat-conversation hidden">
+                <header class="chat-conversation-header">
+                    <div class="chat-conversation-title-row">
+                        <button type="button" id="backToChatsBtn" class="chat-back-btn" aria-label="Voltar para lista de conversas">
+                            ‹
+                        </button>
+
+                        <div class="chat-conversation-copy">
+                            <h2 id="chatTitle">Chat</h2>
+                            <p id="chatSubtitle"></p>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btnReportChat" class="btn btn-danger chat-report-btn">
+                        ⚠️ Denunciar
+                    </button>
+                </header>
+
+                <div id="chatMessages" class="chat-messages"></div>
+
+                <form id="chatMessageForm" class="chat-message-form">
+                    <textarea
+                            id="chatMessageInput"
+                            placeholder="Digite sua mensagem..."
+                            rows="2"
+                            maxlength="3000"
+                            required
+                    ></textarea>
+
+                    <button type="submit" class="btn btn-primary">
+                        Enviar
+                    </button>
+                </form>
+            </div>
+        </section>
+    </section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/chatreportmodal :: chatreportmodal}"></div>
+
+<script th:src="@{/js/core/main.js}" defer></script>
+<script th:src="@{/js/pages/users/chats.js}" defer></script>
+</body>
+</html>

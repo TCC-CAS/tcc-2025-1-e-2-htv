@@ -1,0 +1,355 @@
+
+.plans-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.plans-modal {
+    background: #ffffff;
+    width: 100%;
+    max-width: 1040px;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15);
+    animation: modalFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.plans-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    background: #f1f5f9;
+    border: none;
+    font-size: 1.75rem;
+    color: #64748b;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s ease;
+}
+
+.plans-close:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    transform: scale(1.05);
+}
+
+.plans-modal-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-inline: 1rem;
+}
+
+.plans-modal-header h2 {
+    font-size: 2.25rem;
+    color: #0f172a;
+    margin: 0 0 0.5rem 0;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.plans-subtitle {
+    color: #64748b;
+    font-size: 1.05rem;
+    max-width: 650px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+}
+
+.plan-option {
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 2.25rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    position: relative;
+    transition: all 0.25s ease;
+}
+
+.plan-option:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 24px -8px rgba(15, 23, 42, 0.08);
+}
+
+.plan-option.recommended {
+    border-color: var(--color-primary, #5b4bb7);
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 25%);
+}
+
+.plan-option.featured {
+    border-color: #eab308;
+    background: linear-gradient(180deg, #fefce8 0%, #ffffff 20%);
+}
+
+.plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.plan-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.plan-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.plan-option.recommended .plan-badge {
+    background: #e0e7ff;
+    color: var(--color-primary, #5b4bb7);
+}
+
+.plan-option.featured .plan-badge.gold {
+    background: #fef9c3;
+    color: #a16207;
+}
+
+.plan-price {
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: baseline;
+    color: #0f172a;
+}
+
+.plan-price .currency {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-right: 0.25rem;
+}
+
+.plan-price .amount {
+    font-size: 2.75rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.plan-price .period {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-left: 0.25rem;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.25rem 0;
+    flex: 1;
+}
+.plan-features li {
+    padding: 0.75rem 0;
+    font-size: 0.95rem;
+    color: #475569;
+    border-bottom: 1px dashed #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    line-height: 1.4;
+    width: 100%;
+}
+.plan-features li:last-child {
+    border-bottom: none;
+}
+
+.plan-features li strong {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.plan-features li::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    display: inline-block;
+    margin-right: 0.4rem;
+}
+.plan-features li::before {
+    content: "✓";
+    color: #10b981;
+}
+.plan-option:first-child .plan-features li:last-child {
+    color: #94a3b8;
+}
+
+.plan-option:first-child .plan-features li:last-child::before {
+    content: "×";
+    color: #ef4444;
+    font-size: 1.2rem;
+}
+
+
+.btn-plan {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+
+.btn-plan.disabled,
+.btn-plan:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-prata {
+    background: var(--color-primary, #5b4bb7);
+    color: #ffffff;
+}
+
+.btn-prata:hover {
+    background: #4a3ca0;
+    box-shadow: 0 8px 16px rgba(91, 75, 183, 0.2);
+}
+
+/* Botão Ouro */
+.btn-ouro {
+    background: #eab308;
+    color: #0f172a;
+}
+
+.btn-ouro:hover {
+    background: #ca8a04;
+    color: #ffffff;
+    box-shadow: 0 8px 16px rgba(234, 179, 8, 0.25);
+}
+
+@media (max-width: 960px) {
+    .plans-modal {
+        max-width: 700px;
+        padding: 2rem 1.5rem;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .plans-modal-header h2 {
+        font-size: 1.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .plans-modal-overlay {
+        padding: 0;
+    }
+
+    .plans-modal {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        padding: 3rem 1.25rem 2rem;
+        overflow-y: auto;
+    }
+
+    .plans-close {
+        top: 1rem;
+        right: 1rem;
+    }
+
+    .plans-modal-header h2 {
+        font-size: 1.65rem;
+    }
+
+    .plan-option {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .plan-price .amount {
+        font-size: 2.4rem;
+    }
+}
+
+.plans-modal-overlay {
+    display: none;
+
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+
+.plans-modal-overlay.active {
+    display: flex;
+}
+
+/* Alto contraste: badges pequenos dos planos com texto escuro sobre amarelo. */
+body.high-contrast .plans-modal .plan-badge,
+body.create-high-contrast .plans-modal .plan-badge,
+body.high-contrast .plans-modal .plan-option.recommended .plan-badge,
+body.create-high-contrast .plans-modal .plan-option.recommended .plan-badge,
+body.high-contrast .plans-modal .plan-option.featured .plan-badge.gold,
+body.create-high-contrast .plans-modal .plan-option.featured .plan-badge.gold {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Use e Devolva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/admin.css(v=${#dates.createNow().time})}">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <a href="#">Use e Devolva <span class="admin-badge">Painel de Controle</span></a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <button id="openAddAdminBtn" style="padding: 0.5rem 1rem; border-radius: 6px; border: none; background: #10B981; color: white; font-weight: 600; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+            ➕ Novo Admin
+        </button>
+        <span style="font-weight: 600; font-size: 0.9rem;">Olá, Admin</span>
+        <div class="avatar" style="background: var(--cor-primaria-escura); color: white;">AD</div>
+    </div>
+</header>
+
+<main>
+    <section class="card">
+        <div class="card-header">
+            <h2>Fila de Denúncias</h2>
+            <span style="color: var(--cor-texto-medio); font-size: 0.9rem;">24 Pendentes</span>
+        </div>
+
+        <div class="table-toolbar">
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <select id="typeFilter" style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <option value="ALL">Todos os Tipos</option>
+                    <option value="USER">Apenas Utilizadores</option>
+                    <option value="TOOL">Apenas Ferramentas</option>
+                </select>
+
+                <select id="statusFilter" style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <option value="ALL">Todos os Status</option>
+                    <option value="PENDING">Pendentes</option>
+                    <option value="RESOLVED">Finalizados</option>
+                </select>
+
+                <select id="priorityFilter" style="padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <option value="ALL">Todas Prioridades</option>
+                    <option value="HIGH">Alta</option>
+                    <option value="MEDIUM">Média</option>
+                    <option value="LOW">Baixa</option>
+                </select>
+            </div>
+
+            <div class="bulk-actions" id="bulkActions">
+                <button class="btn btn-outline" id="bulkIgnoreBtn">🗑️ Ignorar Selecionados</button>
+                <button class="btn btn-danger" id="bulkSanctionBtn">⚠️ Sancionar Selecionados</button>
+            </div>
+
+            <div class="table-container">
+                <table id="reportsTable">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>Prioridade</th>
+                        <th>Tipo</th>
+                        <th>ID / Contexto</th>
+                        <th>Motivo</th>
+                        <th>Denunciante</th>
+                        <th>Alvo (Denunciado)</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody id="reportsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="card" id="investigationSection">
+        <div class="card-header" style="margin-bottom: 1rem;">
+            <h3 id="panelTitle">Painel de Detalhes (Modo Investigação)</h3>
+            <span class="badge badge-baixa">Clique num Alvo ou Denunciante na tabela para carregar</span>
+        </div>
+
+        <div class="investigation-panel" id="investigationPanel">
+            <div class="profile-header">
+                <div class="avatar" id="invAvatar">--</div>
+                <div class="profile-info">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h3 id="invName">Selecione um item</h3>
+                        <span class="badge" id="invTypeBadge" style="display: none;"></span>
+                    </div>
+                    <p id="invId">ID: #----</p>
+                    <p id="invSubtitle" style="margin-top: 4px; font-weight: 600; color: var(--cor-texto-medio);">--</p>
+                </div>
+            </div>
+
+            <div class="inv-grid">
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-label" id="metricLabel">Métrica Principal</span>
+                        <span class="stat-value" id="metricText">--</span>
+                        <div class="meter-bg">
+                            <div class="meter-fill" id="metricBar" style="width: 0%; background: var(--success);"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item" style="margin-top: 1.5rem;">
+                        <span class="stat-label">Denúncias Recebidas</span>
+                        <span class="stat-value" id="reportsReceived" style="color: var(--danger)">0</span>
+                    </div>
+                </div>
+
+                <div class="timeline-container">
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--cor-texto-medio);">Histórico Recente</h4>
+                        <div class="timeline" id="invTimeline"></div>
+                    </div>
+                </div>
+
+                <div class="timeline-container">
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 1rem; color: var(--cor-texto-medio);">Ações Disponíveis</h4>
+                        <div class="action-buttons" id="invActions"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="addAdminModal" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+    <div style="background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; font-family: 'Poppins', sans-serif;">
+        <span id="closeAdminModal" style="position: absolute; right: 20px; top: 15px; font-size: 1.6rem; cursor: pointer; color: #6b7280; font-weight: bold;">&times;</span>
+
+        <h3 style="margin-bottom: 1.5rem; color: #1f2937; font-weight: 700; font-size: 1.3rem;">Cadastrar Novo Admin</h3>
+
+        <form id="addAdminForm" style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #4b5563;">Nome Completo</label>
+                <input type="text" id="newAdminName" required style="width: 100%; padding: 0.7rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #4b5563;">E-mail</label>
+                <input type="email" id="newAdminEmail" required style="width: 100%; padding: 0.7rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #4b5563;">Senha de Acesso</label>
+                <input type="password" id="newAdminPassword" required style="width: 100%; padding: 0.7rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem;">
+            </div>
+
+            <button type="submit" style="padding: 0.8rem; background: #1e3a8a; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: inherit; font-size: 0.95rem; margin-top: 0.5rem;">
+                Salvar Administrador
+            </button>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 Use e Devolva - Ferramenta Administrativa Interna</p>
+</footer>
+
+<script src="/js/core/main.js" defer></script>
+<script src="/js/pages/security/admin-dashboard.js" defer></script>
+<script src="/js/pages/security/admin-create.js" defer></script>
+
+</body>
+</html>

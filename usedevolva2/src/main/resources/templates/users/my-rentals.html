@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meus Aluguéis - Use e Devolva</title>
+
+
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/my-rentals.css(v=${#dates.createNow().time})}">
+
+<!--    -->
+<!--    <link rel="stylesheet" href="../../static/css/fragments/header.css">-->
+<!--<link rel="stylesheet" href="../../static/css/fragments/footer.css">-->
+<!--<link rel="stylesheet" href="../../static/css/root.css">-->
+<!--<link rel="stylesheet" href="../../static/css/pages/users/my-rentals.css">-->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+
+
+<main>
+    <div class="page-header">
+        <h2>Minhas solicitações</h2>
+        <p>
+            Acompanhe as ferramentas que requisitou, o estado atual e o histórico dos aluguéis.
+        </p>
+    </div>
+
+    <div class="filter-container" style="margin-bottom: 25px; text-align: right;">
+        <label for="statusFilter" style="font-weight: 500; margin-right: 8px; font-size: 0.95rem;">Mostrar:</label>
+        <select id="statusFilter" style="padding: 8px 16px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Poppins', sans-serif; cursor: pointer; background-color: #fff;">
+            <option value="ACTIVE">Aluguéis Ativos</option>
+            <option value="HISTORY">Histórico (Finalizados / Cancelados)</option>
+            <option value="ALL">Todos os Aluguéis</option>
+        </select>
+    </div>
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-info">
+
+                <h3>Total de Aluguéis</h3>
+
+                <p id="totalRentals">0</p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div class="stat-info">
+
+                <h3>Total Gasto</h3>
+
+                <p id="totalSpent">R$ 0,00</p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section
+            class="rentals-list"
+            id="rentalsList"
+    >
+    </section>
+
+</main>
+<div th:replace="fragments/footer :: footer"></div>
+
+<script src="/js/core/main.js" defer></script>
+<script src="/js/pages/users/my-rentals.js" defer></script>
+
+</body>
+</html>

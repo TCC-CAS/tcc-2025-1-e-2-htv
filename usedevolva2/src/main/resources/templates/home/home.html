@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home - Use e Devolva</title>
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/home.css(v=${#dates.createNow().time})}">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <script src="/js/core/main.js" defer></script>
+</head>
+
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+
+    <main id="conteudo-principal">
+        <section class="tools-carousel-section" aria-labelledby="homeHeroTitle">
+            <div class="carousel-content">
+                <h1 id="homeHeroTitle">Encontre ferramentas próximas</h1>
+                <p>
+                    Use a busca por localização para encontrar ferramentas disponíveis perto de você
+                    ou em uma região escolhida no mapa.
+                </p>
+                <button type="button" class="btn-action" id="openToolsMapBtn">
+                    📍 Abrir mapa interativo
+                </button>
+            </div>
+
+            <div class="carousel" aria-label="Carrossel de ferramentas">
+                <button class="carousel-btn prev" type="button" aria-label="Imagem anterior">‹</button>
+
+                <div class="carousel-track-container">
+                    <div class="carousel-track">
+                        <img src="/assets/tools1.jpg" alt="Ferramentas manuais disponíveis para aluguel">
+                        <img src="/assets/tools2.jpg" alt="Ferramentas elétricas organizadas em bancada">
+                        <img src="/assets/tools3.jpg" alt="Conjunto de ferramentas metálicas para construção">
+                    </div>
+                </div>
+
+                <button class="carousel-btn next" type="button" aria-label="Próxima imagem">›</button>
+
+                <div class="carousel-dots" aria-label="Indicadores do carrossel">
+                    <button type="button" class="dot active" aria-label="Ir para imagem 1"></button>
+                    <button type="button" class="dot" aria-label="Ir para imagem 2"></button>
+                    <button type="button" class="dot" aria-label="Ir para imagem 3"></button>
+                </div>
+            </div>
+        </section>
+
+        <section aria-labelledby="featuredToolsTitle" class="featured-tools-section">
+            <div class="featured-tools-header">
+                <div>
+                    <h2 id="featuredToolsTitle">Ferramentas em destaque</h2>
+                    <p id="featuredToolsSubtitle">As ferramentas mais procuradas na sua região.</p>
+                    <small id="homeLocalizacaoDetectadaTexto" class="home-location-detected-text">
+                        Detectando localização...
+                    </small>
+                </div>
+
+                <div class="home-location-filter">
+                    <label for="homeLocalizacaoModo">Localização</label>
+
+                    <div class="home-location-row">
+                        <select id="homeLocalizacaoModo">
+                            <option value="brasil">Todo o Brasil</option>
+                            <option value="estado">Por estado</option>
+                            <option value="cidade">Por cidade</option>
+                        </select>
+
+                        <select id="homeFiltroEstado">
+                            <option value="">UF</option>
+                            <option value="AC">AC</option>
+                            <option value="AL">AL</option>
+                            <option value="AP">AP</option>
+                            <option value="AM">AM</option>
+                            <option value="BA">BA</option>
+                            <option value="CE">CE</option>
+                            <option value="DF">DF</option>
+                            <option value="ES">ES</option>
+                            <option value="GO">GO</option>
+                            <option value="MA">MA</option>
+                            <option value="MT">MT</option>
+                            <option value="MS">MS</option>
+                            <option value="MG">MG</option>
+                            <option value="PA">PA</option>
+                            <option value="PB">PB</option>
+                            <option value="PR">PR</option>
+                            <option value="PE">PE</option>
+                            <option value="PI">PI</option>
+                            <option value="RJ">RJ</option>
+                            <option value="RN">RN</option>
+                            <option value="RS">RS</option>
+                            <option value="RO">RO</option>
+                            <option value="RR">RR</option>
+                            <option value="SC">SC</option>
+                            <option value="SP">SP</option>
+                            <option value="SE">SE</option>
+                            <option value="TO">TO</option>
+                        </select>
+
+                        <input type="text" id="homeFiltroCidade" placeholder="Cidade">
+
+                        <button type="button" id="homeApplyLocationBtn">
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tools-grid" id="featuredToolsContainer">
+                <p>Carregando ferramentas...</p>
+            </div>
+        </section>
+
+        <section class="card-section" aria-labelledby="announceToolsTitle">
+            <h2 id="announceToolsTitle">Quer anunciar suas ferramentas?</h2>
+            <p>
+                Transforme suas ferramentas paradas em uma fonte de renda extra.
+                Comece a anunciar suas ferramentas agora mesmo.
+            </p>
+            <a href="#" id="announceBtn" class="btn-action">Anunciar Ferramenta</a>        </section>
+        
+    </main>
+
+<div id="toolsMapModal" class="tools-map-modal" aria-hidden="true">
+    <div class="tools-map-dialog">
+        <div class="tools-map-header">
+            <div>
+                <h2>Ferramentas no mapa</h2>
+                <p>Clique em um ponto para ver as ferramentas disponíveis naquele local.</p>
+                <small id="toolsMapLocationStatus" class="tools-map-location-status">
+                    Ao abrir, vamos solicitar sua localização. Se preferir, digite um endereço abaixo.
+                </small>
+
+                <form id="toolsMapAddressForm" class="tools-map-address-form" autocomplete="off">
+                    <input
+                        type="text"
+                        id="toolsMapAddressInput"
+                        placeholder="Digite um endereço, bairro, cidade ou CEP"
+                        aria-label="Endereço para buscar no mapa"
+                    />
+                    <button type="submit" id="toolsMapAddressSearchBtn">Buscar no mapa</button>
+                </form>
+            </div>
+
+            <div class="tools-map-header-actions">
+                <div class="tools-map-radius-control">
+                    <span>Raio</span>
+
+                    <button type="button" id="toolsMapRadiusMinus" aria-label="Diminuir raio">
+                        −
+                    </button>
+
+                    <strong id="toolsMapRadiusValue">10 km</strong>
+
+                    <button type="button" id="toolsMapRadiusPlus" aria-label="Aumentar raio">
+                        +
+                    </button>
+                </div>
+
+                <button type="button" id="closeToolsMapBtn" class="tools-map-close">
+                    ×
+                </button>
+            </div>
+        </div>
+
+        <div class="tools-map-body">
+            <div id="toolsMap" class="tools-map"></div>
+
+            <aside class="tools-map-side">
+                <h3 id="toolsMapSideTitle">Selecione um ponto no mapa</h3>
+
+                <div id="toolsMapSideList" class="tools-map-side-list">
+                    <p class="tools-map-empty">
+                        Os locais com ferramentas aparecerão no mapa.
+                    </p>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        defer
+></script>
+
+<script src="/js/pages/home.js" defer></script>
+
+</body>
+
+</html>

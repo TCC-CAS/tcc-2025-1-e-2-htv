@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil - Use e Devolva</title>
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/profile.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/create-tool.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/plans.css(v=${#dates.createNow().time})}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<main>
+
+    <section class="profile-header">
+        <div class="avatar-container">
+            <div class="avatar" id="profileAvatar">--</div>
+
+            <button type="button" class="edit-avatar-btn" id="profilePhotoBtn" title="Alterar foto">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                    </path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z">
+                    </path>
+                </svg>
+            </button>
+            <input type="file" id="profilePhotoInput" accept="image/*" hidden>
+        </div>
+
+
+
+        <div class="profile-info">
+            <h2 id="profileName">Carregando...</h2>
+            <p>
+                <span id="profileEmail">---</span> •
+                <span id="profilePhone">---</span>
+            </p>
+        </div>
+    </section>
+    <section class="plan-card">
+        <div>
+            <span class="plan-label">Plano atual</span>
+            <h3 id="currentPlan">FREE</h3>
+            <p>Escolha um plano para liberar mais recursos na plataforma.</p>
+        </div>
+
+        <button type="button" id="openPlansModalBtn" class="plan-button">
+            Ver planos
+        </button>
+    </section>
+        <h3 style="margin-bottom: 1.5rem; color: var(--text-main);">Gerir Conta</h3>
+
+        <!-- GRELHA DE MENUS -->
+        <section class="menu-grid">
+
+            <!-- EDITAR PERFIL -->
+            <a href="/users/edit-profile" class="menu-card">
+                <div class="menu-icon icon-profile">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                </div>
+                <div class="menu-content">
+                    <h3>Editar Perfil</h3>
+                    <p>Atualize os seus dados pessoais, palavra-passe e e-mail.</p>
+                </div>
+            </a>
+
+            <!-- MEUS ALUGUÉIS -->
+            <a href="/users/my-rentals" class="menu-card">
+                <div class="menu-icon icon-rentals">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <div class="menu-content">
+                    <h3>Meus Aluguéis</h3>
+                    <p>Acompanhe as ferramentas que alugou e veja o histórico de pedidos.</p>
+                </div>
+            </a>
+
+            <!-- MINHAS FERRAMENTAS -->
+            <a href="/users/my-tools" class="menu-card">
+                <div class="menu-icon icon-tools">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <div class="menu-content">
+                    <h3>Minhas Ferramentas</h3>
+                    <p>Faça a gestão dos seus anúncios, adicione novas ferramentas e veja os ganhos.</p>
+                </div>
+            </a>
+
+            <a href="/rentals/requests" class="menu-card">
+                <div class="menu-icon icon-tools">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <div class="menu-content">
+                    <h3>Solicitações e Reservas Ativas </h3>
+                    <p>Aceite, recure e acompanhe as reservas das suas ferramentas.</p>
+                </div>
+            </a>
+
+
+            <a href="/favorites" class="menu-card">
+                <div class="menu-icon icon-favorites">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                </div>
+                <div class="menu-content">
+                    <h3>Favoritos</h3>
+                    <p>Veja a lista das ferramentas que guardou para alugar mais tarde.</p>
+                </div>
+            </a>
+
+            <button type="button" class="menu-card" id="openProfileAddressModalBtn">
+                <div class="menu-icon icon-profile">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+
+                <div class="menu-content">
+                    <h3>Meus endereços</h3>
+                    <p>Cadastre e gerencie os locais usados para retirada das ferramentas.</p>
+                </div>
+            </button>
+
+            <button type="button" class="menu-card profile-logout-card" id="profileLogoutBtn" style="border-color: #FEE2E2;">
+                <div class="menu-icon icon-logout">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </div>
+                <div class="menu-content">
+                    <h3 style="color: var(--danger);">Sair da Conta</h3>
+                    <p>Terminar a sessão no seu dispositivo atual com segurança.</p>
+                </div>
+            </button>
+
+        </section>
+    </main>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<div th:replace="fragments/plans :: plansModal"></div>
+
+<script src="/js/pages/payments/payments.js" defer></script>
+<script src="/js/core/main.js" defer></script>
+<script src="/js/components/address-modal.js" defer></script>
+<script src="/js/pages/users/profile.js" defer></script>
+
+</body>
+</html>

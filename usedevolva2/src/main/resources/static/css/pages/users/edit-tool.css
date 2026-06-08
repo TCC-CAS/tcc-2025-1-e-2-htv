@@ -1,0 +1,408 @@
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* HEADER */
+        .topbar {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        /* MAIN CONTAINER */
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* FORMULÁRIO */
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .form-section h3 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #fff;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--border-focus);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* GESTÃO DE FOTOGRAFIAS */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .photo-item {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-item svg.img-icon {
+            width: 32px;
+            height: 32px;
+            color: #9CA3AF;
+        }
+
+        .btn-remove-photo {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border-color);
+            color: var(--danger);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.2s;
+        }
+
+        .btn-remove-photo:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .file-upload-wrapper {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background-color: var(--bg-color);
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper:hover {
+            border-color: var(--primary);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-wrapper label {
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .file-upload-wrapper p {
+            margin: 0.5rem 0 0 0;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* BOTÕES DE ACÇÃO */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding-top: 1rem;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+            .btn {
+                width: 100%;
+            }
+            .form-section {
+                padding: 1.5rem;
+            }
+        }
+
+        .photo-gallery,
+        .image-preview-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .photo-item,
+        .image-preview-item {
+            width: 90px;
+            height: 90px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #f3f4f6;
+            position: relative;
+        }
+
+        .photo-item img,
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .remove-preview-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.72);
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .toast-message {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #16a34a;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(-12px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-message.hide {
+            opacity: 0;
+            transform: translateY(-12px);
+        }
+
+        .photo-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-remove-photo {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            z-index: 3;
+            font-weight: 700;
+            color: #d62828;
+        }
+
+        .main-image-badge,
+        .btn-set-main-photo {
+            position: absolute;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border-radius: 6px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 5px 6px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .main-image-badge {
+            background: rgba(0, 0, 0, 0.72);
+            color: #fff;
+        }
+
+        .btn-set-main-photo {
+            background: #111827;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-set-main-photo:hover {
+            background: #2563eb;
+        }
+
+        .main-image {
+            border: 2px solid #22c55e;
+        }

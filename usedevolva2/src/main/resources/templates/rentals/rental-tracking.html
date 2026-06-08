@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acompanhamento de Aluguel - Use e Devolva</title>
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/rental-tracking.css(v=${#dates.createNow().time})}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="tracking-main-container">
+
+    <section class="caminho-container">
+        <h2 class="status-titulo">Status Atual da Locação</h2>
+
+        <div class="caminho-wrapper">
+            <div class="caminho-linha-fundo"></div>
+            <div class="caminho-linha-progresso" id="linhaProgresso"></div>
+
+            <div class="etapa completada">
+                <div class="etapa-bolinha">
+                    <span class="etapa-numero">1</span>
+                    <span class="etapa-icone">✓</span>
+                </div>
+                <div class="etapa-texto">Solicitação enviada</div>
+            </div>
+
+            <div class="etapa completada">
+                <div class="etapa-bolinha">
+                    <span class="etapa-numero">2</span>
+                    <span class="etapa-icone">✓</span>
+                </div>
+                <div class="etapa-texto">Pagamento aprovado</div>
+            </div>
+
+            <div class="etapa atual">
+                <div class="etapa-bolinha">
+                    <span class="etapa-numero">3</span>
+                    <span class="etapa-icone">✓</span>
+                </div>
+                <div class="etapa-texto">Aceito pelo dono</div>
+            </div>
+
+            <div class="etapa">
+                <div class="etapa-bolinha">
+                    <span class="etapa-numero">4</span>
+                    <span class="etapa-icone">✓</span>
+                </div>
+                <div class="etapa-texto">Em uso / Retirado</div>
+            </div>
+
+            <div class="etapa">
+                <div class="etapa-bolinha">
+                    <span class="etapa-numero">5</span>
+                    <span class="etapa-icone">✓</span>
+                </div>
+                <div class="etapa-texto">Devolvido</div>
+            </div>
+
+            <div class="etapa">
+                <div class="etapa-bolinha">
+                    <span class="etapa-numero">6</span>
+                    <span class="etapa-icone">✓</span>
+                </div>
+                <div class="etapa-texto">Finalizado</div>
+            </div>
+        </div>
+
+        <div id="containerAcoes" class="tracking-actions">
+            <button type="button" class="btn-rental-chat">Abrir chat da locação</button>
+        </div>
+    </section>
+
+    <div class="grid-infos">
+
+        <section class="card">
+            <h2>Resumo do aluguel</h2>
+            <div class="card-content">
+                <p><strong>Ferramenta:</strong> <span id="toolName">picareta igual a hevillyn</span></p>
+                <p><strong>Proprietário:</strong> <span id="ownerName">THIAGO GATTI BAFI</span></p>
+                <p><strong>Período:</strong> <span id="rentalPeriod">31/05/2026 até 05/06/2026</span></p>
+                <p><strong>Status:</strong> <span id="statusTexto" class="status-badge-val">Pagamento confirmado</span></p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Pagamento</h2>
+            <div class="card-content">
+                <p><strong>Método:</strong> <span id="paymentMethod">Pix</span></p>
+                <p><strong>Valor pago:</strong> <span class="destaque-valor" id="paymentValue">R$ 77,04</span></p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Entrega / Retirada</h2>
+            <div class="card-content">
+                <p><strong>Forma:</strong> <span id="deliveryType">Retirada presencial</span></p>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<script src="/js/core/main.js" defer></script>
+<script src="/js/pages/rentals/rental-tracking.js" defer></script>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

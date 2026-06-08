@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Perfil - Use e Devolva</title>
+
+    <link rel="stylesheet" th:href="@{/css/root.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/header.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/fragments/footer.css(v=${#dates.createNow().time})}">
+    <link rel="stylesheet" th:href="@{/css/pages/users/edit-profile.css(v=${#dates.createNow().time})}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"></div>
+
+<main class="edit-profile-page">
+    <a href="/users/profile" class="back-link">← Voltar para o perfil</a>
+
+    <section class="edit-profile-card">
+        <div class="edit-profile-heading">
+            <div>
+                <span>Minha conta</span>
+                <h1>Editar perfil</h1>
+                <p>Atualize seus dados pessoais, foto de perfil e senha de acesso.</p>
+            </div>
+        </div>
+
+        <section class="profile-photo-section">
+            <div class="edit-profile-avatar" id="editProfileAvatar">--</div>
+
+            <div class="profile-photo-actions">
+                <h2>Foto de perfil</h2>
+                <p>Use uma imagem quadrada ou aproximada. O arquivo deve ter até 5 MB.</p>
+
+                <label for="profilePhotoInput" class="btn-secondary">Escolher foto</label>
+                <input type="file" id="profilePhotoInput" accept="image/*" hidden>
+
+                <div class="profile-photo-buttons">
+                    <button type="button" id="saveProfilePhotoBtn" class="btn-primary" disabled>
+                        Salvar foto
+                    </button>
+
+                    <button type="button" id="removeProfilePhotoBtn" class="btn-danger" disabled>
+                        Remover foto
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <form id="editProfileForm" class="edit-profile-form">
+            <div class="form-grid">
+                <label>
+                    Nome completo
+                    <input type="text" id="nomeCompleto" required placeholder="Seu nome completo">
+                </label>
+
+                <label>
+                    E-mail
+                    <input type="email" id="email" required placeholder="seuemail@exemplo.com">
+                </label>
+
+                <label>
+                    Telefone
+                    <input type="tel" id="telefone" required placeholder="(00) 00000-0000" inputmode="numeric" maxlength="15" pattern="\(\d{2}\) \d{5}-\d{4}">
+                    <small id="telefoneError" class="field-error" aria-live="polite"></small>
+                </label>
+            </div>
+
+            <div class="password-box">
+                <h2>Alterar senha</h2>
+                <p>Preencha estes campos somente se quiser trocar a senha.</p>
+
+                <div class="form-grid">
+                    <label>
+                        Senha atual
+                        <input type="password" id="senhaAtual" placeholder="Sua senha atual">
+                    </label>
+
+                    <label>
+                        Nova senha
+                        <input type="password" id="novaSenha" placeholder="Mínimo 8 caracteres">
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="/users/profile" class="btn-secondary">Cancelar</a>
+                <button type="submit" class="btn-primary" id="saveProfileBtn">Salvar alterações</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script src="/js/core/main.js" defer></script>
+<script src="/js/pages/users/edit-profile.js" defer></script>
+
+</body>
+</html>

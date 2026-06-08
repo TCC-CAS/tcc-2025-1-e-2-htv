@@ -1,0 +1,909 @@
+let currentTool = null;
+let currentToolId = null;
+let bookedPeriods = [];
+let ownerPlano = null;
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+    currentToolId = Number(TOOL_ID);
+
+    await loadTool();
+    await loadImages();
+    await loadBookedPeriods();
+    const dataInicio = document.getElementById("dataInicio");
+    const dataFim = document.getElementById("dataFim");
+    const reservationForm = document.getElementById("reservationForm");
+    const startToolChatBtn = document.getElementById("startToolChatBtn");
+
+    if (startToolChatBtn) {
+        startToolChatBtn.addEventListener("click", startToolChat);
+    }
+
+    if (dataInicio) dataInicio.addEventListener("change", updateBookingSummary);
+    if (dataFim) dataFim.addEventListener("change", updateBookingSummary);
+
+    if (reservationForm) {
+
+        reservationForm.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            try {
+                const user = JSON.parse(localStorage.getItem("user"));
+
+                if (currentTool && user && Number(currentTool.ownerId) === Number(user.id)) {
+                    showToast("Você não pode alugar sua própria ferramenta.");
+                    return;
+                }
+
+                const dataInicio =
+                    document.getElementById("dataInicio").value;
+
+                const dataFim =
+                    document.getElementById("dataFim").value;
+
+                const obs =
+                    document.getElementById("obs").value;
+
+                if (!dataInicio || !dataFim) {
+                    showToast("Preencha as datas.");
+                    return;
+                }
+
+                if (!user || !user.id) {
+                    showToast("Você precisa estar logado.");
+                    return;
+                }
+
+                const response = await fetch("/tool-payments/create", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        toolId: TOOL_ID,
+                        userId: user.id,
+                        startDate: dataInicio,
+                        endDate: dataFim,
+                        message: obs
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+
+                    console.error(data);
+
+                    showToast(
+                        data.message ||
+                        "Erro ao criar pagamento."
+                    );
+
+                    return;
+                }
+
+                localStorage.setItem(
+                    "toolPaymentData",
+                    JSON.stringify(data)
+                );
+
+                showPixModal(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+                showToast(
+                    "Erro ao processar solicitação."
+                );
+            }
+        });
+    }
+});
+
+async function loadTool() {
+    try {
+        const response = await fetch(`/tools/${TOOL_ID}`);
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar ferramenta.");
+        }
+
+        const tool = await response.json();
+        currentTool = tool;
+
+        applyOwnerToolRestrictions();
+
+        const localizacaoFormatada = formatToolNeighborhoodCityState(tool);
+
+        const txtObservacoes = tool.observacoes || tool.observacao || "Nenhuma observação informada.";
+        const dataInicioVal = tool.dataInicioDisponibilidade || tool.data_inicio_disponibilidade;
+        const dataFimVal = tool.dataFimDisponibilidade || tool.data_fim_disponibilidade;
+
+        document.getElementById("breadcrumbToolName").textContent = tool.nome || "Ferramenta";
+        document.getElementById("toolName").textContent = tool.nome || "Ferramenta";
+        document.getElementById("toolCategory").textContent = (tool.categoria || "Categoria").toUpperCase();
+        document.getElementById("toolLocation").textContent = `Disponível em ${localizacaoFormatada}`;
+        document.getElementById("toolDescription").textContent = tool.descricao || "Descrição não informada.";
+        document.getElementById("toolCondition").textContent = tool.estadoConservacao || tool.estado_conservacao || "Estado não informado.";
+
+        document.getElementById("toolObservations").textContent = txtObservacoes;
+        document.getElementById("toolAvailability").textContent = formatAvailability(tool);
+        document.getElementById("toolPrice").textContent = formatCurrency(tool.valorDiaria || tool.valor_diaria || 0);
+
+        const inputInicio = document.getElementById("dataInicio");
+        const inputFim = document.getElementById("dataFim");
+
+        if (inputInicio && inputFim) {
+            const now = new Date();
+            const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+
+            let minAllowed = todayStr;
+            if (dataInicioVal && dataInicioVal > todayStr) {
+                minAllowed = dataInicioVal;
+            }
+
+            inputInicio.min = minAllowed;
+            inputFim.min = minAllowed;
+
+            if (dataFimVal) {
+                inputInicio.max = dataFimVal;
+                inputFim.max = dataFimVal;
+            }
+        }
+
+        await loadOwner(getToolOwnerId(tool), tool);
+
+    } catch (error) {
+        console.error(error);
+        showToast("Não foi possível carregar a ferramenta.");
+    }
+}
+
+function formatToolNeighborhoodCityState(tool) {
+    const bairro = String(tool.bairro || "").trim();
+    const cidade = String(tool.cidade || "").trim();
+    const estado = String(tool.estado || "").trim().toUpperCase();
+
+    if (bairro && cidade && estado) {
+        return `${bairro} - ${cidade} - ${estado}`;
+    }
+
+    if (bairro && cidade) {
+        return `${bairro} - ${cidade}`;
+    }
+
+    if (bairro && estado) {
+        return `${bairro} - ${estado}`;
+    }
+
+    if (bairro) {
+        return bairro;
+    }
+
+    if (cidade && estado) {
+        return `${cidade} - ${estado}`;
+    }
+
+    if (cidade || estado) {
+        return cidade || estado;
+    }
+
+    return tool.localizacao || "localização não informada";
+}
+
+async function loadBookedPeriods() {
+    try {
+        const response = await fetch('/rentals');
+        if (response.ok) {
+            const allRentals = await response.json();
+            bookedPeriods = allRentals.filter(r =>
+                Number(r.toolId) === Number(TOOL_ID) &&
+                !["CANCELLED", "REJECTED", "FINALIZED"].includes(r.status)
+            );
+        }
+    } catch (err) {
+        console.error("Erro ao carregar histórico de agendamentos:", err);
+    }
+}
+
+
+function getImageUrl(image) {
+    return image?.filePath || image?.url || image?.secureUrl || image?.secure_url || "";
+}
+
+function renderImageFallback(container, message = "Imagem indisponível") {
+    if (!container) return;
+    container.innerHTML = `
+        <div class="tool-main-image tool-main-image-fallback">
+            <span>${escapeHtml(message)}</span>
+        </div>
+    `;
+}
+
+function attachToolImageFallback(img) {
+    if (!img) return;
+    img.addEventListener("error", () => {
+        const wrapper = img.closest(".tool-main-image");
+        if (wrapper) {
+            wrapper.classList.add("tool-main-image-fallback");
+            wrapper.innerHTML = "<span>Imagem indisponível</span>";
+        }
+    }, { once: true });
+}
+
+async function loadImages() {
+    const container = document.getElementById("imageGallery");
+
+    try {
+        const response = await fetch(`/tools/${TOOL_ID}/images`);
+
+        if (!response.ok) {
+            renderImageFallback(container, "Sem imagens cadastradas");
+            return;
+        }
+
+        let images = await response.json();
+        images = Array.isArray(images)
+            ? images.filter(image => getImageUrl(image))
+            : [];
+
+        if (images.length === 0) {
+            renderImageFallback(container, "Sem imagens cadastradas");
+            return;
+        }
+
+        images.sort((a, b) => Number(Boolean(b.principal)) - Number(Boolean(a.principal)));
+
+        const mainImage = images[0];
+        const mainImageUrl = getImageUrl(mainImage);
+        const thumbnails = images;
+
+        container.innerHTML = `
+    <div class="tool-main-image">
+        <img id="selectedToolImage" src="${escapeHtml(mainImageUrl)}" alt="Imagem principal da ferramenta" loading="eager">
+    </div>
+
+    ${
+            thumbnails.length > 1
+                ? `<div class="tool-thumbs" id="toolThumbs"></div>`
+                : ""
+        }
+`;
+        attachToolImageFallback(document.getElementById("selectedToolImage"));
+
+        const thumbs = document.getElementById("toolThumbs");
+
+        if (thumbs) {
+            thumbnails.forEach((image, index) => {
+                const imageUrl = getImageUrl(image);
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = index === 0 ? "tool-thumb-btn active" : "tool-thumb-btn";
+                button.setAttribute("aria-label", "Selecionar imagem da ferramenta");
+
+                button.innerHTML = `
+            <img src="${escapeHtml(imageUrl)}" alt="Miniatura da ferramenta" loading="lazy">
+        `;
+
+                button.addEventListener("click", () => {
+                    const selectedImage = document.getElementById("selectedToolImage");
+                    const selectedWrapper = selectedImage?.closest(".tool-main-image");
+
+                    if (selectedWrapper?.classList.contains("tool-main-image-fallback")) {
+                        selectedWrapper.classList.remove("tool-main-image-fallback");
+                        selectedWrapper.innerHTML = `
+                    <img id="selectedToolImage" src="${escapeHtml(imageUrl)}" alt="Imagem principal da ferramenta">
+                `;
+                        attachToolImageFallback(document.getElementById("selectedToolImage"));
+                    } else if (selectedImage) {
+                        selectedImage.src = imageUrl;
+                    }
+
+                    document.querySelectorAll(".tool-thumb-btn").forEach(btn => {
+                        btn.classList.remove("active");
+                    });
+
+                    button.classList.add("active");
+                });
+
+                const thumbImg = button.querySelector("img");
+
+                if (thumbImg) {
+                    thumbImg.addEventListener("error", () => button.remove(), { once: true });
+                }
+
+                thumbs.appendChild(button);
+            });
+        }
+
+    } catch (error) {
+        console.error(error);
+        renderImageFallback(container, "Erro ao carregar imagens");
+    }
+}
+
+async function loadOwner(ownerId, tool = null) {
+    const fallbackOwner = buildOwnerFromTool(tool);
+
+    updateOwnerInfo(
+        fallbackOwner.name || "Proprietário da ferramenta",
+        fallbackOwner.profileImageUrl,
+        fallbackOwner.plano
+    );
+
+    if (!ownerId) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/users/${ownerId}`);
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar proprietário.");
+        }
+
+        const owner = await response.json();
+        ownerPlano = owner.plano || fallbackOwner.plano || ownerPlano;
+
+        const ownerName =
+            getFirstFilledValue(owner, ["nomeCompleto", "nome", "name", "email"]) ||
+            fallbackOwner.name ||
+            "Proprietário da ferramenta";
+
+        const ownerImageUrl =
+            getFirstFilledValue(owner, ["profileImageUrl", "fotoPerfil", "photoUrl", "avatarUrl"]) ||
+            fallbackOwner.profileImageUrl;
+
+        updateOwnerInfo(ownerName, ownerImageUrl, ownerPlano);
+
+    } catch (error) {
+        console.error(error);
+        updateOwnerInfo(
+            fallbackOwner.name || "Proprietário da ferramenta",
+            fallbackOwner.profileImageUrl,
+            fallbackOwner.plano
+        );
+    }
+}
+
+function getToolOwnerId(tool) {
+    if (!tool) {
+        return null;
+    }
+
+    return tool.ownerId || tool.proprietarioId || tool.usuarioId || tool.userId || null;
+}
+
+function buildOwnerFromTool(tool) {
+    if (!tool) {
+        return {
+            name: "Proprietário da ferramenta",
+            profileImageUrl: null,
+            plano: null
+        };
+    }
+
+    return {
+        name: getFirstFilledValue(tool, ["ownerNome", "ownerName", "proprietarioNome", "usuarioNome"]) || "Proprietário da ferramenta",
+        profileImageUrl: getFirstFilledValue(tool, ["ownerProfileImageUrl", "ownerProfileImage", "ownerPhotoUrl", "ownerAvatarUrl", "profileImageUrl"]),
+        plano: getFirstFilledValue(tool, ["ownerPlano", "planoProprietario", "ownerPlan"])
+    };
+}
+
+function getFirstFilledValue(source, keys) {
+    if (!source) {
+        return null;
+    }
+
+    for (const key of keys) {
+        const value = source[key];
+
+        if (value !== null && value !== undefined && String(value).trim() !== "") {
+            return String(value).trim();
+        }
+    }
+
+    return null;
+}
+
+function updateOwnerInfo(ownerName, profileImageUrl, plano) {
+    const goldBadge = document.getElementById("goldPlanDiscountBadge");
+
+    if (goldBadge && plano === "OURO") {
+        goldBadge.classList.remove("hidden");
+    }
+
+    document.getElementById("ownerName").textContent = ownerName;
+    renderOwnerAvatar(ownerName, profileImageUrl);
+}
+
+
+function renderOwnerAvatar(ownerName, profileImageUrl) {
+    const ownerAvatar = document.getElementById("ownerAvatar");
+
+    if (!ownerAvatar) {
+        return;
+    }
+
+    if (profileImageUrl) {
+        ownerAvatar.innerHTML = `<img src="${escapeHtml(profileImageUrl)}" alt="Foto de perfil de ${escapeHtml(ownerName)}">`;
+        ownerAvatar.classList.add("has-image");
+        return;
+    }
+
+    ownerAvatar.classList.remove("has-image");
+    ownerAvatar.textContent = getInitials(ownerName);
+}
+
+
+function escapeHtml(value) {
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function updateBookingSummary() {
+    if (!currentTool) return;
+
+    const inputInicio = document.getElementById("dataInicio");
+    const inputFim = document.getElementById("dataFim");
+
+    const dataInicio = inputInicio.value;
+    const dataFim = inputFim.value;
+
+    if (!dataInicio || !dataFim) {
+        document.getElementById("dailySummary").textContent = "0 diárias";
+        document.getElementById("baseValue").textContent = formatCurrency(0);
+        document.getElementById("serviceFee").textContent = formatCurrency(0);
+        document.getElementById("totalValue").textContent = formatCurrency(0);
+        return;
+    }
+
+    const start = new Date(dataInicio + "T00:00:00");
+    const end = new Date(dataFim + "T00:00:00");
+
+    if (end < start) {
+        showToast("A data de devolução não pode ser anterior à data de início.");
+        inputFim.value = "";
+        return;
+    }
+
+    const hasConflict = bookedPeriods.some(b => {
+        const bStart = new Date(b.startDate + "T00:00:00");
+        const bEnd = new Date(b.endDate + "T00:00:00");
+        return !(end < bStart || start > bEnd);
+    });
+
+    if (hasConflict) {
+        showToast("Esta ferramenta já está reservada ou solicitada neste período. Escolha outras datas!");
+        inputInicio.value = "";
+        inputFim.value = "";
+
+        document.getElementById("dailySummary").textContent = "0 diárias";
+        document.getElementById("baseValue").textContent = formatCurrency(0);
+        document.getElementById("serviceFee").textContent = formatCurrency(0);
+        document.getElementById("totalValue").textContent = formatCurrency(0);
+        return;
+    }
+
+    const millisecondsPerDay = 1000 * 60 * 60 * 24;
+    const totalDays = Math.floor((end - start) / millisecondsPerDay) + 1;
+
+    const dailyRate = Number(currentTool.valorDiaria || 0);
+    const base = dailyRate * totalDays;
+
+    const feePercent = (ownerPlano === "OURO") ? 0.05 : 0.07;
+    const serviceFee = base * feePercent;
+
+    const total = base + serviceFee;
+
+    document.getElementById("dailySummary").textContent =
+        totalDays === 1 ? "1 diária" : `${totalDays} diárias`;
+
+    document.getElementById("baseValue").textContent = formatCurrency(base);
+
+    document.getElementById("serviceFee").textContent = formatCurrency(serviceFee);
+    document.getElementById("totalValue").textContent = formatCurrency(total);
+}
+
+function formatAvailability(tool) {
+    const dataInicio = tool.dataInicioDisponibilidade || tool.data_inicio_disponibilidade;
+    const dataFim = tool.dataFimDisponibilidade || tool.data_fim_disponibilidade;
+
+    const hasStart = !!dataInicio;
+    const hasEnd = !!dataFim;
+
+    if (!hasStart && !hasEnd) {
+        return "Disponibilidade não informada.";
+    }
+
+    if (hasStart && !hasEnd) {
+        return `Disponível a partir de ${formatDate(dataInicio)}.`;
+    }
+
+    if (!hasStart && hasEnd) {
+        return `Disponível até ${formatDate(dataFim)}.`;
+    }
+
+    return `Disponível de ${formatDate(dataInicio)} até ${formatDate(dataFim)}.`;
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString + "T00:00:00");
+    return date.toLocaleDateString("pt-BR");
+}
+
+function formatCurrency(value) {
+    return Number(value).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function getInitials(name) {
+    return name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part[0])
+        .join("")
+        .toUpperCase();
+}
+
+function showPixModal(data) {
+
+    const modal =
+        document.getElementById("pixModal");
+
+    modal.classList.remove("hidden");
+
+    document.getElementById("pixQrImage").src =
+        data.pixQrCodeBase64;
+
+    document.getElementById("pixCode").value =
+        data.pixQrCode;
+
+    localStorage.setItem(
+        "lastToolPayment",
+        JSON.stringify(data)
+    );
+}
+
+function closePixModal() {
+
+    document
+        .getElementById("pixModal")
+        .classList.add("hidden");
+}
+
+document.addEventListener("click", async (event) => {
+
+    if (event.target.id === "copyPixCodeBtn") {
+
+        const code =
+            document.getElementById("pixCode").value;
+
+        await navigator.clipboard.writeText(code);
+
+        showToast("Código Pix copiado!");
+    }
+});
+
+document.addEventListener("click", (event) => {
+
+    if (
+        event.target.id === "closePixModal"
+    ) {
+
+        closePixModal();
+    }
+});
+
+document.addEventListener("click", async (event) => {
+
+    if (
+        event.target.id !== "checkPaymentBtn"
+    ) return;
+
+    try {
+
+        const paymentData =
+            JSON.parse(
+                localStorage.getItem(
+                    "lastToolPayment"
+                )
+            );
+
+        if (!paymentData) {
+
+            showToast(
+                "Pagamento não encontrado."
+            );
+
+            return;
+        }
+
+        const response = await fetch(
+            `/tool-payments/check/${paymentData.paymentId}`
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            showToast(
+                "Pagamento ainda pendente."
+            );
+
+            return;
+        }
+
+        if (
+            data.status !== "PAID"
+        ) {
+
+            showToast(
+                "Pagamento ainda não aprovado."
+            );
+
+            return;
+        }
+
+        showToast(
+            "Pagamento aprovado!"
+        );
+
+        setTimeout(() => {
+
+            window.location.href =
+                `/rentals/tracking/${data.rentalId}`;
+
+        }, 1500);
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            "Erro ao verificar pagamento."
+        );
+    }
+});
+
+async function startToolChat() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id) {
+        showToast("Você precisa estar logado para iniciar uma conversa.");
+        window.location.href = "/auth/login";
+        return;
+    }
+
+    if (!currentToolId) {
+        showToast("Ferramenta não encontrada para iniciar o chat.");
+        return;
+    }
+
+    if (currentTool && Number(currentTool.ownerId) === Number(user.id)) {
+        showToast("Você não pode iniciar chat com sua própria ferramenta.");
+        return;
+    }
+
+    const button = document.getElementById("startToolChatBtn");
+    const originalText = button ? button.textContent : "";
+
+    try {
+        if (button) {
+            button.disabled = true;
+            button.textContent = "Abrindo chat...";
+        }
+
+        const response = await fetch(`/chats/tools/${currentToolId}/start?userId=${user.id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: "Olá! Tenho interesse nesta ferramenta e gostaria de conversar sobre a locação."
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Erro ao iniciar chat.");
+        }
+
+        const chat = await response.json();
+
+        window.location.href = `/users/chats?chatId=${chat.id}`;
+
+    } catch (error) {
+        console.error(error);
+        showToast(error.message || "Não foi possível iniciar o chat.");
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+    }
+}
+
+function applyOwnerToolRestrictions() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id || !currentTool || !currentTool.ownerId) {
+        return;
+    }
+
+    const isOwner = Number(currentTool.ownerId) === Number(user.id);
+
+    if (!isOwner) {
+        return;
+    }
+
+    const startToolChatBtn = document.getElementById("startToolChatBtn");
+    const reservationForm = document.getElementById("reservationForm");
+    const rentSubmitBtn = reservationForm
+        ? reservationForm.querySelector("button[type='submit']")
+        : null;
+
+    const warningMessage = "Você não pode alugar ou iniciar chat com sua própria ferramenta.";
+
+    if (startToolChatBtn) {
+        startToolChatBtn.disabled = true;
+        startToolChatBtn.title = warningMessage;
+        startToolChatBtn.classList.add("disabled-owner-action");
+    }
+
+    if (rentSubmitBtn) {
+        rentSubmitBtn.disabled = true;
+        rentSubmitBtn.title = warningMessage;
+        rentSubmitBtn.classList.add("disabled-owner-action");
+    }
+}
+
+function showToast(message, type = "error") {
+    let container = document.getElementById("toast-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-container";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    toast.className = `custom-toast ${type}`;
+
+    const icon = type === "error" ? "⚠️" : "✅";
+
+    toast.innerHTML = `
+        <span style="font-size: 1.2rem;">${icon}</span>
+        <span style="flex: 1;">${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+        if (container.childElementCount === 0) {
+            container.remove();
+        }
+    }, 4000);
+}
+
+
+const btnReportTool = document.getElementById("btnReportTool");
+const btnReportOwner = document.getElementById("btnReportOwner");
+const productReportModal = document.getElementById("productReportModal");
+const btnCloseProductReportModal = document.getElementById("btnCloseProductReportModal");
+const btnCancelProductReport = document.getElementById("btnCancelProductReport");
+const productReportForm = document.getElementById("productReportForm");
+const productReportTargetType = document.getElementById("productReportTargetType");
+const productReportReasonSelect = document.getElementById("productReportReason");
+const productReportModalTitle = document.getElementById("productReportModalTitle");
+
+const toolReasons = `
+        <option value="">Selecione o motivo...</option>
+        <option value="CONTEUDO_INADEQUADO">Nome ou foto inadequada/ofensiva</option>
+        <option value="PRODUTO_PROIBIDO">Produto perigoso, proibido ou ilegal</option>
+        <option value="FRAUDE_GOLPE">Anúncio falso ou tentativa de golpe</option>
+        <option value="CATEGORIA_INCORRETA">Categoria ou informações completamente erradas</option>
+    `;
+
+const userReasons = `
+        <option value="">Selecione o motivo...</option>
+        <option value="PERFIL_INADEQUADO">Nome ou foto de perfil ofensiva/inadequada</option>
+        <option value="COMPORTAMENTO_INADEQUADO">Comportamento inadequado ou abusivo</option>
+        <option value="FRAUDE_GOLPE">Usuário suspeito de aplicar golpes</option>
+        <option value="SPAM">Envio de propagandas ou SPAM</option>
+    `;
+
+if (btnReportTool) {
+    btnReportTool.addEventListener("click", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.id) {
+            showToast("Você precisa fazer login para fazer uma denúncia.");
+            return;
+        }
+        productReportTargetType.value = "TOOL";
+        productReportModalTitle.innerText = "Denunciar Ferramenta";
+        productReportReasonSelect.innerHTML = toolReasons;
+        productReportModal.classList.add("active");
+    });
+}
+
+if (btnReportOwner) {
+    btnReportOwner.addEventListener("click", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user.id) {
+            showToast("Você precisa fazer login para fazer uma denúncia.");
+            return;
+        }
+        if (currentTool && Number(currentTool.ownerId) === Number(user.id)) {
+            showToast("Você não pode denunciar a si mesmo.");
+            return;
+        }
+        productReportTargetType.value = "USER";
+        productReportModalTitle.innerText = "Denunciar Usuário";
+        productReportReasonSelect.innerHTML = userReasons;
+        productReportModal.classList.add("active");
+    });
+}
+
+function closeProductReport() {
+    productReportModal.classList.remove("active");
+    if (productReportForm) productReportForm.reset();
+}
+
+if (btnCloseProductReportModal) btnCloseProductReportModal.addEventListener("click", closeProductReport);
+if (btnCancelProductReport) btnCancelProductReport.addEventListener("click", closeProductReport);
+
+if (productReportForm) {
+    productReportForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const user = JSON.parse(localStorage.getItem("user"));
+        const targetType = productReportTargetType.value;
+        const reason = productReportReasonSelect.value;
+        const description = document.getElementById("productReportDescription").value;
+
+        const payload = {
+            reporterId: user.id,
+            reportedUserId: targetType === "USER" ? currentTool.ownerId : null,
+            toolId: targetType === "TOOL" ? currentToolId : null,
+            rentalId: null,
+            reason: reason,
+            description: description,
+            reportedMessages: null
+        };
+
+        try {
+            const response = await fetch("/reports/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro no processamento do servidor.");
+            }
+
+            showToast("Sua denúncia foi registrada com sucesso!", "success");
+            closeProductReport();
+
+        } catch (error) {
+            console.error(error);
+            showToast("Não foi possível enviar a denúncia. Tente novamente.");
+        }
+    });
+}
+

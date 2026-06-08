@@ -1,0 +1,272 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f8fafc;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.edit-profile-page {
+    max-width: 980px;
+    margin: 2rem auto 4rem;
+    padding: 0 1.5rem;
+}
+
+.back-link {
+    display: inline-flex;
+    margin-bottom: 1rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.edit-profile-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.edit-profile-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.edit-profile-heading span {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+
+.edit-profile-heading h1 {
+    margin: 0.25rem 0;
+    font-size: 2rem;
+}
+
+.edit-profile-heading p,
+.profile-photo-actions p,
+.password-box p {
+    margin: 0;
+    color: #64748b;
+}
+
+.profile-photo-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    background: #f8fafc;
+}
+
+.edit-profile-avatar {
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    font-weight: 700;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.edit-profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-photo-actions h2,
+.password-box h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.15rem;
+}
+
+.profile-photo-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.profile-photo-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.edit-profile-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.edit-profile-form input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    font: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.edit-profile-form input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.password-box {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.password-box .form-grid {
+    margin-top: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+    border: none;
+    border-radius: 12px;
+    padding: 0.85rem 1.25rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #eef2ff;
+    color: var(--primary);
+}
+
+.edit-profile-toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.edit-profile-toast {
+    min-width: 260px;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+}
+
+.edit-profile-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.edit-profile-toast.success {
+    background: #16a34a;
+}
+
+.edit-profile-toast.error {
+    background: #dc2626;
+}
+
+@media (max-width: 720px) {
+    .edit-profile-card {
+        padding: 1.25rem;
+    }
+
+    .profile-photo-section,
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .edit-profile-avatar {
+        align-self: center;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.field-error {
+    display: block;
+    min-height: 1rem;
+    margin-top: 0.35rem;
+    color: #dc2626;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.input-error {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}
+
+
+/* Alto contraste: corrige apenas botoes secundarios que ficavam claros com texto claro. */
+body.high-contrast .edit-profile-page .btn-secondary,
+body.create-high-contrast .edit-profile-page .btn-secondary,
+body.high-contrast .edit-profile-page label.btn-secondary,
+body.create-high-contrast .edit-profile-page label.btn-secondary,
+body.high-contrast .edit-profile-page a.btn-secondary,
+body.create-high-contrast .edit-profile-page a.btn-secondary {
+    background: #ffff00 !important;
+    color: #000000 !important;
+    border: 2px solid #ffff00 !important;
+    text-decoration: none !important;
+}

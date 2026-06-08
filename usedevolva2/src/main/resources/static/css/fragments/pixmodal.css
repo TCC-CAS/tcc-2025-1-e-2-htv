@@ -1,0 +1,108 @@
+.pix-modal {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0,0,0,0.65);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+}
+
+.pix-modal.hidden {
+    display: none;
+}
+
+.pix-modal-content {
+
+    background: white;
+
+    width: 90%;
+    max-width: 420px;
+
+    border-radius: 18px;
+
+    padding: 2rem;
+
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pix-modal-content h2 {
+    margin: 0;
+}
+
+.pix-qrcode {
+    width: 240px;
+    height: 240px;
+
+    margin: 0 auto;
+
+    object-fit: contain;
+}
+
+#pixCode {
+
+    width: 100%;
+
+    height: 100px;
+
+    resize: none;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    padding: 10px;
+
+    font-size: 12px;
+}
+
+.btn-copy-pix,
+.btn-check-payment {
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.btn-check-payment {
+    background: #0f172a;
+    color: white;
+}
+
+.btn-copy-pix {
+    background: #f1f5f9;
+}
+
+.pix-close-btn {
+
+    position: absolute;
+
+    top: 12px;
+    right: 12px;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: #f1f5f9;
+
+    cursor: pointer;
+
+    font-size: 1.3rem;
+}
