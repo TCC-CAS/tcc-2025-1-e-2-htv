@@ -260,35 +260,35 @@ async function loadImages() {
 
         const mainImage = images[0];
         const mainImageUrl = getImageUrl(mainImage);
-        const thumbnails = images.slice(1);
+        const thumbnails = images;
 
         container.innerHTML = `
-            <div class="tool-main-image">
-                <img id="selectedToolImage" src="${escapeHtml(mainImageUrl)}" alt="Imagem principal da ferramenta" loading="eager">
-            </div>
+    <div class="tool-main-image">
+        <img id="selectedToolImage" src="${escapeHtml(mainImageUrl)}" alt="Imagem principal da ferramenta" loading="eager">
+    </div>
 
-            ${
-                thumbnails.length > 0
-                    ? `<div class="tool-thumbs" id="toolThumbs"></div>`
-                    : ""
-            }
-        `;
-
+    ${
+            thumbnails.length > 1
+                ? `<div class="tool-thumbs" id="toolThumbs"></div>`
+                : ""
+        }
+`;
         attachToolImageFallback(document.getElementById("selectedToolImage"));
 
         const thumbs = document.getElementById("toolThumbs");
 
         if (thumbs) {
-            thumbnails.forEach(image => {
+            thumbnails.forEach((image, index) => {
                 const imageUrl = getImageUrl(image);
+
                 const button = document.createElement("button");
                 button.type = "button";
-                button.className = "tool-thumb-btn";
+                button.className = index === 0 ? "tool-thumb-btn active" : "tool-thumb-btn";
                 button.setAttribute("aria-label", "Selecionar imagem da ferramenta");
 
                 button.innerHTML = `
-                    <img src="${escapeHtml(imageUrl)}" alt="Miniatura da ferramenta" loading="lazy">
-                `;
+            <img src="${escapeHtml(imageUrl)}" alt="Miniatura da ferramenta" loading="lazy">
+        `;
 
                 button.addEventListener("click", () => {
                     const selectedImage = document.getElementById("selectedToolImage");
@@ -296,17 +296,23 @@ async function loadImages() {
 
                     if (selectedWrapper?.classList.contains("tool-main-image-fallback")) {
                         selectedWrapper.classList.remove("tool-main-image-fallback");
-                        selectedWrapper.innerHTML = `<img id="selectedToolImage" src="${escapeHtml(imageUrl)}" alt="Imagem principal da ferramenta">`;
+                        selectedWrapper.innerHTML = `
+                    <img id="selectedToolImage" src="${escapeHtml(imageUrl)}" alt="Imagem principal da ferramenta">
+                `;
                         attachToolImageFallback(document.getElementById("selectedToolImage"));
-                        return;
-                    }
-
-                    if (selectedImage) {
+                    } else if (selectedImage) {
                         selectedImage.src = imageUrl;
                     }
+
+                    document.querySelectorAll(".tool-thumb-btn").forEach(btn => {
+                        btn.classList.remove("active");
+                    });
+
+                    button.classList.add("active");
                 });
 
                 const thumbImg = button.querySelector("img");
+
                 if (thumbImg) {
                     thumbImg.addEventListener("error", () => button.remove(), { once: true });
                 }

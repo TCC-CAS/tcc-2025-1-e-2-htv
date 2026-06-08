@@ -140,20 +140,17 @@ document.addEventListener("DOMContentLoaded", async() => {
             if (localizacaoModo === "estado") {
                 matchLocalizacao =
                     !estadoFiltro ||
-                    toolUf === estadoFiltro ||
-                    toolLocalizacao.includes(estadoFiltro);
+                    toolUf === estadoFiltro;
             }
 
             if (localizacaoModo === "cidade") {
                 const matchEstadoCidade =
                     !estadoFiltro ||
-                    toolUf === estadoFiltro ||
-                    toolLocalizacao.includes(estadoFiltro);
+                    toolUf === estadoFiltro;
 
                 const matchCidade =
                     !cidadeFiltro ||
-                    toolCidade.includes(cidadeFiltro) ||
-                    toolLocalizacao.includes(cidadeFiltro);
+                    toolCidade === cidadeFiltro;
 
                 matchLocalizacao = matchEstadoCidade && matchCidade;
             }
@@ -161,7 +158,6 @@ document.addEventListener("DOMContentLoaded", async() => {
             return matchBusca && matchCategoria && matchEstadoConservacao && matchValorMinimo && matchValorMaximo && matchLocalizacao;
         });
 
-        // ORDENAÇÃO: Usuários Ouro sempre no topo independentemente do filtro selecionado
         filteredTools.sort((a, b) => {
             const aIsOuro = a.ownerPlano === "OURO" ? 1 : 0;
             const bIsOuro = b.ownerPlano === "OURO" ? 1 : 0;
